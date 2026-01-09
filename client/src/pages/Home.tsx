@@ -145,19 +145,17 @@ export default function Home() {
     .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
 
   // Matriz de Alocação (Top 8 de cada)
-  const top8Colaboradores = Object.entries(colaboradorHoras)
+  const todosColaboradores = Object.entries(colaboradorHoras)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 8)
     .map(([nome]) => nome);
   
-  const top8Projetos = Object.entries(projetoHoras)
+  const todosProjetos = Object.entries(projetoHoras)
     .sort(([, a], [, b]) => b - a)
-    .slice(0, 8)
     .map(([nome]) => nome);
 
-  const matrizAlocacao = top8Colaboradores.map(colab => {
+  const matrizAlocacao = todosColaboradores.map(colab => {
     const row: any = { colaborador: colab.split(" ").slice(0, 2).join(" ") };
-    top8Projetos.forEach(proj => {
+    todosProjetos.forEach(proj => {
       const horas = filteredData
         .filter(r => r.Colaborador === colab && r.Projeto === proj)
         .reduce((sum, r) => sum + r.Horas_Trabalhadas, 0);
@@ -169,7 +167,7 @@ export default function Home() {
   const getHeatmapColor = (value: number) => {
     if (value === 0) return "rgba(59, 130, 246, 0.05)";
     const max = Math.max(...matrizAlocacao.flatMap(row => 
-      top8Projetos.map(proj => row[proj] || 0)
+      todosProjetos.map(proj => row[proj] || 0)
     ));
     const ratio = value / max;
     if (ratio > 0.75) return "rgba(59, 130, 246, 0.9)";
@@ -471,48 +469,60 @@ export default function Home() {
           <h2 className="text-2xl font-bold mb-4">Matriz de Alocação</h2>
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Colaborador × Projeto (Top 8)</CardTitle>
-              <p className="text-sm text-muted-foreground">Horas trabalhadas por colaborador em cada projeto</p>
+              <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
+              <p className="text-sm text-muted-foreground">
+                Horas trabalhadas por colaborador em cada projeto · {todosColaboradores.length} colaboradores × {todosProjetos.length} projetos
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full border-collapse">
-                  <thead>
-                    <tr className="border-b-2">
-                      <th className="text-left p-3 font-semibold sticky left-0 bg-card">Colaborador</th>
-                      {top8Projetos.map((proj, idx) => (
-                        <th key={idx} className="text-center p-3 font-semibold text-sm">
-                          <div className="w-24 truncate" title={proj}>
-                            {proj.substring(0, 15)}...
-                          </div>
+              <div className="rounded-lg border">
+                <div className="overflow-auto max-h-[600px] relative">
+                  <table className="w-full border-collapse">
+                    <thead className="sticky top-0 z-10">
+                      <tr className="border-b-2 bg-card">
+                        <th className="text-left p-3 font-semibold sticky left-0 bg-card border-r-2 z-20 min-w-[180px]">
+                          Colaborador
                         </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matrizAlocacao.map((row, idx) => (
-                      <tr key={idx} className="border-b hover:bg-muted/50 transition-colors">
-                        <td className="p-3 font-medium sticky left-0 bg-card">{row.colaborador}</td>
-                        {top8Projetos.map((proj, pIdx) => {
-                          const value = row[proj] || 0;
-                          return (
-                            <td 
-                              key={pIdx} 
-                              className="p-3 text-center font-mono text-sm font-semibold"
-                              style={{ 
-                                backgroundColor: getHeatmapColor(value),
-                                color: value > 0 ? '#fff' : 'inherit'
-                              }}
-                            >
-                              {value > 0 ? value.toFixed(1) : "-"}
-                            </td>
-                          );
-                        })}
+                        {todosProjetos.map((proj: string, idx: number) => (
+                          <th key={idx} className="text-center p-3 font-semibold text-xs bg-card min-w-[100px]">
+                            <div className="max-w-[100px] truncate" title={proj}>
+                              {proj}
+                            </div>
+                          </th>
+                        ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {matrizAlocacao.map((row, idx) => (
+                        <tr key={idx} className="border-b hover:bg-muted/30 transition-colors">
+                          <td className="p-3 font-medium sticky left-0 bg-card border-r z-10">
+                            {row.colaborador}
+                          </td>
+                          {todosProjetos.map((proj: string, pIdx: number) => {
+                            const value = row[proj] || 0;
+                            return (
+                              <td 
+                                key={pIdx} 
+                                className="p-3 text-center font-mono text-sm font-semibold transition-all hover:scale-105"
+                                style={{ 
+                                  backgroundColor: getHeatmapColor(value),
+                                  color: value > 0 ? '#fff' : 'inherit'
+                                }}
+                                title={value > 0 ? `${row.colaborador} · ${proj}: ${value.toFixed(1)}h` : ''}
+                              >
+                                {value > 0 ? value.toFixed(1) : "-"}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
+              <p className="text-xs text-muted-foreground mt-3">
+                💡 Dica: Role horizontalmente para ver todos os projetos. Passe o mouse sobre as células para ver detalhes.
+              </p>
             </CardContent>
           </Card>
         </div>
