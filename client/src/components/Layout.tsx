@@ -25,7 +25,7 @@ export default function Layout({ children }: LayoutProps) {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full bg-card border-r transition-all duration-300 z-20 shadow-lg",
+          "fixed left-0 top-0 h-full bg-card/95 backdrop-blur-md border-r border-primary/30 transition-all duration-300 z-20 shadow-[0_0_30px_rgba(59,130,246,0.2)]",
           sidebarOpen ? "w-72" : "w-20"
         )}
       >
@@ -39,7 +39,7 @@ export default function Layout({ children }: LayoutProps) {
               "flex items-center gap-3 mb-2 transition-all duration-300",
               !sidebarOpen && "justify-center"
             )}>
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0">
+              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-pulse">
                 <BarChart3 className="h-6 w-6 text-white" />
               </div>
               {sidebarOpen && (
@@ -63,9 +63,9 @@ export default function Layout({ children }: LayoutProps) {
                   <Button
                     variant={isActive ? "default" : "ghost"}
                     className={cn(
-                      "w-full h-auto transition-all duration-300 group relative overflow-hidden",
+                      "w-full h-auto transition-all duration-300 group relative overflow-hidden border",
                       sidebarOpen ? "justify-start gap-3 py-3 px-4" : "justify-center p-3",
-                      isActive && "shadow-md"
+                      isActive ? "bg-primary/20 border-primary/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "border-transparent hover:border-primary/30 hover:bg-accent/50"
                     )}
                     title={!sidebarOpen ? item.label : undefined}
                   >
@@ -146,12 +146,12 @@ export default function Layout({ children }: LayoutProps) {
         )}
       >
         {/* Header */}
-        <header className="border-b bg-card/50 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
+        <header className="border-b border-primary/20 bg-card/50 backdrop-blur-md sticky top-0 z-10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
           <div className="container py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent gradient-animated">
                     {navItems.find((item) => item.path === location)?.label || "Dashboard"}
                   </h1>
                   <p className="text-xs text-muted-foreground">
@@ -178,7 +178,7 @@ export default function Layout({ children }: LayoutProps) {
         </main>
 
         {/* Footer */}
-        <footer className="border-t bg-card/30 backdrop-blur-sm py-6 mt-12">
+        <footer className="border-t border-primary/20 bg-card/30 backdrop-blur-md py-6 mt-12 shadow-[0_-10px_30px_rgba(59,130,246,0.1)]">
           <div className="container">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <p>Dashboard Gerencial · Atualizado em tempo real</p>
