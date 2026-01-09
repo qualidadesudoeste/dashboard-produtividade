@@ -1,7 +1,7 @@
-/* Swiss Precision Dashboard - Grid rigoroso 8px, tipografia hierárquica, assimetria calculada */
+/* Swiss Precision Dashboard - Layout profissional e elegante com hierarquia visual refinada */
 
 import { useEffect, useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Select,
@@ -25,7 +25,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Clock, Users, FolderKanban, Activity, TrendingUp, CheckCircle2 } from "lucide-react";
+import { Clock, Users, FolderKanban, Activity, TrendingUp, CheckCircle2, Filter } from "lucide-react";
 
 interface DataRecord {
   Colaborador: string;
@@ -40,7 +40,7 @@ interface DataRecord {
   PF: number;
 }
 
-const COLORS = ["#0A84FF", "#5AC8FA", "#34C759", "#FF9500", "#FF3B30", "#AF52DE", "#FF2D55"];
+const COLORS = ["#0A84FF", "#5AC8FA", "#34C759", "#FF9500", "#FF3B30", "#AF52DE", "#FF2D55", "#FFD60A"];
 
 export default function Home() {
   const [data, setData] = useState<DataRecord[]>([]);
@@ -64,9 +64,9 @@ export default function Home() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent mb-4"></div>
-          <p className="text-muted-foreground">Carregando dados...</p>
+        <div className="text-center space-y-4">
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="text-muted-foreground text-lg">Carregando dados do dashboard...</p>
         </div>
       </div>
     );
@@ -99,7 +99,7 @@ export default function Home() {
   const top15Colaboradores = Object.entries(colaboradorHoras)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 15)
-    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(2)) }));
+    .map(([nome, horas]) => ({ nome: nome.trim(), horas: Number(horas.toFixed(2)) }));
 
   // Top 10 Projetos
   const projetoHoras = filteredData.reduce((acc, r) => {
@@ -110,7 +110,10 @@ export default function Home() {
   const top10Projetos = Object.entries(projetoHoras)
     .sort(([, a], [, b]) => b - a)
     .slice(0, 10)
-    .map(([nome, horas]) => ({ nome: nome.substring(0, 30), horas: Number(horas.toFixed(2)) }));
+    .map(([nome, horas]) => ({ 
+      nome: nome.length > 35 ? nome.substring(0, 35) + "..." : nome, 
+      horas: Number(horas.toFixed(2)) 
+    }));
 
   // Distribuição por Tipo
   const tipoHoras = filteredData.reduce((acc, r) => {
@@ -149,44 +152,60 @@ export default function Home() {
   const projetos = ["todos", ...Array.from(new Set(data.map((r) => r.Projeto))).sort()];
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border bg-card">
-        <div className="container py-8">
-          <h1 className="text-5xl font-bold tracking-tight mb-2">Dashboard Gerencial</h1>
-          <p className="text-muted-foreground text-lg">Análise de Produtividade por Colaborador e Projeto</p>
+    <div className="min-h-screen bg-muted/30">
+      {/* Header com gradiente sutil */}
+      <header className="border-b border-border bg-gradient-to-b from-card to-background/50 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
+        <div className="container py-10">
+          <div className="flex items-end justify-between">
+            <div>
+              <h1 className="text-6xl font-bold tracking-tight mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+                Dashboard Gerencial
+              </h1>
+              <p className="text-muted-foreground text-lg font-medium">
+                Análise de Produtividade · Colaboradores & Projetos
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground mb-1">Período</p>
+              <p className="text-xl font-bold font-mono">Dezembro 2025</p>
+            </div>
+          </div>
         </div>
       </header>
 
-      {/* Filtros */}
-      <div className="border-b border-border bg-card">
-        <div className="container py-6">
-          <div className="flex flex-wrap gap-4">
-            <div className="flex-1 min-w-[280px]">
-              <label className="text-sm font-medium mb-2 block">Colaborador</label>
+      {/* Filtros com design refinado */}
+      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+        <div className="container py-8">
+          <div className="flex items-center gap-3 mb-4">
+            <Filter className="h-5 w-5 text-primary" />
+            <h2 className="text-lg font-semibold">Filtros de Análise</h2>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Colaborador</label>
               <Select value={selectedColaborador} onValueChange={setSelectedColaborador}>
-                <SelectTrigger>
+                <SelectTrigger className="h-12 text-base">
                   <SelectValue placeholder="Selecione um colaborador" />
                 </SelectTrigger>
                 <SelectContent>
                   {colaboradores.map((c) => (
                     <SelectItem key={c} value={c}>
-                      {c === "todos" ? "Todos os Colaboradores" : c}
+                      {c === "todos" ? "📊 Todos os Colaboradores" : c}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
-            <div className="flex-1 min-w-[280px]">
-              <label className="text-sm font-medium mb-2 block">Projeto</label>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">Projeto</label>
               <Select value={selectedProjeto} onValueChange={setSelectedProjeto}>
-                <SelectTrigger>
+                <SelectTrigger className="h-12 text-base">
                   <SelectValue placeholder="Selecione um projeto" />
                 </SelectTrigger>
                 <SelectContent>
                   {projetos.map((p) => (
                     <SelectItem key={p} value={p}>
-                      {p === "todos" ? "Todos os Projetos" : p}
+                      {p === "todos" ? "📁 Todos os Projetos" : p}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -196,94 +215,158 @@ export default function Home() {
         </div>
       </div>
 
-      {/* KPIs */}
-      <div className="container py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-6">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Total de Horas</CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
+      {/* KPIs com design elevado */}
+      <div className="container py-10">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Card className="border-l-4 border-l-primary shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Total de Horas
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Clock className="h-5 w-5 text-primary" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono">{totalHoras.toFixed(2)}h</div>
+              <div className="text-4xl font-bold font-mono tracking-tight">{totalHoras.toFixed(2)}h</div>
+              <p className="text-xs text-muted-foreground mt-2">Horas trabalhadas no período</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Atividades</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-l-4 border-l-chart-2 shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Atividades
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-chart-2/10 flex items-center justify-center">
+                  <Activity className="h-5 w-5 text-chart-2" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono">{totalAtividades}</div>
+              <div className="text-4xl font-bold font-mono tracking-tight">{totalAtividades.toLocaleString()}</div>
+              <p className="text-xs text-muted-foreground mt-2">Atividades registradas</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Colaboradores</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-l-4 border-l-chart-3 shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Colaboradores
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-chart-3/10 flex items-center justify-center">
+                  <Users className="h-5 w-5 text-chart-3" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono">{totalColaboradores}</div>
+              <div className="text-4xl font-bold font-mono tracking-tight">{totalColaboradores}</div>
+              <p className="text-xs text-muted-foreground mt-2">Pessoas na equipe</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Projetos</CardTitle>
-              <FolderKanban className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-l-4 border-l-chart-4 shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Projetos
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-chart-4/10 flex items-center justify-center">
+                  <FolderKanban className="h-5 w-5 text-chart-4" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono">{totalProjetos}</div>
+              <div className="text-4xl font-bold font-mono tracking-tight">{totalProjetos}</div>
+              <p className="text-xs text-muted-foreground mt-2">Projetos ativos</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Média h/Atividade</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-l-4 border-l-chart-5 shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Média h/Atividade
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-chart-5/10 flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 text-chart-5" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono">{mediaHorasPorAtividade.toFixed(2)}h</div>
+              <div className="text-4xl font-bold font-mono tracking-tight">{mediaHorasPorAtividade.toFixed(2)}h</div>
+              <p className="text-xs text-muted-foreground mt-2">Tempo médio por atividade</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">Taxa Conclusão</CardTitle>
-              <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+          <Card className="border-l-4 border-l-chart-3 shadow-md hover:shadow-lg transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
+                  Taxa de Conclusão
+                </CardTitle>
+                <div className="h-10 w-10 rounded-full bg-chart-3/10 flex items-center justify-center">
+                  <CheckCircle2 className="h-5 w-5 text-chart-3" />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-bold font-mono">{taxaConclusao.toFixed(1)}%</div>
+              <div className="text-4xl font-bold font-mono tracking-tight">{taxaConclusao.toFixed(1)}%</div>
+              <p className="text-xs text-muted-foreground mt-2">Atividades concluídas</p>
             </CardContent>
           </Card>
         </div>
       </div>
 
-      {/* Gráficos */}
+      {/* Gráficos com tabs elegantes */}
       <div className="container pb-16">
         <Tabs defaultValue="colaboradores" className="space-y-8">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
-            <TabsTrigger value="colaboradores">Colaboradores</TabsTrigger>
-            <TabsTrigger value="projetos">Projetos</TabsTrigger>
-            <TabsTrigger value="tipos">Tipos</TabsTrigger>
-            <TabsTrigger value="temporal">Temporal</TabsTrigger>
+          <TabsList className="grid w-full max-w-3xl mx-auto grid-cols-4 h-14 bg-card shadow-sm">
+            <TabsTrigger value="colaboradores" className="text-base">
+              👥 Colaboradores
+            </TabsTrigger>
+            <TabsTrigger value="projetos" className="text-base">
+              📁 Projetos
+            </TabsTrigger>
+            <TabsTrigger value="tipos" className="text-base">
+              🏷️ Tipos
+            </TabsTrigger>
+            <TabsTrigger value="temporal" className="text-base">
+              📈 Temporal
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="colaboradores" className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Top 15 Colaboradores por Horas Trabalhadas</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-muted/30">
+                <CardTitle className="text-2xl">Top 15 Colaboradores</CardTitle>
+                <CardDescription>Ranking por horas trabalhadas no período</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={500}>
-                  <BarChart data={top15Colaboradores} layout="vertical" margin={{ left: 200, right: 32 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
-                    <XAxis type="number" stroke="#8E8E93" />
-                    <YAxis dataKey="nome" type="category" width={190} stroke="#8E8E93" style={{ fontSize: 12 }} />
-                    <Tooltip />
-                    <Bar dataKey="horas" fill="#0A84FF" radius={[0, 4, 4, 0]} />
+              <CardContent className="pt-8">
+                <ResponsiveContainer width="100%" height={550}>
+                  <BarChart data={top15Colaboradores} layout="vertical" margin={{ left: 220, right: 40, top: 10, bottom: 10 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" horizontal={true} vertical={false} />
+                    <XAxis type="number" stroke="#8E8E93" style={{ fontSize: 13 }} />
+                    <YAxis 
+                      dataKey="nome" 
+                      type="category" 
+                      width={210} 
+                      stroke="#8E8E93" 
+                      style={{ fontSize: 12, fontWeight: 500 }} 
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#FFFFFF', 
+                        border: '1px solid #E5E5EA', 
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }} 
+                    />
+                    <Bar dataKey="horas" fill="#0A84FF" radius={[0, 6, 6, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -291,18 +374,33 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="projetos" className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Top 10 Projetos por Horas Trabalhadas</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-muted/30">
+                <CardTitle className="text-2xl">Top 10 Projetos</CardTitle>
+                <CardDescription>Alocação de horas por projeto</CardDescription>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-8">
                 <ResponsiveContainer width="100%" height={500}>
-                  <BarChart data={top10Projetos} margin={{ bottom: 120, top: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
-                    <XAxis dataKey="nome" angle={-45} textAnchor="end" height={120} stroke="#8E8E93" style={{ fontSize: 11 }} />
-                    <YAxis stroke="#8E8E93" />
-                    <Tooltip />
-                    <Bar dataKey="horas" fill="#0A84FF" radius={[4, 4, 0, 0]} />
+                  <BarChart data={top10Projetos} margin={{ bottom: 140, top: 20, left: 20, right: 20 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" vertical={false} />
+                    <XAxis 
+                      dataKey="nome" 
+                      angle={-45} 
+                      textAnchor="end" 
+                      height={140} 
+                      stroke="#8E8E93" 
+                      style={{ fontSize: 11, fontWeight: 500 }} 
+                    />
+                    <YAxis stroke="#8E8E93" style={{ fontSize: 13 }} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#FFFFFF', 
+                        border: '1px solid #E5E5EA', 
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }} 
+                    />
+                    <Bar dataKey="horas" fill="#0A84FF" radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -311,12 +409,13 @@ export default function Home() {
 
           <TabsContent value="tipos" className="space-y-8">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Distribuição por Tipo de Atividade</CardTitle>
+              <Card className="shadow-lg">
+                <CardHeader className="border-b bg-muted/30">
+                  <CardTitle className="text-xl">Distribuição por Tipo</CardTitle>
+                  <CardDescription>Horas por tipo de atividade</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={400}>
+                <CardContent className="pt-8">
+                  <ResponsiveContainer width="100%" height={420}>
                     <PieChart>
                       <Pie
                         data={distribuicaoTipo}
@@ -324,25 +423,34 @@ export default function Home() {
                         nameKey="nome"
                         cx="50%"
                         cy="50%"
-                        outerRadius={120}
-                        label={(entry) => `${entry.nome.substring(0, 20)}`}
+                        outerRadius={130}
+                        label={(entry) => `${entry.nome.substring(0, 22)}`}
+                        labelLine={{ stroke: '#8E8E93', strokeWidth: 1 }}
                       >
                         {distribuicaoTipo.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#FFFFFF', 
+                          border: '1px solid #E5E5EA', 
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }} 
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Distribuição por Status</CardTitle>
+              <Card className="shadow-lg">
+                <CardHeader className="border-b bg-muted/30">
+                  <CardTitle className="text-xl">Distribuição por Status</CardTitle>
+                  <CardDescription>Horas por status das atividades</CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <ResponsiveContainer width="100%" height={400}>
+                <CardContent className="pt-8">
+                  <ResponsiveContainer width="100%" height={420}>
                     <PieChart>
                       <Pie
                         data={distribuicaoStatus}
@@ -350,14 +458,22 @@ export default function Home() {
                         nameKey="nome"
                         cx="50%"
                         cy="50%"
-                        outerRadius={120}
-                        label
+                        outerRadius={130}
+                        label={(entry) => `${entry.nome}: ${entry.horas.toFixed(0)}h`}
+                        labelLine={{ stroke: '#8E8E93', strokeWidth: 1 }}
                       >
                         {distribuicaoStatus.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                         ))}
                       </Pie>
-                      <Tooltip />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#FFFFFF', 
+                          border: '1px solid #E5E5EA', 
+                          borderRadius: '8px',
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }} 
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -366,19 +482,44 @@ export default function Home() {
           </TabsContent>
 
           <TabsContent value="temporal" className="space-y-8">
-            <Card>
-              <CardHeader>
-                <CardTitle>Evolução Temporal de Horas Trabalhadas</CardTitle>
+            <Card className="shadow-lg">
+              <CardHeader className="border-b bg-muted/30">
+                <CardTitle className="text-2xl">Evolução Temporal</CardTitle>
+                <CardDescription>Tendência de horas trabalhadas ao longo do tempo</CardDescription>
               </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={400}>
-                  <LineChart data={evolucaoTemporal}>
+              <CardContent className="pt-8">
+                <ResponsiveContainer width="100%" height={450}>
+                  <LineChart data={evolucaoTemporal} margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
-                    <XAxis dataKey="mes" stroke="#8E8E93" />
-                    <YAxis stroke="#8E8E93" />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="horas" stroke="#0A84FF" strokeWidth={3} dot={{ r: 6 }} />
+                    <XAxis 
+                      dataKey="mes" 
+                      stroke="#8E8E93" 
+                      style={{ fontSize: 13, fontWeight: 500 }} 
+                    />
+                    <YAxis 
+                      stroke="#8E8E93" 
+                      style={{ fontSize: 13 }} 
+                    />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: '#FFFFFF', 
+                        border: '1px solid #E5E5EA', 
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                      }} 
+                    />
+                    <Legend 
+                      wrapperStyle={{ paddingTop: '20px' }} 
+                      iconType="circle"
+                    />
+                    <Line 
+                      type="monotone" 
+                      dataKey="horas" 
+                      stroke="#0A84FF" 
+                      strokeWidth={4} 
+                      dot={{ r: 7, fill: '#0A84FF', strokeWidth: 2, stroke: '#FFFFFF' }}
+                      activeDot={{ r: 9 }}
+                    />
                   </LineChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -386,6 +527,13 @@ export default function Home() {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-card py-8 mt-16">
+        <div className="container text-center text-sm text-muted-foreground">
+          <p>Dashboard Gerencial de Produtividade · Atualizado em tempo real</p>
+        </div>
+      </footer>
     </div>
   );
 }
