@@ -1,4 +1,5 @@
-/* Design Philosophy: Swiss Precision + Data Visualization Excellence
+/**
+ * Design Philosophy: Swiss Precision meets Modern Data Visualization
  * - Clean, functional layout with strong grid system
  * - Data-driven color coding with meaningful gradients
  * - Micro-interactions and smooth animations
@@ -24,7 +25,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { Clock, Activity, FolderKanban, Users, TrendingUp, CheckCircle2, Target, Zap, Search, Filter } from "lucide-react";
+import { Clock, Activity, FolderKanban, Users, TrendingUp, CheckCircle2, Target, Zap, Search, Filter, Calendar } from "lucide-react";
 
 interface DataRecord {
   Colaborador: string;
@@ -47,7 +48,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedColaborador, setSelectedColaborador] = useState<string>("todos");
   const [selectedProjeto, setSelectedProjeto] = useState<string>("todos");
-  const [selectedPeriodo, setSelectedPeriodo] = useState<string>("todos");
+  const [dataInicio, setDataInicio] = useState<string>("");
+  const [dataFim, setDataFim] = useState<string>("");
   const [matrizSearchColab, setMatrizSearchColab] = useState<string>("");
   const [matrizSearchProj, setMatrizSearchProj] = useState<string>("");
 
@@ -64,10 +66,21 @@ export default function Home() {
       });
   }, []);
 
-  const periodos = useMemo(() => {
-    const meses = new Set(data.map((r) => r.Início.substring(0, 7)));
-    return ["todos", ...Array.from(meses).sort()];
-  }, [data]);
+  // Validação de datas
+  const handleDataInicioChange = (value: string) => {
+    setDataInicio(value);
+    // Se data fim estiver preenchida e for menor que a nova data início, limpa data fim
+    if (dataFim && value > dataFim) {
+      setDataFim("");
+    }
+  };
+
+  const handleDataFimChange = (value: string) => {
+    // Só permite definir data fim se for maior ou igual à data início
+    if (!dataInicio || value >= dataInicio) {
+      setDataFim(value);
+    }
+  };
 
   if (loading) {
     return (
@@ -83,7 +96,20 @@ export default function Home() {
   const filteredData = data.filter((record) => {
     const matchColaborador = selectedColaborador === "todos" || record.Colaborador === selectedColaborador;
     const matchProjeto = selectedProjeto === "todos" || record.Projeto === selectedProjeto;
-    const matchPeriodo = selectedPeriodo === "todos" || record.Início.startsWith(selectedPeriodo);
+    
+    // Filtro de período com data início e fim
+    let matchPeriodo = true;
+    if (dataInicio && dataFim) {
+      const recordDate = record.Início.substring(0, 10); // YYYY-MM-DD
+      matchPeriodo = recordDate >= dataInicio && recordDate <= dataFim;
+    } else if (dataInicio) {
+      const recordDate = record.Início.substring(0, 10);
+      matchPeriodo = recordDate >= dataInicio;
+    } else if (dataFim) {
+      const recordDate = record.Início.substring(0, 10);
+      matchPeriodo = recordDate <= dataFim;
+    }
+    
     return matchColaborador && matchProjeto && matchPeriodo;
   });
 
@@ -98,141 +124,111 @@ export default function Home() {
     : 0;
 
   // Métricas Adicionais Detalhadas
-  const totalPF = filteredData.reduce((sum, r) => sum + (r.PF || 0), 0);
   const atividadesConcluidas = filteredData.filter((r) => r.Status === "Concluído").length;
-  const atividadesEmAndamento = filteredData.filter((r) => r.Status !== "Concluído").length;
-  const mediaHorasPorColaborador = totalColaboradores > 0 ? totalHoras / totalColaboradores : 0;
-  const mediaHorasPorProjeto = totalProjetos > 0 ? totalHoras / totalProjetos : 0;
-  const mediaPFPorAtividade = totalAtividades > 0 ? totalPF / totalAtividades : 0;
-
-  // Distribuição por Tipo (detalhada)
-  const tipoStats = filteredData.reduce((acc, r) => {
-    if (!acc[r.Tipo]) {
-      acc[r.Tipo] = { horas: 0, atividades: 0, pf: 0 };
-    }
-    acc[r.Tipo].horas += r.Horas_Trabalhadas;
-    acc[r.Tipo].atividades += 1;
-    acc[r.Tipo].pf += r.PF || 0;
-    return acc;
-  }, {} as Record<string, { horas: number; atividades: number; pf: number }>);
-
-  const tipoMaisFrequente = Object.entries(tipoStats)
-    .sort(([, a], [, b]) => b.atividades - a.atividades)[0];
+  const atividadesAndamento = filteredData.filter((r) => r.Status === "Em andamento").length;
+  const totalPF = filteredData.reduce((sum, r) => sum + (r.PF || 0), 0);
+  const mediaPorColaborador = totalColaboradores > 0 ? totalHoras / totalColaboradores : 0;
+  const mediaPorProjeto = totalProjetos > 0 ? totalHoras / totalProjetos : 0;
 
   // Top Projeto e Colaborador
   const projetoHoras = filteredData.reduce((acc, r) => {
     acc[r.Projeto] = (acc[r.Projeto] || 0) + r.Horas_Trabalhadas;
     return acc;
   }, {} as Record<string, number>);
-  const topProjeto = Object.entries(projetoHoras).sort(([, a], [, b]) => b - a)[0];
 
   const colaboradorHoras = filteredData.reduce((acc, r) => {
     acc[r.Colaborador] = (acc[r.Colaborador] || 0) + r.Horas_Trabalhadas;
     return acc;
   }, {} as Record<string, number>);
-  const topColaborador = Object.entries(colaboradorHoras).sort(([, a], [, b]) => b - a)[0];
 
-  // Top 10 Projetos
+  const topProjeto = Object.entries(projetoHoras).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+  const topColaborador = Object.entries(colaboradorHoras).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+
+  // Dados para gráficos
   const top10Projetos = Object.entries(projetoHoras)
-    .sort(([, a], [, b]) => b - a)
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
-    .map(([nome, horas]) => ({ 
-      nome: nome.length > 25 ? nome.substring(0, 25) + "..." : nome, 
-      horas: Number(horas.toFixed(1)) 
-    }));
+    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
 
-  // Top 10 Colaboradores
   const top10Colaboradores = Object.entries(colaboradorHoras)
-    .sort(([, a], [, b]) => b - a)
+    .sort((a, b) => b[1] - a[1])
     .slice(0, 10)
-    .map(([nome, horas]) => ({ 
-      nome: nome.split(" ").slice(0, 2).join(" "),
-      horas: Number(horas.toFixed(1)) 
-    }));
+    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
 
-  // Distribuição por Tipo
-  const tipoHoras = filteredData.reduce((acc, r) => {
+  const tipoDistribuicao = filteredData.reduce((acc, r) => {
     acc[r.Tipo] = (acc[r.Tipo] || 0) + r.Horas_Trabalhadas;
     return acc;
   }, {} as Record<string, number>);
-  const distribuicaoTipo = Object.entries(tipoHoras)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 8)
-    .map(([nome, horas]) => ({ 
-      nome: nome.length > 20 ? nome.substring(0, 20) + "..." : nome,
-      horas: Number(horas.toFixed(1)) 
-    }));
 
-  // Distribuição por Status
-  const statusHoras = filteredData.reduce((acc, r) => {
+  const top10Tipos = Object.entries(tipoDistribuicao)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 10)
+    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
+
+  const statusDistribuicao = filteredData.reduce((acc, r) => {
     acc[r.Status] = (acc[r.Status] || 0) + r.Horas_Trabalhadas;
     return acc;
   }, {} as Record<string, number>);
-  const distribuicaoStatus = Object.entries(statusHoras)
-    .sort(([, a], [, b]) => b - a)
-    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
 
-  // Matriz de Alocação (TODOS os dados com filtros)
-  const todosColaboradores = Object.entries(colaboradorHoras)
-    .sort(([, a], [, b]) => b - a)
-    .map(([nome]) => nome);
-  
-  const todosProjetos = Object.entries(projetoHoras)
-    .sort(([, a], [, b]) => b - a)
-    .map(([nome]) => nome);
+  const statusData = Object.entries(statusDistribuicao).map(([nome, horas]) => ({
+    nome,
+    horas: Number(horas.toFixed(1)),
+  }));
 
-  // Filtrar colaboradores e projetos para a matriz
-  const colaboradoresFiltrados = todosColaboradores.filter(colab =>
-    colab.toLowerCase().includes(matrizSearchColab.toLowerCase())
+  // Listas únicas para filtros
+  const colaboradores = ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador))).sort()];
+  const projetos = ["todos", ...Array.from(new Set(data.map((r) => r.Projeto))).sort()];
+
+  // Matriz de Alocação
+  const colaboradoresFiltrados = matrizSearchColab
+    ? colaboradores.filter((c) => c !== "todos" && c.toLowerCase().includes(matrizSearchColab.toLowerCase()))
+    : colaboradores.filter((c) => c !== "todos");
+
+  const projetosFiltrados = matrizSearchProj
+    ? projetos.filter((p) => p !== "todos" && p.toLowerCase().includes(matrizSearchProj.toLowerCase()))
+    : projetos.filter((p) => p !== "todos");
+
+  const getHorasPorColabProj = (colab: string, proj: string) => {
+    return filteredData
+      .filter((r) => r.Colaborador === colab && r.Projeto === proj)
+      .reduce((sum, r) => sum + r.Horas_Trabalhadas, 0);
+  };
+
+  const maxHoras = Math.max(
+    ...colaboradoresFiltrados.flatMap((c) =>
+      projetosFiltrados.map((p) => getHorasPorColabProj(c, p))
+    ),
+    1
   );
 
-  const projetosFiltrados = todosProjetos.filter(proj =>
-    proj.toLowerCase().includes(matrizSearchProj.toLowerCase())
-  );
-
-  const matrizAlocacao = colaboradoresFiltrados.map(colab => {
-    const row: any = { colaborador: colab.split(" ").slice(0, 2).join(" ") };
-    projetosFiltrados.forEach(proj => {
-      const horas = filteredData
-        .filter(r => r.Colaborador === colab && r.Projeto === proj)
-        .reduce((sum, r) => sum + r.Horas_Trabalhadas, 0);
-      row[proj] = horas;
-    });
-    return row;
-  });
-
-  const getHeatmapColor = (value: number) => {
-    if (value === 0) return "rgba(59, 130, 246, 0.05)";
-    const max = Math.max(...matrizAlocacao.flatMap(row => 
-      projetosFiltrados.map(proj => row[proj] || 0)
-    ));
-    const ratio = value / max;
-    if (ratio > 0.75) return "rgba(59, 130, 246, 0.9)";
-    if (ratio > 0.5) return "rgba(59, 130, 246, 0.6)";
-    if (ratio > 0.25) return "rgba(59, 130, 246, 0.4)";
-    return "rgba(59, 130, 246, 0.2)";
+  const getColorIntensity = (horas: number) => {
+    if (horas === 0) return "bg-card";
+    const intensity = Math.min(horas / maxHoras, 1);
+    if (intensity > 0.7) return "bg-blue-600";
+    if (intensity > 0.4) return "bg-blue-500";
+    if (intensity > 0.2) return "bg-blue-400";
+    return "bg-blue-300";
   };
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Filtros Globais */}
-      <Card className="border-2 cyber-border glow-card">
+      <Card className="border-2 cyber-border glow-card hover-lift">
         <CardContent className="pt-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
               <label className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
                 <Users className="h-4 w-4" />
                 Colaborador
               </label>
               <Select value={selectedColaborador} onValueChange={setSelectedColaborador}>
-                <SelectTrigger className="h-11 hover:border-primary transition-colors">
-                  <SelectValue />
+                <SelectTrigger className="hover-border-glow">
+                  <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {todosColaboradores.map((colab) => (
-                    <SelectItem key={colab} value={colab}>
-                      {colab}
+                  {colaboradores.map((c) => (
+                    <SelectItem key={c} value={c} className="hover-scale">
+                      {c === "todos" ? "Todos" : c}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -245,14 +241,13 @@ export default function Home() {
                 Projeto
               </label>
               <Select value={selectedProjeto} onValueChange={setSelectedProjeto}>
-                <SelectTrigger className="h-11 hover:border-primary transition-colors">
-                  <SelectValue />
+                <SelectTrigger className="hover-border-glow">
+                  <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="todos">Todos</SelectItem>
-                  {todosProjetos.map((proj) => (
-                    <SelectItem key={proj} value={proj}>
-                      {proj}
+                  {projetos.map((p) => (
+                    <SelectItem key={p} value={p} className="hover-scale">
+                      {p === "todos" ? "Todos" : p}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -261,21 +256,31 @@ export default function Home() {
 
             <div className="space-y-2">
               <label className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Período
+                <Calendar className="h-4 w-4" />
+                De
               </label>
-              <Select value={selectedPeriodo} onValueChange={setSelectedPeriodo}>
-                <SelectTrigger className="h-11 hover:border-primary transition-colors">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {periodos.map((periodo) => (
-                    <SelectItem key={periodo} value={periodo}>
-                      {periodo === "todos" ? "Todos os Períodos" : periodo}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Input
+                type="date"
+                value={dataInicio}
+                onChange={(e) => handleDataInicioChange(e.target.value)}
+                className="hover-border-glow"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-muted-foreground flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Até
+              </label>
+              <Input
+                type="date"
+                value={dataFim}
+                onChange={(e) => handleDataFimChange(e.target.value)}
+                min={dataInicio || undefined}
+                disabled={!dataInicio}
+                className="hover-border-glow disabled:opacity-50"
+                title={!dataInicio ? "Selecione a data inicial primeiro" : ""}
+              />
             </div>
           </div>
         </CardContent>
@@ -284,7 +289,7 @@ export default function Home() {
       {/* KPIs Principais - Grid 3x3 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Total de Horas */}
-        <Card className="border-l-4 border-l-blue-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-blue-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -293,66 +298,66 @@ export default function Home() {
                 <p className="text-3xl font-bold">{totalHoras.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">h</span></p>
                 <p className="text-xs text-muted-foreground">Tempo total trabalhado</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-blue-500/10 flex items-center justify-center group-hover:bg-blue-500/20 transition-colors">
-                <Clock className="h-7 w-7 text-blue-500" />
+              <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Clock className="h-6 w-6 text-blue-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Atividades */}
-        <Card className="border-l-4 border-l-green-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-green-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Atividades</p>
                 <p className="text-3xl font-bold">{totalAtividades}</p>
-                <p className="text-xs text-green-600 font-medium">{atividadesConcluidas} concluídas · {atividadesEmAndamento} em andamento</p>
+                <p className="text-xs text-green-500">{atividadesConcluidas} concluídas · {atividadesAndamento} em andamento</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-green-500/10 flex items-center justify-center group-hover:bg-green-500/20 transition-colors">
-                <Activity className="h-7 w-7 text-green-500" />
+              <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Activity className="h-6 w-6 text-green-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Colaboradores */}
-        <Card className="border-l-4 border-l-purple-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-purple-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Colaboradores</p>
                 <p className="text-3xl font-bold">{totalColaboradores}</p>
-                <p className="text-xs text-muted-foreground">Média: {mediaHorasPorColaborador.toFixed(1)}h por colaborador</p>
+                <p className="text-xs text-muted-foreground">Média: {mediaPorColaborador.toFixed(1)}h por colaborador</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-purple-500/10 flex items-center justify-center group-hover:bg-purple-500/20 transition-colors">
-                <Users className="h-7 w-7 text-purple-500" />
+              <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Users className="h-6 w-6 text-purple-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Projetos */}
-        <Card className="border-l-4 border-l-orange-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-orange-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Projetos</p>
                 <p className="text-3xl font-bold">{totalProjetos}</p>
-                <p className="text-xs text-muted-foreground">Média: {mediaHorasPorProjeto.toFixed(1)}h por projeto</p>
+                <p className="text-xs text-muted-foreground">Média: {mediaPorProjeto.toFixed(1)}h por projeto</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-orange-500/10 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-                <FolderKanban className="h-7 w-7 text-orange-500" />
+              <div className="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <FolderKanban className="h-6 w-6 text-orange-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Média h/Atividade */}
-        <Card className="border-l-4 border-l-cyan-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-cyan-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -361,15 +366,15 @@ export default function Home() {
                 <p className="text-3xl font-bold">{mediaHoras.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">h</span></p>
                 <p className="text-xs text-muted-foreground">Tempo médio por atividade</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-cyan-500/10 flex items-center justify-center group-hover:bg-cyan-500/20 transition-colors">
-                <TrendingUp className="h-7 w-7 text-cyan-500" />
+              <div className="h-12 w-12 rounded-full bg-cyan-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <TrendingUp className="h-6 w-6 text-cyan-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Taxa Conclusão */}
-        <Card className="border-l-4 border-l-emerald-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-emerald-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -378,141 +383,127 @@ export default function Home() {
                 <p className="text-3xl font-bold">{taxaConclusao.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">%</span></p>
                 <p className="text-xs text-muted-foreground">{atividadesConcluidas} de {totalAtividades} atividades</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
-                <CheckCircle2 className="h-7 w-7 text-emerald-500" />
+              <div className="h-12 w-12 rounded-full bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <CheckCircle2 className="h-6 w-6 text-emerald-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Pontos de Função */}
-        <Card className="border-l-4 border-l-amber-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-amber-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1">
                 <p className="text-sm font-medium text-muted-foreground">Pontos de Função</p>
                 <p className="text-3xl font-bold">{totalPF.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">PF</span></p>
-                <p className="text-xs text-muted-foreground">Média: {mediaPFPorAtividade.toFixed(2)} PF/atividade</p>
+                <p className="text-xs text-muted-foreground">{totalAtividades > 0 ? (totalPF / totalAtividades).toFixed(2) : 0} PF por atividade</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-                <Target className="h-7 w-7 text-amber-500" />
+              <div className="h-12 w-12 rounded-full bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <Target className="h-6 w-6 text-amber-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Top Projeto */}
-        <Card className="border-l-4 border-l-rose-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-rose-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1 flex-1 min-w-0">
                 <p className="text-sm font-medium text-muted-foreground">Top Projeto</p>
-                <p className="text-lg font-bold truncate" title={topProjeto?.[0]}>
-                  {topProjeto?.[0] || "N/A"}
-                </p>
-                <p className="text-xs text-muted-foreground">{topProjeto?.[1]?.toFixed(1) || 0}h trabalhadas</p>
+                <p className="text-xl font-bold truncate" title={topProjeto[0]}>{topProjeto[0]}</p>
+                <p className="text-xs text-muted-foreground">{topProjeto[1].toFixed(1)}h trabalhadas</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-rose-500/10 flex items-center justify-center group-hover:bg-rose-500/20 transition-colors shrink-0">
-                <Zap className="h-7 w-7 text-rose-500" />
+              <div className="h-12 w-12 rounded-full bg-rose-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <Zap className="h-6 w-6 text-rose-500" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         {/* Top Colaborador */}
-        <Card className="border-l-4 border-l-indigo-500 glow-card hover:scale-105 cursor-pointer group relative overflow-hidden">
+        <Card className="border-l-4 border-l-indigo-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div className="space-y-1 flex-1 min-w-0">
                 <p className="text-sm font-medium text-muted-foreground">Top Colaborador</p>
-                <p className="text-lg font-bold truncate" title={topColaborador?.[0]}>
-                  {topColaborador?.[0] || "N/A"}
-                </p>
-                <p className="text-xs text-muted-foreground">{topColaborador?.[1]?.toFixed(1) || 0}h trabalhadas</p>
+                <p className="text-xl font-bold truncate" title={topColaborador[0]}>{topColaborador[0]}</p>
+                <p className="text-xs text-muted-foreground">{topColaborador[1].toFixed(1)}h trabalhadas</p>
               </div>
-              <div className="h-14 w-14 rounded-full bg-indigo-500/10 flex items-center justify-center group-hover:bg-indigo-500/20 transition-colors shrink-0">
-                <Zap className="h-7 w-7 text-indigo-500" />
+              <div className="h-12 w-12 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                <Users className="h-6 w-6 text-indigo-500" />
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Seção: Rankings */}
-      <div>
+      {/* Rankings */}
+      <div className="space-y-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <TrendingUp className="h-6 w-6 text-primary" />
           Rankings
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top 10 Projetos */}
-          <Card className="glow-card cyber-border">
+          <Card className="glow-card cyber-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Top 10 Projetos por Horas</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={top10Projetos} margin={{ left: 20, right: 20, top: 10, bottom: 100 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-10" vertical={false} />
-                  <XAxis 
-                    dataKey="nome" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    height={100}
-                    tick={{ fill: 'currentColor', opacity: 0.8, fontSize: 10 }}
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={top10Projetos} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis type="number" stroke="#888" />
+                  <YAxis
+                    dataKey="nome"
+                    type="category"
+                    width={150}
+                    stroke="#888"
+                    tick={{ fontSize: 12 }}
                   />
-                  <YAxis 
-                    tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 12 }}
-                    label={{ value: 'Horas (h)', angle: -90, position: 'insideLeft', style: { fill: 'currentColor', opacity: 0.6 } }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--card-foreground))'
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      border: "1px solid rgba(59,130,246,0.3)",
+                      borderRadius: "8px",
                     }}
-                    formatter={(value: number) => [`${value.toFixed(1)}h`, 'Horas']}
                   />
-                  <Bar dataKey="horas" fill={CHART_COLOR} radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="horas" fill={CHART_COLOR} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
           </Card>
 
           {/* Top 10 Colaboradores */}
-          <Card className="glow-card cyber-border">
+          <Card className="glow-card cyber-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Top 10 Colaboradores por Horas</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={top10Colaboradores} margin={{ left: 20, right: 20, top: 10, bottom: 100 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-10" vertical={false} />
-                  <XAxis 
-                    dataKey="nome" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    height={100}
-                    tick={{ fill: 'currentColor', opacity: 0.8, fontSize: 10 }}
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={top10Colaboradores} layout="vertical">
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis type="number" stroke="#888" />
+                  <YAxis
+                    dataKey="nome"
+                    type="category"
+                    width={150}
+                    stroke="#888"
+                    tick={{ fontSize: 12 }}
                   />
-                  <YAxis 
-                    tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 12 }}
-                    label={{ value: 'Horas (h)', angle: -90, position: 'insideLeft', style: { fill: 'currentColor', opacity: 0.6 } }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--card-foreground))'
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      border: "1px solid rgba(59,130,246,0.3)",
+                      borderRadius: "8px",
                     }}
-                    formatter={(value: number) => [`${value.toFixed(1)}h`, 'Horas']}
                   />
-                  <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[8, 8, 0, 0]} />
+                  <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[0, 4, 4, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -520,41 +511,30 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Seção: Distribuições */}
-      <div>
+      {/* Distribuições */}
+      <div className="space-y-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <Activity className="h-6 w-6 text-primary" />
           Distribuições
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribuição por Tipo */}
-          <Card className="glow-card cyber-border">
+          <Card className="glow-card cyber-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Por Tipo de Atividade</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={distribuicaoTipo} margin={{ left: 20, right: 20, top: 10, bottom: 80 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-10" vertical={false} />
-                  <XAxis 
-                    dataKey="nome" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    height={80}
-                    tick={{ fill: 'currentColor', opacity: 0.8, fontSize: 10 }}
-                  />
-                  <YAxis 
-                    tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 12 }}
-                    label={{ value: 'Horas (h)', angle: -90, position: 'insideLeft', style: { fill: 'currentColor', opacity: 0.6 } }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--card-foreground))'
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={top10Tipos}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="nome" stroke="#888" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 10 }} />
+                  <YAxis stroke="#888" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      border: "1px solid rgba(59,130,246,0.3)",
+                      borderRadius: "8px",
                     }}
-                    formatter={(value: number) => [`${value.toFixed(1)}h`, 'Horas']}
                   />
                   <Bar dataKey="horas" fill={CHART_COLOR} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -563,33 +543,22 @@ export default function Home() {
           </Card>
 
           {/* Distribuição por Status */}
-          <Card className="glow-card cyber-border">
+          <Card className="glow-card cyber-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Por Status</CardTitle>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={350}>
-                <BarChart data={distribuicaoStatus} margin={{ left: 20, right: 20, top: 10, bottom: 80 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-10" vertical={false} />
-                  <XAxis 
-                    dataKey="nome" 
-                    angle={-45} 
-                    textAnchor="end" 
-                    height={80}
-                    tick={{ fill: 'currentColor', opacity: 0.8, fontSize: 10 }}
-                  />
-                  <YAxis 
-                    tick={{ fill: 'currentColor', opacity: 0.6, fontSize: 12 }}
-                    label={{ value: 'Horas (h)', angle: -90, position: 'insideLeft', style: { fill: 'currentColor', opacity: 0.6 } }}
-                  />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'hsl(var(--card))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      color: 'hsl(var(--card-foreground))'
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={statusData}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
+                  <XAxis dataKey="nome" stroke="#888" />
+                  <YAxis stroke="#888" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(0,0,0,0.8)",
+                      border: "1px solid rgba(59,130,246,0.3)",
+                      borderRadius: "8px",
                     }}
-                    formatter={(value: number) => [`${value.toFixed(1)}h`, 'Horas']}
                   />
                   <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[4, 4, 0, 0]} />
                 </BarChart>
@@ -599,19 +568,18 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Seção: Matriz de Alocação */}
-      <div>
+      {/* Matriz de Alocação */}
+      <div className="space-y-6">
         <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
           <Filter className="h-6 w-6 text-primary" />
           Matriz de Alocação
         </h2>
-        <Card className="glow-card cyber-border">
+        <Card className="glow-card cyber-border hover-lift">
           <CardHeader>
             <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
             <p className="text-sm text-muted-foreground">
               Horas trabalhadas por colaborador em cada projeto · {colaboradoresFiltrados.length} colaboradores × {projetosFiltrados.length} projetos
             </p>
-            {/* Filtros da Matriz */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -619,7 +587,7 @@ export default function Home() {
                   placeholder="Buscar colaborador..."
                   value={matrizSearchColab}
                   onChange={(e) => setMatrizSearchColab(e.target.value)}
-                  className="pl-10 h-11 hover:border-primary transition-colors"
+                  className="pl-10 hover-border-glow"
                 />
               </div>
               <div className="relative">
@@ -628,60 +596,59 @@ export default function Home() {
                   placeholder="Buscar projeto..."
                   value={matrizSearchProj}
                   onChange={(e) => setMatrizSearchProj(e.target.value)}
-                  className="pl-10 h-11 hover:border-primary transition-colors"
+                  className="pl-10 hover-border-glow"
                 />
               </div>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="rounded-lg border">
-              <div className="overflow-auto max-h-[600px] relative">
-                <table className="w-full border-collapse">
-                  <thead className="sticky top-0 z-10">
-                    <tr className="border-b-2 bg-card">
-                      <th className="text-left p-3 font-semibold sticky left-0 bg-card border-r-2 z-20 min-w-[180px]">
-                        Colaborador
+            <div className="overflow-auto max-h-[600px] border rounded-lg">
+              <table className="w-full text-sm">
+                <thead className="sticky top-0 bg-card z-10 border-b">
+                  <tr>
+                    <th className="sticky left-0 bg-card z-20 p-3 text-left font-semibold border-r min-w-[200px]">
+                      Colaborador
+                    </th>
+                    {projetosFiltrados.map((proj) => (
+                      <th
+                        key={proj}
+                        className="p-3 text-center font-semibold min-w-[120px] border-r last:border-r-0"
+                        title={proj}
+                      >
+                        <div className="truncate max-w-[120px]">{proj}</div>
                       </th>
-                      {projetosFiltrados.map((proj: string, idx: number) => (
-                        <th key={idx} className="text-center p-3 font-semibold text-xs bg-card min-w-[100px]">
-                          <div className="max-w-[100px] truncate" title={proj}>
-                            {proj}
-                          </div>
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {matrizAlocacao.map((row, idx) => (
-                      <tr key={idx} className="border-b hover:bg-muted/30 transition-colors">
-                        <td className="p-3 font-medium sticky left-0 bg-card border-r z-10">
-                          {row.colaborador}
-                        </td>
-                        {projetosFiltrados.map((proj: string, pIdx: number) => {
-                          const value = row[proj] || 0;
-                          return (
-                            <td 
-                              key={pIdx} 
-                              className="p-3 text-center font-mono text-sm font-semibold transition-all hover:scale-105"
-                              style={{ 
-                                backgroundColor: getHeatmapColor(value),
-                                color: value > 0 ? '#fff' : 'inherit'
-                              }}
-                              title={value > 0 ? `${row.colaborador} · ${proj}: ${value.toFixed(1)}h` : ''}
-                            >
-                              {value > 0 ? `${value.toFixed(1)}h` : "-"}
-                            </td>
-                          );
-                        })}
-                      </tr>
                     ))}
-                  </tbody>
-                </table>
-              </div>
+                  </tr>
+                </thead>
+                <tbody>
+                  {colaboradoresFiltrados.map((colab) => (
+                    <tr key={colab} className="border-b last:border-b-0 hover:bg-accent/50 transition-colors">
+                      <td className="sticky left-0 bg-card z-10 p-3 font-medium border-r">
+                        <div className="truncate max-w-[200px]" title={colab}>
+                          {colab}
+                        </div>
+                      </td>
+                      {projetosFiltrados.map((proj) => {
+                        const horas = getHorasPorColabProj(colab, proj);
+                        return (
+                          <td
+                            key={`${colab}-${proj}`}
+                            className={`p-3 text-center border-r last:border-r-0 transition-all hover:scale-105 cursor-pointer ${getColorIntensity(
+                              horas
+                            )}`}
+                            title={`${colab} - ${proj}: ${horas.toFixed(1)}h`}
+                          >
+                            {horas > 0 ? horas.toFixed(1) : "-"}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <p className="text-xs text-muted-foreground mt-3 flex items-center gap-2">
-              <Search className="h-3 w-3" />
-              Use os filtros acima para buscar colaboradores ou projetos específicos. Role horizontalmente para ver todos os dados.
+            <p className="text-xs text-muted-foreground mt-4 text-center">
+              💡 Cores mais intensas indicam maior alocação de horas · Passe o mouse sobre as células para detalhes
             </p>
           </CardContent>
         </Card>

@@ -35,19 +35,11 @@ export default function Layout({ children }: LayoutProps) {
             "p-6 border-b transition-all duration-300",
             !sidebarOpen && "px-4"
           )}>
-            <div className={cn(
-              "flex items-center gap-3 mb-2 transition-all duration-300",
-              !sidebarOpen && "justify-center"
-            )}>
-              <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shrink-0 shadow-[0_0_15px_rgba(59,130,246,0.5)] animate-pulse">
-                <BarChart3 className="h-6 w-6 text-white" />
+            {sidebarOpen && (
+              <div className="mb-2">
+                <h2 className="text-xl font-bold">Dashboard</h2>
               </div>
-              {sidebarOpen && (
-                <div className="overflow-hidden">
-                  <h2 className="text-xl font-bold whitespace-nowrap">Dashboard</h2>
-                </div>
-              )}
-            </div>
+            )}
             {sidebarOpen && (
               <p className="text-xs text-muted-foreground overflow-hidden">Gestão de Produtividade</p>
             )}
@@ -69,10 +61,12 @@ export default function Layout({ children }: LayoutProps) {
                     )}
                     title={!sidebarOpen ? item.label : undefined}
                   >
-                    <Icon className={cn(
-                      "shrink-0 transition-transform group-hover:scale-110",
-                      sidebarOpen ? "h-5 w-5" : "h-6 w-6"
-                    )} />
+                    {item.path !== "/" && (
+                      <Icon className={cn(
+                        "shrink-0 transition-transform group-hover:scale-110",
+                        sidebarOpen ? "h-5 w-5" : "h-6 w-6"
+                      )} />
+                    )}
                     {sidebarOpen && (
                       <div className="flex flex-col items-start text-left overflow-hidden">
                         <span className="font-medium whitespace-nowrap">{item.label}</span>

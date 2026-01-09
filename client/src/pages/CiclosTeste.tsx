@@ -236,7 +236,7 @@ export default function CiclosTeste() {
 
       {/* Métricas Gerais */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="border-l-4 border-l-purple-500">
+        <Card className="border-l-4 hover-scale border-l-purple-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -250,7 +250,7 @@ export default function CiclosTeste() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-emerald-500">
+        <Card className="border-l-4 hover-scale border-l-emerald-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -264,7 +264,7 @@ export default function CiclosTeste() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-blue-500">
+        <Card className="border-l-4 hover-scale border-l-blue-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
@@ -278,7 +278,7 @@ export default function CiclosTeste() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 border-l-red-500">
+        <Card className="border-l-4 hover-scale border-l-red-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-red-500/10 flex items-center justify-center">
