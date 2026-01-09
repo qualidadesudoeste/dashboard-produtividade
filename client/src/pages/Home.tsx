@@ -1,6 +1,6 @@
-/* Swiss Precision Dashboard - Layout profissional e elegante com hierarquia visual refinada */
+/* Swiss Precision Dashboard - Dark mode com toggle e filtro de período */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -25,7 +25,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Clock, Users, FolderKanban, Activity, TrendingUp, CheckCircle2, Filter } from "lucide-react";
+import { Clock, Users, FolderKanban, Activity, TrendingUp, CheckCircle2, Filter, Moon, Sun, Calendar } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import { Button } from "@/components/ui/button";
 
 interface DataRecord {
   Colaborador: string;
@@ -47,6 +49,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedColaborador, setSelectedColaborador] = useState<string>("todos");
   const [selectedProjeto, setSelectedProjeto] = useState<string>("todos");
+  const [selectedPeriodo, setSelectedPeriodo] = useState<string>("todos");
+  const { theme, toggleTheme } = useTheme();
 
   useEffect(() => {
     fetch("/data.json")
@@ -60,6 +64,12 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
+
+  // Extrair períodos únicos dos dados
+  const periodos = useMemo(() => {
+    const meses = new Set(data.map((r) => r.Início.substring(0, 7)));
+    return ["todos", ...Array.from(meses).sort()];
+  }, [data]);
 
   if (loading) {
     return (
@@ -76,7 +86,8 @@ export default function Home() {
   const filteredData = data.filter((record) => {
     const matchColaborador = selectedColaborador === "todos" || record.Colaborador === selectedColaborador;
     const matchProjeto = selectedProjeto === "todos" || record.Projeto === selectedProjeto;
-    return matchColaborador && matchProjeto;
+    const matchPeriodo = selectedPeriodo === "todos" || record.Início.startsWith(selectedPeriodo);
+    return matchColaborador && matchProjeto && matchPeriodo;
   });
 
   // Calcular KPIs
@@ -151,38 +162,64 @@ export default function Home() {
   const colaboradores = ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador))).sort()];
   const projetos = ["todos", ...Array.from(new Set(data.map((r) => r.Projeto))).sort()];
 
+  // Formatar nome do período
+  const formatarPeriodo = (periodo: string) => {
+    if (periodo === "todos") return "Todos os Períodos";
+    const [ano, mes] = periodo.split("-");
+    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", 
+                   "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    return `${meses[parseInt(mes) - 1]} ${ano}`;
+  };
+
   return (
-    <div className="min-h-screen bg-muted/30">
-      {/* Header com gradiente sutil */}
-      <header className="border-b border-border bg-gradient-to-b from-card to-background/50 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
+    <div className="min-h-screen bg-background">
+      {/* Header com gradiente sutil e toggle de tema */}
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-10 shadow-sm">
         <div className="container py-10">
           <div className="flex items-end justify-between">
             <div>
-              <h1 className="text-6xl font-bold tracking-tight mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent">
+              <h1 className="text-6xl font-bold tracking-tight mb-3">
                 Dashboard Gerencial
               </h1>
               <p className="text-muted-foreground text-lg font-medium">
                 Análise de Produtividade · Colaboradores & Projetos
               </p>
             </div>
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground mb-1">Período</p>
-              <p className="text-xl font-bold font-mono">Dezembro 2025</p>
+            <div className="flex items-center gap-4">
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground mb-1">Período</p>
+                <p className="text-xl font-bold font-mono">{formatarPeriodo(selectedPeriodo)}</p>
+              </div>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={toggleTheme}
+                className="h-12 w-12 rounded-full"
+              >
+                {theme === "dark" ? (
+                  <Sun className="h-5 w-5" />
+                ) : (
+                  <Moon className="h-5 w-5" />
+                )}
+              </Button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Filtros com design refinado */}
-      <div className="border-b border-border bg-card/50 backdrop-blur-sm">
+      <div className="border-b border-border bg-card/30 backdrop-blur-sm">
         <div className="container py-8">
           <div className="flex items-center gap-3 mb-4">
             <Filter className="h-5 w-5 text-primary" />
             <h2 className="text-lg font-semibold">Filtros de Análise</h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Colaborador</label>
+              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Users className="h-4 w-4" />
+                Colaborador
+              </label>
               <Select value={selectedColaborador} onValueChange={setSelectedColaborador}>
                 <SelectTrigger className="h-12 text-base">
                   <SelectValue placeholder="Selecione um colaborador" />
@@ -197,7 +234,10 @@ export default function Home() {
               </Select>
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">Projeto</label>
+              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <FolderKanban className="h-4 w-4" />
+                Projeto
+              </label>
               <Select value={selectedProjeto} onValueChange={setSelectedProjeto}>
                 <SelectTrigger className="h-12 text-base">
                   <SelectValue placeholder="Selecione um projeto" />
@@ -206,6 +246,24 @@ export default function Home() {
                   {projetos.map((p) => (
                     <SelectItem key={p} value={p}>
                       {p === "todos" ? "📁 Todos os Projetos" : p}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Período
+              </label>
+              <Select value={selectedPeriodo} onValueChange={setSelectedPeriodo}>
+                <SelectTrigger className="h-12 text-base">
+                  <SelectValue placeholder="Selecione um período" />
+                </SelectTrigger>
+                <SelectContent>
+                  {periodos.map((p) => (
+                    <SelectItem key={p} value={p}>
+                      {formatarPeriodo(p)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -349,21 +407,23 @@ export default function Home() {
               <CardContent className="pt-8">
                 <ResponsiveContainer width="100%" height={550}>
                   <BarChart data={top15Colaboradores} layout="vertical" margin={{ left: 220, right: 40, top: 10, bottom: 10 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" horizontal={true} vertical={false} />
-                    <XAxis type="number" stroke="#8E8E93" style={{ fontSize: 13 }} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-20" horizontal={true} vertical={false} />
+                    <XAxis type="number" stroke="currentColor" className="opacity-60" style={{ fontSize: 13 }} />
                     <YAxis 
                       dataKey="nome" 
                       type="category" 
                       width={210} 
-                      stroke="#8E8E93" 
+                      stroke="currentColor"
+                      className="opacity-60"
                       style={{ fontSize: 12, fontWeight: 500 }} 
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#FFFFFF', 
-                        border: '1px solid #E5E5EA', 
+                        backgroundColor: 'hsl(var(--card))', 
+                        border: '1px solid hsl(var(--border))', 
                         borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        color: 'hsl(var(--card-foreground))'
                       }} 
                     />
                     <Bar dataKey="horas" fill="#0A84FF" radius={[0, 6, 6, 0]} />
@@ -382,22 +442,24 @@ export default function Home() {
               <CardContent className="pt-8">
                 <ResponsiveContainer width="100%" height={500}>
                   <BarChart data={top10Projetos} margin={{ bottom: 140, top: 20, left: 20, right: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-20" vertical={false} />
                     <XAxis 
                       dataKey="nome" 
                       angle={-45} 
                       textAnchor="end" 
                       height={140} 
-                      stroke="#8E8E93" 
+                      stroke="currentColor"
+                      className="opacity-60"
                       style={{ fontSize: 11, fontWeight: 500 }} 
                     />
-                    <YAxis stroke="#8E8E93" style={{ fontSize: 13 }} />
+                    <YAxis stroke="currentColor" className="opacity-60" style={{ fontSize: 13 }} />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#FFFFFF', 
-                        border: '1px solid #E5E5EA', 
+                        backgroundColor: 'hsl(var(--card))', 
+                        border: '1px solid hsl(var(--border))', 
                         borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        color: 'hsl(var(--card-foreground))'
                       }} 
                     />
                     <Bar dataKey="horas" fill="#0A84FF" radius={[6, 6, 0, 0]} />
@@ -425,7 +487,7 @@ export default function Home() {
                         cy="50%"
                         outerRadius={130}
                         label={(entry) => `${entry.nome.substring(0, 22)}`}
-                        labelLine={{ stroke: '#8E8E93', strokeWidth: 1 }}
+                        labelLine={{ stroke: 'currentColor', strokeWidth: 1, className: 'opacity-40' }}
                       >
                         {distribuicaoTipo.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -433,10 +495,11 @@ export default function Home() {
                       </Pie>
                       <Tooltip 
                         contentStyle={{ 
-                          backgroundColor: '#FFFFFF', 
-                          border: '1px solid #E5E5EA', 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))', 
                           borderRadius: '8px',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          color: 'hsl(var(--card-foreground))'
                         }} 
                       />
                     </PieChart>
@@ -460,7 +523,7 @@ export default function Home() {
                         cy="50%"
                         outerRadius={130}
                         label={(entry) => `${entry.nome}: ${entry.horas.toFixed(0)}h`}
-                        labelLine={{ stroke: '#8E8E93', strokeWidth: 1 }}
+                        labelLine={{ stroke: 'currentColor', strokeWidth: 1, className: 'opacity-40' }}
                       >
                         {distribuicaoStatus.map((_, index) => (
                           <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
@@ -468,10 +531,11 @@ export default function Home() {
                       </Pie>
                       <Tooltip 
                         contentStyle={{ 
-                          backgroundColor: '#FFFFFF', 
-                          border: '1px solid #E5E5EA', 
+                          backgroundColor: 'hsl(var(--card))', 
+                          border: '1px solid hsl(var(--border))', 
                           borderRadius: '8px',
-                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                          color: 'hsl(var(--card-foreground))'
                         }} 
                       />
                     </PieChart>
@@ -490,22 +554,25 @@ export default function Home() {
               <CardContent className="pt-8">
                 <ResponsiveContainer width="100%" height={450}>
                   <LineChart data={evolucaoTemporal} margin={{ top: 20, right: 40, bottom: 20, left: 20 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#E5E5EA" />
+                    <CartesianGrid strokeDasharray="3 3" stroke="currentColor" className="opacity-20" />
                     <XAxis 
                       dataKey="mes" 
-                      stroke="#8E8E93" 
+                      stroke="currentColor"
+                      className="opacity-60"
                       style={{ fontSize: 13, fontWeight: 500 }} 
                     />
                     <YAxis 
-                      stroke="#8E8E93" 
+                      stroke="currentColor"
+                      className="opacity-60"
                       style={{ fontSize: 13 }} 
                     />
                     <Tooltip 
                       contentStyle={{ 
-                        backgroundColor: '#FFFFFF', 
-                        border: '1px solid #E5E5EA', 
+                        backgroundColor: 'hsl(var(--card))', 
+                        border: '1px solid hsl(var(--border))', 
                         borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                        color: 'hsl(var(--card-foreground))'
                       }} 
                     />
                     <Legend 
@@ -517,7 +584,7 @@ export default function Home() {
                       dataKey="horas" 
                       stroke="#0A84FF" 
                       strokeWidth={4} 
-                      dot={{ r: 7, fill: '#0A84FF', strokeWidth: 2, stroke: '#FFFFFF' }}
+                      dot={{ r: 7, fill: '#0A84FF', strokeWidth: 2, stroke: 'hsl(var(--card))' }}
                       activeDot={{ r: 9 }}
                     />
                   </LineChart>
@@ -529,7 +596,7 @@ export default function Home() {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-border bg-card py-8 mt-16">
+      <footer className="border-t border-border bg-card/50 py-8 mt-16">
         <div className="container text-center text-sm text-muted-foreground">
           <p>Dashboard Gerencial de Produtividade · Atualizado em tempo real</p>
         </div>
