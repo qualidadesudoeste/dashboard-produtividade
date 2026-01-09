@@ -189,28 +189,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header Limpo */}
-      <header className="border-b bg-card sticky top-0 z-10 shadow-sm">
-        <div className="container py-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold mb-1">Dashboard Gerencial</h1>
-              <p className="text-sm text-muted-foreground">Análise de Produtividade e Alocação</p>
-            </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={toggleTheme}
-              className="h-10 w-10"
-            >
-              {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-            </Button>
-          </div>
-        </div>
-      </header>
-
-      <div className="container py-8 space-y-8">
+    <div className="space-y-8">
         {/* Filtros em linha única */}
         <Card>
           <CardContent className="pt-6">
@@ -537,14 +516,6 @@ export default function Home() {
             </CardContent>
           </Card>
         </div>
-      </div>
-
-      {/* Footer */}
-      <footer className="border-t bg-muted/30 py-6 mt-12">
-        <div className="container text-center text-sm text-muted-foreground">
-          <p>Dashboard Gerencial · Atualizado em tempo real</p>
-        </div>
-      </footer>
     </div>
   );
 }
