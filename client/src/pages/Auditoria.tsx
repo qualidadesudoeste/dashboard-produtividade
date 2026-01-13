@@ -174,6 +174,68 @@ export default function Auditoria() {
     }
   }, []);
 
+  // Rotina automática: criar auditorias vazias para sprints dos Ciclos de Teste
+  useEffect(() => {
+    if (auditorias.length > 0) return; // Executar apenas se não houver auditorias
+
+    fetch("/ciclos_teste.json")
+      .then((res) => res.json())
+      .then((ciclosData) => {
+        const novasAuditorias: Auditoria[] = [];
+
+        ciclosData.forEach((ciclo: any) => {
+          const projeto = ciclo.projeto;
+          const sprint = ciclo.sprint;
+
+          // Verificar se já existe auditoria para este projeto+sprint
+          const jaExiste = auditorias.some(
+            (aud) => aud.projeto === projeto && aud.sprint === sprint
+          );
+
+          if (!jaExiste) {
+            novasAuditorias.push({
+              id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              projeto,
+              sprint,
+              data: new Date().toISOString().split("T")[0],
+              auditor: "Pendente",
+              checklist: {
+                makerCompass: false,
+                especificacaoRequisitos: false,
+                planejamentSprint: false,
+                cardsCriados: false,
+                estimativasPlanningPoker: false,
+                tempoMaximoCard: false,
+                playPauseRegistro: false,
+                impedimentosRegistrados: false,
+                dailyEquipe: false,
+                dailyCliente: false,
+                contagemPF: false,
+                qaTestou100: false,
+                reviewRealizada: false,
+                retrospectiva: false,
+                sprintQuinzenal: false,
+              },
+              scoreTotal: 0,
+              status: "Reprovado",
+              observacoes: "",
+              acoesCorretivas: "",
+            });
+          }
+        });
+
+        if (novasAuditorias.length > 0) {
+          const todasAuditorias = [...auditorias, ...novasAuditorias];
+          setAuditorias(todasAuditorias);
+          localStorage.setItem("auditorias", JSON.stringify(todasAuditorias));
+          console.log(`✅ ${novasAuditorias.length} auditorias criadas automaticamente`);
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar ciclos de teste:", error);
+      });
+  }, [auditorias]);
+
   const projetos = useMemo(() => {
     return Array.from(new Set(data.map((item) => item.Projeto))).sort();
   }, [data]);
