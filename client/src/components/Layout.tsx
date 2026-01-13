@@ -1,6 +1,7 @@
-import { Link, useLocation } from "wouter";
+import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BarChart3, FileCheck, TestTube, ChevronLeft, ChevronRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { BarChart3, FileCheck, TestTube, ChevronLeft, ChevronRight, Search, Bell, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -10,7 +11,6 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
-
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navItems = [
@@ -20,27 +20,34 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex data-grid">
-      {/* Sidebar */}
+    <div className="min-h-screen bg-background flex">
+      {/* Sidebar com degradê azul */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full bg-sidebar backdrop-blur-xl border-r border-primary/30 transition-all duration-300 z-20 neon-glow",
-          sidebarOpen ? "w-72" : "w-20"
+          "fixed left-0 top-0 h-full sidebar-gradient transition-all duration-300 z-20 shadow-lg",
+          sidebarOpen ? "w-60" : "w-20"
         )}
       >
         <div className="flex flex-col h-full">
-          {/* Header do Sidebar */}
+          {/* Logo/Brand */}
           <div className={cn(
-            "p-6 border-b transition-all duration-300",
+            "p-6 border-b border-white/10",
             !sidebarOpen && "px-4"
           )}>
-            {sidebarOpen && (
-              <div className="mb-2">
-                <h2 className="text-xl font-bold gradient-text">Dashboard</h2>
+            {sidebarOpen ? (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                  <BarChart3 className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-white">Dashboard</h2>
+                  <p className="text-xs text-white/70">Gestão de Produtividade</p>
+                </div>
               </div>
-            )}
-            {sidebarOpen && (
-              <p className="text-xs text-muted-foreground overflow-hidden">Gestão de Produtividade</p>
+            ) : (
+              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center mx-auto">
+                <BarChart3 className="h-6 w-6 text-white" />
+              </div>
             )}
           </div>
 
@@ -49,37 +56,25 @@ export default function Layout({ children }: LayoutProps) {
             {navItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.path;
+
               return (
                 <Link key={item.path} href={item.path}>
                   <Button
-                    variant={isActive ? "default" : "ghost"}
+                    variant="ghost"
                     className={cn(
-                      "w-full h-auto transition-all duration-300 group relative overflow-hidden border",
-                      sidebarOpen ? "justify-start gap-3 py-3 px-4" : "justify-center p-3",
-                      isActive ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "border-transparent hover:border-primary/30 hover:bg-accent/50"
+                      "w-full justify-start text-white/90 hover:bg-white/10 hover:text-white transition-all duration-200",
+                      !sidebarOpen && "justify-center px-2",
+                      isActive && "bg-white/20 text-white font-medium shadow-sm"
                     )}
-                    title={!sidebarOpen ? item.label : undefined}
                   >
-                    {item.path !== "/" && (
-                      <Icon className={cn(
-                        "shrink-0 transition-transform group-hover:scale-110",
-                        sidebarOpen ? "h-5 w-5" : "h-6 w-6"
-                      )} />
-                    )}
+                    <Icon className={cn("h-5 w-5", sidebarOpen && "mr-3")} />
                     {sidebarOpen && (
-                      <div className="flex flex-col items-start text-left overflow-hidden">
-                        <span className="font-medium whitespace-nowrap">{item.label}</span>
-                        <span className={cn(
-                          "text-xs whitespace-nowrap",
-                          isActive ? "text-primary-foreground/90" : "text-muted-foreground"
-                        )}>
-                          {item.description}
-                        </span>
+                      <div className="flex flex-col items-start">
+                        <span className="text-sm font-medium">{item.label}</span>
+                        {!isActive && (
+                          <span className="text-xs text-white/60">{item.description}</span>
+                        )}
                       </div>
-                    )}
-                    {/* Indicador de página ativa */}
-                    {isActive && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary-foreground rounded-r" />
                     )}
                   </Button>
                 </Link>
@@ -87,51 +82,65 @@ export default function Layout({ children }: LayoutProps) {
             })}
           </nav>
 
-          {/* Footer do Sidebar */}
-
+          {/* Toggle Button */}
+          <div className="p-4 border-t border-white/10">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="w-full text-white/90 hover:bg-white/10 hover:text-white"
+            >
+              {sidebarOpen ? (
+                <>
+                  <ChevronLeft className="h-4 w-4 mr-2" />
+                  <span className="text-xs">Recolher</span>
+                </>
+              ) : (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
         </div>
-
-        {/* Botão de Toggle do Sidebar */}
-        <Button
-          variant="default"
-          size="icon"
-          onClick={() => setSidebarOpen(!sidebarOpen)}
-          className={cn(
-            "absolute -right-3 top-8 h-6 w-6 rounded-full shadow-lg transition-all duration-300 hover:scale-110",
-            "border-2 border-background"
-          )}
-        >
-          {sidebarOpen ? (
-            <ChevronLeft className="h-4 w-4" />
-          ) : (
-            <ChevronRight className="h-4 w-4" />
-          )}
-        </Button>
       </aside>
 
-      {/* Conteúdo Principal */}
+      {/* Main Content */}
       <div
         className={cn(
           "flex-1 transition-all duration-300",
-          sidebarOpen ? "ml-72" : "ml-20"
+          sidebarOpen ? "ml-60" : "ml-20"
         )}
       >
-
-
-        {/* Conteúdo */}
-        <main className="container py-8">
-          {children}
-        </main>
-
-        {/* Footer */}
-        <footer className="border-t border-primary/30 bg-sidebar/50 backdrop-blur-xl py-6 mt-12 neon-border">
-          <div className="container">
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <p>Dashboard Gerencial · Atualizado em tempo real</p>
-              <p className="text-xs">© 2025 - Gestão de Produtividade</p>
+        {/* Header branco */}
+        <header className="modern-header sticky top-0 z-10 px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4 flex-1 max-w-2xl">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar..."
+                  className="pl-10 bg-background/50 border-border/50 focus:bg-white"
+                />
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell className="h-5 w-5 text-muted-foreground" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-destructive rounded-full"></span>
+              </Button>
+              <Button variant="ghost" size="icon" className="rounded-full">
+                <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                  <User className="h-4 w-4 text-primary" />
+                </div>
+              </Button>
             </div>
           </div>
-        </footer>
+        </header>
+
+        {/* Content */}
+        <main className="p-8">
+          {children}
+        </main>
       </div>
     </div>
   );
