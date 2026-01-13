@@ -1,9 +1,14 @@
 /**
- * Design Philosophy: Modern Blue Monochromatic Dashboard
- * - Single color theme: Blue only (various shades)
- * - Searchable lists instead of static charts
- * - Smooth animations and micro-interactions
- * - Maximum information density with filters
+ * Design Philosophy: Modern Compact Dashboard
+ * - Maximum information density without clutter
+ * - Vibrant colors with gradients and depth
+ * - Clear visual hierarchy with focal points
+ * - Efficient space usage (~50% height reduction)
+ * - Horizontal compact filters (single row)
+ * - Prominent hero cards for top performers
+ * - Grid 3x2 KPIs with visual impact
+ * - Symmetric 2x2 charts grid
+ * - Enhanced typography and micro-interactions
  */
 
 import { useEffect, useState, useMemo } from "react";
@@ -16,7 +21,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, Activity, FolderKanban, Users, CheckCircle2, Target, Trophy, Crown, TrendingUp, Search, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from "recharts";
+import { Clock, Activity, FolderKanban, Users, CheckCircle2, Target, Zap, Trophy, Crown, TrendingUp, ChevronDown, ChevronUp } from "lucide-react";
 
 interface DataRecord {
   Colaborador: string;
@@ -30,6 +47,9 @@ interface DataRecord {
   Horas_Trabalhadas: number;
   PF: number;
 }
+
+const CHART_COLOR = "#3B82F6";
+const CHART_COLOR_SECONDARY = "#10B981";
 
 export default function Home() {
   const [data, setData] = useState<DataRecord[]>([]);
@@ -46,6 +66,7 @@ export default function Home() {
   const [matrizSearchColab, setMatrizSearchColab] = useState<string>("");
   const [matrizSearchProj, setMatrizSearchProj] = useState<string>("");
 
+  // useMemo deve vir ANTES do useEffect para manter ordem consistente dos hooks
   const colaboradores = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador)))], [data]);
   const projetos = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Projeto)))], [data]);
 
@@ -62,6 +83,7 @@ export default function Home() {
       });
   }, []);
 
+  // Filtros rápidos de período
   const aplicarFiltroRapido = (tipo: string) => {
     const hoje = new Date();
     const ano = hoje.getFullYear();
@@ -72,6 +94,13 @@ export default function Home() {
     let fim = "";
 
     switch (tipo) {
+      case "ultimos7":
+        const data7dias = new Date(hoje);
+        data7dias.setDate(dia - 7);
+        inicio = data7dias.toISOString().split("T")[0];
+        fim = hoje.toISOString().split("T")[0];
+        break;
+
       case "ultimos30":
         const data30dias = new Date(hoje);
         data30dias.setDate(dia - 30);
@@ -103,7 +132,7 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto"></div>
           <p className="text-lg font-semibold text-gray-700">Carregando dados...</p>
@@ -112,6 +141,7 @@ export default function Home() {
     );
   }
 
+  // Filtros
   const filteredData = data.filter((row) => {
     if (selectedColaborador !== "todos" && row.Colaborador !== selectedColaborador) return false;
     if (selectedProjeto !== "todos" && row.Projeto !== selectedProjeto) return false;
@@ -120,6 +150,7 @@ export default function Home() {
     return true;
   });
 
+  // KPIs
   const totalHoras = filteredData.reduce((sum, r) => sum + r.Horas_Trabalhadas, 0);
   const totalAtividades = filteredData.length;
   const totalColaboradores = new Set(filteredData.map((r) => r.Colaborador)).size;
@@ -138,9 +169,15 @@ export default function Home() {
     .map(([name, value]) => ({ name, value, percent: (value / totalAtividades) * 100 }))
     .sort((a, b) => b.value - a.value);
 
+  // Filtrar tipos por busca
   const tipoData = tipoDataFull.filter(item =>
     item.name.toLowerCase().includes(searchTipo.toLowerCase())
   );
+
+  const tipoMaisFrequente = tipoData[0];
+  const percTipoMaisFrequente = tipoMaisFrequente
+    ? ((tipoMaisFrequente.value / totalAtividades) * 100).toFixed(1)
+    : "0";
 
   // Distribuição por Status
   const statusCount = filteredData.reduce((acc, r) => {
@@ -152,9 +189,16 @@ export default function Home() {
     .map(([name, value]) => ({ name, value, percent: (value / totalAtividades) * 100 }))
     .sort((a, b) => b.value - a.value);
 
+  // Filtrar status por busca
   const statusData = statusDataFull.filter(item =>
     item.name.toLowerCase().includes(searchStatus.toLowerCase())
   );
+  const STATUS_COLORS: Record<string, string> = {
+    "Concluído": "#10B981",
+    "Teste": "#3B82F6",
+    "Não Avaliado/Localizado": "#F59E0B",
+    "Review": "#8B5CF6",
+  };
 
   // Rankings
   const projetoHoras = filteredData.reduce((acc, r) => {
@@ -162,10 +206,12 @@ export default function Home() {
     return acc;
   }, {} as Record<string, number>);
 
+  // Todos os projetos (sem limite)
   const rankingProjetosFull = Object.entries(projetoHoras)
     .map(([projeto, horas]) => ({ projeto, horas }))
     .sort((a, b) => b.horas - a.horas);
 
+  // Filtrar projetos por busca
   const rankingProjetos = rankingProjetosFull.filter(item =>
     item.projeto.toLowerCase().includes(searchProjetos.toLowerCase())
   );
@@ -175,16 +221,18 @@ export default function Home() {
     return acc;
   }, {} as Record<string, number>);
 
+  // Todos os colaboradores (sem limite)
   const rankingColaboradoresFull = Object.entries(colaboradorHoras)
     .map(([colaborador, horas]) => ({ colaborador, horas }))
     .sort((a, b) => b.horas - a.horas);
 
+  // Filtrar colaboradores por busca
   const rankingColaboradores = rankingColaboradoresFull.filter(item =>
     item.colaborador.toLowerCase().includes(searchColaboradores.toLowerCase())
   ).slice(0, 10);
 
-  const topProjeto = rankingProjetosFull[0];
-  const topColaborador = rankingColaboradoresFull[0];
+  const topProjeto = rankingProjetos[0];
+  const topColaborador = rankingColaboradores[0];
 
   // Matriz
   const matrizData = filteredData.reduce((acc, r) => {
@@ -196,6 +244,7 @@ export default function Home() {
   const colaboradoresUnicosFull = Array.from(new Set(filteredData.map((r) => r.Colaborador))).sort();
   const projetosUnicosFull = Array.from(new Set(filteredData.map((r) => r.Projeto))).sort();
 
+  // Filtrar matriz por busca
   const colaboradoresUnicos = colaboradoresUnicosFull.filter(c =>
     c.toLowerCase().includes(matrizSearchColab.toLowerCase())
   );
@@ -204,13 +253,14 @@ export default function Home() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6 animate-fade-in">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 p-6">
       <div className="max-w-[1600px] mx-auto space-y-4">
         
-        {/* Filtros Compactos */}
-        <Card className="shadow-lg border-2 border-blue-100 animate-slide-down">
+        {/* Filtros Compactos - Single Row */}
+        <Card className="shadow-lg border-2 border-blue-100">
           <CardContent className="pt-4 pb-4">
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
+              {/* Colaborador */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-600 flex items-center gap-1">
                   <Users className="h-3 w-3" />
@@ -230,6 +280,7 @@ export default function Home() {
                 </Select>
               </div>
 
+              {/* Projeto */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-600 flex items-center gap-1">
                   <FolderKanban className="h-3 w-3" />
@@ -249,6 +300,7 @@ export default function Home() {
                 </Select>
               </div>
 
+              {/* Data Início */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-600">De</label>
                 <Input
@@ -259,6 +311,7 @@ export default function Home() {
                 />
               </div>
 
+              {/* Data Fim */}
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-600">Até</label>
                 <Input
@@ -271,30 +324,31 @@ export default function Home() {
                 />
               </div>
 
+              {/* Filtros Rápidos */}
               <div className="col-span-2 space-y-1">
                 <label className="text-xs font-bold text-gray-600">Período</label>
                 <div className="flex flex-wrap gap-1">
                   <button
                     onClick={() => aplicarFiltroRapido("ultimos30")}
-                    className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-all hover:scale-105"
+                    className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                   >
                     30d
                   </button>
                   <button
                     onClick={() => aplicarFiltroRapido("trimestre")}
-                    className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-all hover:scale-105"
+                    className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                   >
                     Trim
                   </button>
                   <button
                     onClick={() => aplicarFiltroRapido("ano")}
-                    className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-all hover:scale-105"
+                    className="px-2 py-1 text-xs font-medium rounded bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
                   >
                     Ano
                   </button>
                   <button
                     onClick={() => aplicarFiltroRapido("limpar")}
-                    className="px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all hover:scale-105"
+                    className="px-2 py-1 text-xs font-medium rounded bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
                   >
                     Limpar
                   </button>
@@ -304,9 +358,10 @@ export default function Home() {
           </CardContent>
         </Card>
 
-        {/* Hero Cards */}
+        {/* Hero Cards - Top Performers */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all hover:scale-[1.02] duration-300 animate-slide-up">
+          {/* Top Projeto */}
+          <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all hover:scale-[1.02] duration-300">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
@@ -325,7 +380,8 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all hover:scale-[1.02] duration-300 animate-slide-up" style={{animationDelay: '50ms'}}>
+          {/* Top Colaborador */}
+          <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all hover:scale-[1.02] duration-300">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-lg">
@@ -347,202 +403,243 @@ export default function Home() {
 
         {/* KPIs Grid 3x2 */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[
-            { label: "Total Horas", value: `${totalHoras.toFixed(1)}h`, icon: Clock, color: "blue-600" },
-            { label: "Atividades", value: totalAtividades, icon: Activity, color: "blue-500" },
-            { label: "Colaboradores", value: totalColaboradores, icon: Users, color: "blue-700" },
-            { label: "Projetos", value: totalProjetos, icon: FolderKanban, color: "blue-800" },
-            { label: "Taxa Conclusão", value: `${taxaConclusao.toFixed(1)}%`, icon: CheckCircle2, color: "blue-400" },
-            { label: "Pontos Função", value: `${Math.round(totalPontosFuncao)}PF`, icon: Target, color: "blue-900" },
-          ].map((kpi, idx) => (
-            <Card
-              key={kpi.label}
-              className={`shadow-lg border-l-4 border-l-${kpi.color} bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300 animate-slide-up`}
-              style={{animationDelay: `${idx * 50}ms`}}
-            >
-              <CardContent className="pt-4 pb-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`text-xs font-bold text-${kpi.color} uppercase tracking-wide`}>{kpi.label}</p>
-                    <p className="text-3xl font-extrabold text-gray-900 mt-1">{kpi.value}</p>
-                  </div>
-                  <kpi.icon className={`h-10 w-10 text-${kpi.color} opacity-80`} />
+          {/* Total Horas */}
+          <Card className="shadow-lg border-l-4 border-l-blue-600 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Total Horas</p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">
+                    {totalHoras.toFixed(1)}<span className="text-lg text-gray-500">h</span>
+                  </p>
                 </div>
-              </CardContent>
-            </Card>
-          ))}
+                <Clock className="h-10 w-10 text-blue-500 opacity-80" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Atividades */}
+          <Card className="shadow-lg border-l-4 border-l-blue-500 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Atividades</p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">{totalAtividades}</p>
+                </div>
+                <Activity className="h-10 w-10 text-blue-500 opacity-80" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Colaboradores */}
+          <Card className="shadow-lg border-l-4 border-l-blue-700 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-700 uppercase tracking-wide">Colaboradores</p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">{totalColaboradores}</p>
+                </div>
+                <Users className="h-10 w-10 text-blue-700 opacity-80" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Projetos */}
+          <Card className="shadow-lg border-l-4 border-l-blue-800 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-800 uppercase tracking-wide">Projetos</p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">{totalProjetos}</p>
+                </div>
+                <FolderKanban className="h-10 w-10 text-blue-800 opacity-80" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Taxa Conclusão */}
+          <Card className="shadow-lg border-l-4 border-l-blue-400 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-600 uppercase tracking-wide">Taxa Conclusão</p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">
+                    {taxaConclusao.toFixed(1)}<span className="text-lg text-gray-500">%</span>
+                  </p>
+                </div>
+                <CheckCircle2 className="h-10 w-10 text-blue-400 opacity-80" />
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Pontos Função */}
+          <Card className="shadow-lg border-l-4 border-l-blue-900 bg-gradient-to-br from-blue-50 to-white hover:shadow-xl transition-all hover:-translate-y-1 duration-300">
+            <CardContent className="pt-4 pb-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs font-bold text-blue-900 uppercase tracking-wide">Pontos Função</p>
+                  <p className="text-3xl font-extrabold text-gray-900 mt-1">
+                    {Math.round(totalPontosFuncao)}<span className="text-lg text-gray-500">PF</span>
+                  </p>
+                </div>
+                <Target className="h-10 w-10 text-blue-900 opacity-80" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
-        {/* Listas Grid 2x2 */}
+        {/* Charts Grid 2x2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          {/* Distribuição por Tipo - LISTA */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          {/* Distribuição por Tipo */}
+          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
                 <TrendingUp className="h-5 w-5 text-blue-600" />
                 Distribuição por Tipo de Atividade
               </CardTitle>
-              <div className="relative mt-2">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Buscar tipo..."
-                  value={searchTipo}
-                  onChange={(e) => setSearchTipo(e.target.value)}
-                  className="pl-8 h-9 text-sm"
-                />
-              </div>
+              <p className="text-xs text-gray-600 mt-1">
+                {tipoMaisFrequente?.name} representa {percTipoMaisFrequente}% das atividades
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
-                {tipoData.map((item, idx) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                        {idx + 1}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900 truncate">{item.name}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-blue-600">{item.value}</span>
-                      <span className="text-xs text-gray-500">({item.percent.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ResponsiveContainer width="100%" height={280}>
+                <BarChart data={tipoData} margin={{ top: 10, right: 10, left: 0, bottom: 80 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+                  <XAxis
+                    dataKey="name"
+                    angle={-45}
+                    textAnchor="end"
+                    height={80}
+                    tick={{ fontSize: 11, fill: "#6B7280" }}
+                  />
+                  <YAxis tick={{ fontSize: 11, fill: "#6B7280" }} />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#FFF",
+                      border: "2px solid #3B82F6",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <Bar dataKey="value" fill="url(#blueGradient)" radius={[8, 8, 0, 0]} />
+                  <defs>
+                    <linearGradient id="blueGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#3B82F6" stopOpacity={1} />
+                      <stop offset="100%" stopColor="#60A5FA" stopOpacity={0.8} />
+                    </linearGradient>
+                  </defs>
+                </BarChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* Ranking Projetos - TODOS */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          {/* Ranking Projetos */}
+          <Card className="shadow-lg border-2 border-pink-100 hover:shadow-xl transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-blue-600" />
+                  <Trophy className="h-5 w-5 text-pink-600" />
                   Ranking Projetos
                 </span>
-                <span className="text-xs font-normal text-gray-500">{rankingProjetos.length} projetos</span>
+                <span className="text-xs font-normal text-gray-500">Top 10</span>
               </CardTitle>
-              <div className="relative mt-2">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Buscar projeto..."
-                  value={searchProjetos}
-                  onChange={(e) => setSearchProjetos(e.target.value)}
-                  className="pl-8 h-9 text-sm"
-                />
-              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
                 {rankingProjetos.map((item, idx) => (
                   <div
                     key={item.projeto}
-                    className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+                    className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-pink-50 to-transparent hover:from-pink-100 transition-colors"
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      idx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
-                      idx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
-                      idx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
-                      "bg-blue-100 text-blue-700"
+                      idx === 0 ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white" :
+                      idx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-400 text-white" :
+                      idx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white" :
+                      "bg-gray-200 text-gray-700"
                     }`}>
                       {idx + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">{item.projeto}</p>
                     </div>
-                    <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
+                    <div className="text-sm font-bold text-pink-600">{item.horas.toFixed(1)}h</div>
                   </div>
                 ))}
               </div>
             </CardContent>
           </Card>
 
-          {/* Distribuição por Status - LISTA */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          {/* Distribuição por Status */}
+          <Card className="shadow-lg border-2 border-green-100 hover:shadow-xl transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600" />
+                <CheckCircle2 className="h-5 w-5 text-green-600" />
                 Distribuição por Status
               </CardTitle>
-              <div className="relative mt-2">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Buscar status..."
-                  value={searchStatus}
-                  onChange={(e) => setSearchStatus(e.target.value)}
-                  className="pl-8 h-9 text-sm"
-                />
-              </div>
+              <p className="text-xs text-gray-600 mt-1">
+                {atividadesConcluidas} concluídas · {totalAtividades - atividadesConcluidas} em andamento
+              </p>
             </CardHeader>
             <CardContent>
-              <div className="space-y-2 max-h-[240px] overflow-y-auto pr-2">
-                {statusData.map((item, idx) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+              <ResponsiveContainer width="100%" height={240}>
+                <PieChart>
+                  <Pie
+                    data={statusData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                    outerRadius={80}
+                    fill="#8884d8"
+                    dataKey="value"
                   >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                        {idx + 1}
-                      </div>
-                      <span className="text-sm font-semibold text-gray-900 truncate">{item.name}</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-blue-600">{item.value}</span>
-                      <span className="text-xs text-gray-500">({item.percent.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name] || "#94A3B8"} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "#FFF",
+                      border: "2px solid #10B981",
+                      borderRadius: "8px",
+                      fontSize: "12px",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
 
-          {/* Ranking Colaboradores - Top 10 */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          {/* Ranking Colaboradores */}
+          <Card className="shadow-lg border-2 border-purple-100 hover:shadow-xl transition-shadow">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
                 <span className="flex items-center gap-2">
-                  <Crown className="h-5 w-5 text-blue-600" />
+                  <Crown className="h-5 w-5 text-purple-600" />
                   Ranking Colaboradores
                 </span>
                 <span className="text-xs font-normal text-gray-500">Top 10</span>
               </CardTitle>
-              <div className="relative mt-2">
-                <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="text"
-                  placeholder="Buscar colaborador..."
-                  value={searchColaboradores}
-                  onChange={(e) => setSearchColaboradores(e.target.value)}
-                  className="pl-8 h-9 text-sm"
-                />
-              </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-[240px] overflow-y-auto pr-2">
                 {rankingColaboradores.map((item, idx) => (
                   <div
                     key={item.colaborador}
-                    className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+                    className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-purple-50 to-transparent hover:from-purple-100 transition-colors"
                   >
                     <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      idx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
-                      idx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
-                      idx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
-                      "bg-blue-100 text-blue-700"
+                      idx === 0 ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white" :
+                      idx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-400 text-white" :
+                      idx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white" :
+                      "bg-gray-200 text-gray-700"
                     }`}>
                       {idx + 1}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-semibold text-gray-900 truncate">{item.colaborador}</p>
                     </div>
-                    <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
+                    <div className="text-sm font-bold text-purple-600">{item.horas.toFixed(1)}h</div>
                   </div>
                 ))}
               </div>
@@ -550,14 +647,14 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Matriz Colapsável com Filtros */}
-        <Card className="shadow-lg border-2 border-gray-200 animate-fade-in">
+        {/* Matriz Colapsável */}
+        <Card className="shadow-lg border-2 border-gray-200">
           <CardHeader
             className="cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => setIsMatrizExpanded(!isMatrizExpanded)}
           >
             <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
-              <span>Colaborador × Projeto</span>
+              <span>Colaborador × Projeto (Completo)</span>
               <div className="flex items-center gap-2">
                 <span className="text-xs font-normal text-gray-500">
                   {colaboradoresUnicos.length} colaboradores × {projetosUnicos.length} projetos
@@ -572,33 +669,11 @@ export default function Home() {
           </CardHeader>
           {isMatrizExpanded && (
             <CardContent>
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Filtrar colaborador..."
-                    value={matrizSearchColab}
-                    onChange={(e) => setMatrizSearchColab(e.target.value)}
-                    className="pl-8 h-9 text-sm"
-                  />
-                </div>
-                <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input
-                    type="text"
-                    placeholder="Filtrar projeto..."
-                    value={matrizSearchProj}
-                    onChange={(e) => setMatrizSearchProj(e.target.value)}
-                    className="pl-8 h-9 text-sm"
-                  />
-                </div>
-              </div>
               <div className="overflow-x-auto">
                 <table className="min-w-full text-xs border-collapse">
                   <thead>
-                    <tr className="bg-blue-100">
-                      <th className="border border-gray-300 px-2 py-1 text-left font-bold sticky left-0 bg-blue-100 z-10">
+                    <tr className="bg-gray-100">
+                      <th className="border border-gray-300 px-2 py-1 text-left font-bold sticky left-0 bg-gray-100 z-10">
                         Colaborador
                       </th>
                       {projetosUnicos.map((p) => (
@@ -619,8 +694,8 @@ export default function Home() {
                           return (
                             <td
                               key={p}
-                              className={`border border-gray-300 px-2 py-1 text-center transition-colors ${
-                                horas > 0 ? "bg-blue-100 font-semibold text-blue-900 hover:bg-blue-200" : "text-gray-400"
+                              className={`border border-gray-300 px-2 py-1 text-center ${
+                                horas > 0 ? "bg-blue-100 font-semibold text-blue-900" : "text-gray-400"
                               }`}
                             >
                               {horas > 0 ? horas.toFixed(1) : "-"}
@@ -637,30 +712,6 @@ export default function Home() {
         </Card>
 
       </div>
-
-      <style>{`
-        @keyframes fade-in {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-        @keyframes slide-down {
-          from { opacity: 0; transform: translateY(-20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes slide-up {
-          from { opacity: 0; transform: translateY(20px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.5s ease-out;
-        }
-        .animate-slide-down {
-          animation: slide-down 0.5s ease-out;
-        }
-        .animate-slide-up {
-          animation: slide-up 0.5s ease-out;
-        }
-      `}</style>
     </div>
   );
 }

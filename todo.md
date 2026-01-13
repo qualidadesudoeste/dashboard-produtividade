@@ -1,72 +1,89 @@
-# TODO - Reorganização Radical do Dashboard
+# TODO - Refinações do Dashboard
 
-## Problemas Identificados no Layout Atual
+## 1. Converter Gráficos em Listas Filtráveis
 
-### Estética
-- [ ] Visual genérico sem personalidade forte
-- [ ] Cards muito simples e sem profundidade
-- [ ] Espaçamentos inconsistentes
-- [ ] Falta de hierarquia visual clara
-- [ ] Cores muito suaves, pouco impacto
+### Distribuição por Tipo de Atividade
+- [ ] Remover gráfico de barras
+- [ ] Criar lista ordenada por quantidade
+- [ ] Adicionar campo de busca
+- [ ] Implementar scroll (max-height)
+- [ ] Mostrar contagem e percentual
+- [ ] Usar cor azul consistente
 
-### Aproveitamento de Espaço
-- [ ] KPIs ocupam linha inteira mas têm pouca informação
-- [ ] Gráficos de pizza muito grande para pouca informação
-- [ ] Espaços em branco excessivos entre elementos
-- [ ] Rankings com scroll desnecessário
-- [ ] Proporção 60/40 cria coluna direita muito estreita
+### Distribuição por Status
+- [ ] Remover gráfico de pizza
+- [ ] Criar lista ordenada por quantidade
+- [ ] Adicionar campo de busca
+- [ ] Implementar scroll (max-height)
+- [ ] Mostrar contagem e percentual
+- [ ] Usar cor azul consistente
 
-## Novo Layout Proposto
+## 2. Expandir Ranking Projetos
 
-### Seção Superior: Filtros + KPIs Integrados
-- [ ] Filtros em linha única mais compacta
-- [ ] KPIs em grid 3x2 com visual mais impactante
-- [ ] Gradientes e sombras para profundidade
-- [ ] Mini-gráficos sparkline nos KPIs principais
+- [ ] Remover limite de top 10
+- [ ] Mostrar TODOS os projetos
+- [ ] Adicionar campo de busca
+- [ ] Implementar scroll eficiente
+- [ ] Manter badges de posição (1º, 2º, 3º)
+- [ ] Usar cor azul consistente
 
-### Seção Principal: Grid Assimétrico 2x2
-- [ ] Gráfico de Tipo de Atividade (grande, superior esquerdo)
-- [ ] Ranking Projetos (médio, superior direito)
-- [ ] Gráfico de Status (médio, inferior esquerdo)  
-- [ ] Ranking Colaboradores (médio, inferior direito)
-- [ ] Usar grid CSS para layout fluido
+## 3. Simplificar Matriz
 
-### Cards de Destaque
-- [ ] Top Projeto e Top Colaborador em cards horizontais compactos
-- [ ] Posicionar entre filtros e seção principal
-- [ ] Visual mais chamativo com ícones e gradientes
+- [ ] Remover texto "(Completo)" do título
+- [ ] Adicionar filtros próprios dentro do card
+- [ ] Filtro de busca para colaborador
+- [ ] Filtro de busca para projeto
+- [ ] Manter funcionalidade colapsável
 
-### Matriz Colapsável
-- [ ] Manter funcionalidade atual
-- [ ] Melhorar visual do header
-- [ ] Adicionar animação suave de expansão
+## 4. Unificar Cores - Apenas Azul
 
-## Melhorias Visuais
+### Hero Cards
+- [ ] Top Projeto: gradiente azul (remover rosa)
+- [ ] Top Colaborador: gradiente azul (remover roxo)
 
-### Tipografia
-- [ ] Aumentar contraste entre títulos e texto
-- [ ] Usar font-weight mais variado
-- [ ] Melhorar hierarquia de tamanhos
+### KPIs
+- [ ] Total Horas: azul (manter)
+- [ ] Atividades: azul (mudar de verde)
+- [ ] Colaboradores: azul (mudar de roxo)
+- [ ] Projetos: azul (mudar de laranja)
+- [ ] Taxa Conclusão: azul (mudar de teal)
+- [ ] Pontos Função: azul (mudar de amber)
 
-### Cores e Profundidade
-- [ ] Adicionar gradientes sutis nos cards
-- [ ] Usar sombras mais pronunciadas
-- [ ] Aumentar saturação das cores de destaque
-- [ ] Melhorar contraste geral
+### Listas e Rankings
+- [ ] Usar apenas tons de azul para badges
+- [ ] Gradientes azul claro → azul escuro
+- [ ] Hover effects em azul
 
-### Espaçamento
-- [ ] Reduzir gaps entre elementos relacionados
-- [ ] Aumentar padding interno dos cards
-- [ ] Usar espaçamento consistente (múltiplos de 4px)
+## 5. Adicionar Animações e Interações
 
-### Animações
-- [ ] Hover effects mais suaves
-- [ ] Transições de entrada escalonadas
-- [ ] Micro-interações nos botões
+### Animações de Entrada
+- [ ] Fade-in escalonado nos cards (stagger 50ms)
+- [ ] Slide-in from bottom nos KPIs
+- [ ] Fade-in nos gráficos/listas
 
-## Métricas de Sucesso
-- [ ] Reduzir altura total em 30%+
-- [ ] Aumentar densidade de informação
-- [ ] Melhorar legibilidade dos gráficos
-- [ ] Visual mais moderno e profissional
-- [ ] Zero espaços desperdiçados
+### Hover Effects
+- [ ] Scale 1.02 nos cards principais
+- [ ] Shadow elevation nos KPIs
+- [ ] Background color change nas listas
+- [ ] Border glow nos inputs de busca
+
+### Transições
+- [ ] Smooth transitions 300ms
+- [ ] Ease-in-out timing
+- [ ] Transform GPU-accelerated
+
+### Micro-interações
+- [ ] Pulse animation nos badges de ranking
+- [ ] Ripple effect nos botões
+- [ ] Loading skeleton nos filtros
+- [ ] Smooth scroll behavior
+
+## Checklist de Implementação
+
+- [ ] Criar estados para campos de busca (tipo, status, projetos)
+- [ ] Implementar funções de filtro para cada lista
+- [ ] Atualizar paleta de cores para azul monocromático
+- [ ] Adicionar classes de animação CSS
+- [ ] Testar performance das animações
+- [ ] Validar responsividade
+- [ ] Salvar checkpoint
