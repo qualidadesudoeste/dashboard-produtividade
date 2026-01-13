@@ -464,10 +464,7 @@ export default function Home() {
 
       {/* Rankings */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <TrendingUp className="h-6 w-6 text-primary" />
-          Rankings
-        </h2>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Ranking Projetos */}
           <Card className="cyber-card neon-border hover-lift">
@@ -589,10 +586,7 @@ export default function Home() {
 
       {/* Distribuições */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <Activity className="h-6 w-6 text-primary" />
-          Distribuições
-        </h2>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribuição por Tipo */}
           <Card className="cyber-card neon-border hover-lift">
@@ -646,10 +640,7 @@ export default function Home() {
 
       {/* Matriz de Alocação */}
       <div className="space-y-6">
-        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-          <Filter className="h-6 w-6 text-primary" />
-          Matriz de Alocação
-        </h2>
+
         <Card className="cyber-card neon-border hover-lift">
           <CardHeader>
             <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
