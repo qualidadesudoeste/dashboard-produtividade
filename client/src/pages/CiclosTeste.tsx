@@ -102,7 +102,7 @@ export default function CiclosTeste() {
       "Liberada/Atrasada": { bg: "bg-orange-500/20", text: "text-orange-400", icon: Clock },
       "Liberada/Sem teste": { bg: "bg-yellow-500/20", text: "text-yellow-400", icon: FileText },
     };
-    const badge = badges[status] || { bg: "bg-gray-500/20", text: "text-gray-400", icon: Activity };
+    const badge = badges[status] || { bg: "bg-gray-500/20", text: "text-muted-foreground", icon: Activity };
     const Icon = badge.icon;
     return (
       <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${badge.bg} ${badge.text}`}>
@@ -113,23 +113,23 @@ export default function CiclosTeste() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0A0E1A] via-[#0F1729] to-[#0A0E1A] p-6">
+    <div className="min-h-screen p-6 bg-background data-grid">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent gradient-animated">
+        <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
           Ciclos de Teste
         </h1>
-        <p className="text-gray-400">Gestão de testes e bugs - Janeiro 2026</p>
+        <p className="text-muted-foreground">Gestão de testes e bugs - Janeiro 2026</p>
       </div>
 
       {/* Filtros */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="hover-lift">
-          <label className="block text-sm font-medium text-gray-300 mb-2">Cliente</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
           <select
             value={filtroCliente}
             onChange={(e) => setFiltroCliente(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
           >
             {clientes.map((cliente) => (
               <option key={cliente} value={cliente}>
@@ -140,11 +140,11 @@ export default function CiclosTeste() {
         </div>
 
         <div className="hover-lift">
-          <label className="block text-sm font-medium text-gray-300 mb-2">Status</label>
+          <label className="block text-sm font-medium text-foreground mb-2">Status</label>
           <select
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value)}
-            className="w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
           >
             {statusList.map((status) => (
               <option key={status} value={status}>
@@ -157,56 +157,56 @@ export default function CiclosTeste() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-gray-800/30 backdrop-blur-sm border border-blue-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-white backdrop-blur-sm border border-blue-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-400 text-sm font-medium">Total de Ciclos</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">Total de Ciclos</h3>
             <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
               <Activity className="w-6 h-6 text-blue-400" />
             </div>
           </div>
-          <p className="text-4xl font-bold text-white mb-1">{totalCiclos}</p>
-          <p className="text-sm text-gray-500">Projetos em teste</p>
+          <p className="text-4xl font-bold text-foreground mb-1">{totalCiclos}</p>
+          <p className="text-sm text-muted-foreground">Projetos em teste</p>
         </div>
 
-        <div className="bg-gray-800/30 backdrop-blur-sm border border-green-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-white backdrop-blur-sm border border-green-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-400 text-sm font-medium">Total de Horas</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">Total de Horas</h3>
             <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
               <Clock className="w-6 h-6 text-green-400" />
             </div>
           </div>
-          <p className="text-4xl font-bold text-white mb-1">{totalHoras.toFixed(1)}<span className="text-xl text-gray-500 ml-1">h</span></p>
-          <p className="text-sm text-gray-500">Tempo total investido</p>
+          <p className="text-4xl font-bold text-foreground mb-1">{totalHoras.toFixed(1)}<span className="text-xl text-muted-foreground ml-1">h</span></p>
+          <p className="text-sm text-muted-foreground">Tempo total investido</p>
         </div>
 
-        <div className="bg-gray-800/30 backdrop-blur-sm border border-purple-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-white backdrop-blur-sm border border-purple-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-400 text-sm font-medium">Total de Cards</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">Total de Cards</h3>
             <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
               <FileText className="w-6 h-6 text-purple-400" />
             </div>
           </div>
-          <p className="text-4xl font-bold text-white mb-1">{totalCards}</p>
-          <p className="text-sm text-gray-500">Atividades testadas</p>
+          <p className="text-4xl font-bold text-foreground mb-1">{totalCards}</p>
+          <p className="text-sm text-muted-foreground">Atividades testadas</p>
         </div>
 
-        <div className="bg-gray-800/30 backdrop-blur-sm border border-orange-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-white backdrop-blur-sm border border-orange-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-gray-400 text-sm font-medium">Retrabalho Médio</h3>
+            <h3 className="text-muted-foreground text-sm font-medium">Retrabalho Médio</h3>
             <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
               <AlertCircle className="w-6 h-6 text-orange-400" />
             </div>
           </div>
-          <p className="text-4xl font-bold text-white mb-1">{retrabalhoMedio.toFixed(1)}<span className="text-xl text-gray-500 ml-1">%</span></p>
-          <p className="text-sm text-gray-500">Taxa de correções</p>
+          <p className="text-4xl font-bold text-foreground mb-1">{retrabalhoMedio.toFixed(1)}<span className="text-xl text-muted-foreground ml-1">%</span></p>
+          <p className="text-sm text-muted-foreground">Taxa de correções</p>
         </div>
       </div>
 
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Distribuição por Status */}
-        <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover-lift hover-border-glow">
-          <h3 className="text-xl font-semibold text-white mb-6">Distribuição por Status</h3>
+        <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover-lift hover-border-glow">
+          <h3 className="text-xl font-semibold text-foreground mb-6">Distribuição por Status</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
@@ -237,8 +237,8 @@ export default function CiclosTeste() {
         </div>
 
         {/* Top 10 Retrabalho */}
-        <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover-lift hover-border-glow">
-          <h3 className="text-xl font-semibold text-white mb-6">Top 10 - Maior Retrabalho</h3>
+        <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover-lift hover-border-glow">
+          <h3 className="text-xl font-semibold text-foreground mb-6">Top 10 - Maior Retrabalho</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={retrabalhoData} layout="vertical">
               <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -260,8 +260,8 @@ export default function CiclosTeste() {
       </div>
 
       {/* Top 10 Duração */}
-      <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
-        <h3 className="text-xl font-semibold text-white mb-6">Top 10 - Maior Duração</h3>
+      <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
+        <h3 className="text-xl font-semibold text-foreground mb-6">Top 10 - Maior Duração</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={duracaoData}>
             <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
@@ -282,32 +282,32 @@ export default function CiclosTeste() {
       </div>
 
       {/* Tabela de Ciclos */}
-      <div className="bg-gray-800/30 backdrop-blur-sm border border-gray-700/50 rounded-xl p-6 hover-lift hover-border-glow">
-        <h3 className="text-xl font-semibold text-white mb-6">Detalhamento dos Ciclos</h3>
+      <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover-lift hover-border-glow">
+        <h3 className="text-xl font-semibold text-foreground mb-6">Detalhamento dos Ciclos</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-700">
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Cliente</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Projeto</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Sprint</th>
-                <th className="text-center py-3 px-4 text-gray-400 font-medium">Duração</th>
-                <th className="text-left py-3 px-4 text-gray-400 font-medium">Status</th>
-                <th className="text-right py-3 px-4 text-gray-400 font-medium">Horas</th>
-                <th className="text-right py-3 px-4 text-gray-400 font-medium">Cards</th>
-                <th className="text-right py-3 px-4 text-gray-400 font-medium">Retrabalho</th>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Cliente</th>
+                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Projeto</th>
+                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Sprint</th>
+                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Duração</th>
+                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Status</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Horas</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Cards</th>
+                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Retrabalho</th>
               </tr>
             </thead>
             <tbody>
               {ciclosFiltrados.map((ciclo, index) => (
-                <tr key={index} className="border-b border-gray-700/50 hover:bg-gray-700/30 transition-colors">
-                  <td className="py-3 px-4 text-white font-medium">{ciclo.cliente}</td>
-                  <td className="py-3 px-4 text-gray-300">{ciclo.projeto}</td>
-                  <td className="py-3 px-4 text-gray-400">{ciclo.sprint}</td>
-                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.duracao} dias</td>
+                <tr key={index} className="border-b border-gray-200/50 hover:bg-gray-700/30 transition-colors">
+                  <td className="py-3 px-4 text-foreground font-medium">{ciclo.cliente}</td>
+                  <td className="py-3 px-4 text-foreground">{ciclo.projeto}</td>
+                  <td className="py-3 px-4 text-muted-foreground">{ciclo.sprint}</td>
+                  <td className="py-3 px-4 text-center text-foreground">{ciclo.duracao} dias</td>
                   <td className="py-3 px-4">{getStatusBadge(ciclo.status)}</td>
-                  <td className="py-3 px-4 text-right text-white">{ciclo.total_horas.toFixed(1)}h</td>
-                  <td className="py-3 px-4 text-right text-white">{ciclo.total_cards}</td>
+                  <td className="py-3 px-4 text-right text-foreground">{ciclo.total_horas.toFixed(1)}h</td>
+                  <td className="py-3 px-4 text-right text-foreground">{ciclo.total_cards}</td>
                   <td className="py-3 px-4 text-right">
                     <span className={`font-semibold ${ciclo.retrabalho > 20 ? "text-red-400" : ciclo.retrabalho > 10 ? "text-orange-400" : "text-green-400"}`}>
                       {ciclo.retrabalho.toFixed(1)}%
