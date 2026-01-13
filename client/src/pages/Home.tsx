@@ -491,29 +491,34 @@ export default function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="max-h-[400px] overflow-y-auto pr-2">
-                <ResponsiveContainer width="100%" height={Math.max(400, rankingProjetosFiltrado.length * 40)}>
-                  <BarChart data={rankingProjetosFiltrado} layout="vertical">
+              <div className="max-h-[500px] overflow-y-auto pr-2">
+                <ResponsiveContainer width="100%" height={Math.max(500, rankingProjetosFiltrado.length * 50)}>
+                  <BarChart data={rankingProjetosFiltrado} layout="vertical" margin={{ left: 20, right: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
                     <XAxis type="number" stroke="#888" />
                     <YAxis
                       dataKey="nome"
                       type="category"
-                      width={150}
+                      width={250}
                       stroke="#888"
-                      tick={{ fontSize: 11 }}
+                      tick={{ fontSize: 12 }}
+                      interval={0}
                     />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "rgba(255,255,255,0.98)",
                         border: "1px solid rgba(59,130,246,0.3)",
                         borderRadius: "8px",
-                        color: "#0f172a"
+                        color: "#0f172a",
+                        maxWidth: "400px",
+                        whiteSpace: "normal",
+                        wordWrap: "break-word"
                       }}
                       formatter={(value: number, name: string) => [
                         `${value.toFixed(1)}h`,
                         name === 'horas' ? 'Horas Trabalhadas' : name
                       ]}
+                      labelFormatter={(label: string) => `Projeto: ${label}`}
                     />
                     <Bar dataKey="horas" fill={CHART_COLOR} radius={[0, 4, 4, 0]} />
                   </BarChart>
@@ -544,29 +549,34 @@ export default function Home() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="max-h-[400px] overflow-y-auto pr-2">
-                <ResponsiveContainer width="100%" height={Math.max(400, rankingColaboradoresFiltrado.length * 40)}>
-                  <BarChart data={rankingColaboradoresFiltrado} layout="vertical">
+              <div className="max-h-[500px] overflow-y-auto pr-2">
+                <ResponsiveContainer width="100%" height={Math.max(500, rankingColaboradoresFiltrado.length * 50)}>
+                  <BarChart data={rankingColaboradoresFiltrado} layout="vertical" margin={{ left: 20, right: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
                     <XAxis type="number" stroke="#888" />
                     <YAxis
                       dataKey="nome"
                       type="category"
-                      width={150}
+                      width={250}
                       stroke="#888"
-                      tick={{ fontSize: 11 }}
+                      tick={{ fontSize: 12 }}
+                      interval={0}
                     />
                     <Tooltip
                       contentStyle={{
                         backgroundColor: "rgba(255,255,255,0.98)",
                         border: "1px solid rgba(59,130,246,0.3)",
                         borderRadius: "8px",
-                        color: "#0f172a"
+                        color: "#0f172a",
+                        maxWidth: "400px",
+                        whiteSpace: "normal",
+                        wordWrap: "break-word"
                       }}
                       formatter={(value: number, name: string) => [
                         `${value.toFixed(1)}h`,
                         name === 'horas' ? 'Horas Trabalhadas' : name
                       ]}
+                      labelFormatter={(label: string) => `Colaborador: ${label}`}
                     />
                     <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[0, 4, 4, 0]} />
                   </BarChart>
