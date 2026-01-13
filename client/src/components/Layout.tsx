@@ -20,11 +20,11 @@ export default function Layout({ children }: LayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-background flex data-grid">
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed left-0 top-0 h-full bg-card/95 backdrop-blur-md border-r border-primary/30 transition-all duration-300 z-20 shadow-[0_0_30px_rgba(59,130,246,0.2)]",
+          "fixed left-0 top-0 h-full bg-sidebar backdrop-blur-xl border-r border-primary/30 transition-all duration-300 z-20 neon-glow",
           sidebarOpen ? "w-72" : "w-20"
         )}
       >
@@ -36,7 +36,7 @@ export default function Layout({ children }: LayoutProps) {
           )}>
             {sidebarOpen && (
               <div className="mb-2">
-                <h2 className="text-xl font-bold">Dashboard</h2>
+                <h2 className="text-xl font-bold gradient-text">Dashboard</h2>
               </div>
             )}
             {sidebarOpen && (
@@ -122,7 +122,7 @@ export default function Layout({ children }: LayoutProps) {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <div>
-                  <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent gradient-animated">
+                  <h1 className="text-2xl font-bold gradient-text">
                     {navItems.find((item) => item.path === location)?.label || "Dashboard"}
                   </h1>
                   <p className="text-xs text-muted-foreground">
@@ -142,7 +142,7 @@ export default function Layout({ children }: LayoutProps) {
         </main>
 
         {/* Footer */}
-        <footer className="border-t border-primary/20 bg-card/30 backdrop-blur-md py-6 mt-12 shadow-[0_-10px_30px_rgba(59,130,246,0.1)]">
+        <footer className="border-t border-primary/30 bg-sidebar/50 backdrop-blur-xl py-6 mt-12 neon-border">
           <div className="container">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
               <p>Dashboard Gerencial · Atualizado em tempo real</p>

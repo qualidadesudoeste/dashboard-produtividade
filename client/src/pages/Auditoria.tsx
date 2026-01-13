@@ -232,7 +232,7 @@ export default function Auditoria() {
 
       {/* Métricas Gerais de Qualidade */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-        <Card className="border-l-4 hover-scale border-l-purple-500">
+        <Card className="border-l-4 hover-lift border-l-purple-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-purple-500/10 flex items-center justify-center">
@@ -246,7 +246,7 @@ export default function Auditoria() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 hover-scale border-l-emerald-500">
+        <Card className="border-l-4 hover-lift border-l-emerald-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
@@ -260,7 +260,7 @@ export default function Auditoria() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 hover-scale border-l-blue-500">
+        <Card className="border-l-4 hover-lift border-l-blue-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
@@ -274,7 +274,7 @@ export default function Auditoria() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 hover-scale border-l-amber-500">
+        <Card className="border-l-4 hover-lift border-l-amber-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-amber-500/10 flex items-center justify-center">
@@ -288,7 +288,7 @@ export default function Auditoria() {
           </CardContent>
         </Card>
 
-        <Card className="border-l-4 hover-scale border-l-red-500">
+        <Card className="border-l-4 hover-lift border-l-red-500">
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-xl bg-red-500/10 flex items-center justify-center">

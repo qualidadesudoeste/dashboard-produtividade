@@ -84,10 +84,10 @@ export default function Home() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-background data-grid">
         <div className="text-center space-y-4">
-          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-          <p className="text-muted-foreground text-lg">Carregando dados...</p>
+          <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent neon-glow"></div>
+          <p className="text-muted-foreground text-lg gradient-text">Carregando dados...</p>
         </div>
       </div>
     );
@@ -213,7 +213,7 @@ export default function Home() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Filtros Globais */}
-      <Card className="border-2 cyber-border glow-card hover-lift">
+      <Card className="cyber-card neon-border scan-line hover-lift">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
@@ -289,7 +289,7 @@ export default function Home() {
       {/* KPIs Principais - Grid 3x3 */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Total de Horas */}
-        <Card className="border-l-4 border-l-blue-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-blue-500">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -306,7 +306,7 @@ export default function Home() {
         </Card>
 
         {/* Atividades */}
-        <Card className="border-l-4 border-l-green-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-green-500">
           <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -323,7 +323,7 @@ export default function Home() {
         </Card>
 
         {/* Colaboradores */}
-        <Card className="border-l-4 border-l-purple-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-purple-500">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -340,7 +340,7 @@ export default function Home() {
         </Card>
 
         {/* Projetos */}
-        <Card className="border-l-4 border-l-orange-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-orange-500">
           <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -357,7 +357,7 @@ export default function Home() {
         </Card>
 
         {/* Média h/Atividade */}
-        <Card className="border-l-4 border-l-cyan-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-cyan-500">
           <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -374,7 +374,7 @@ export default function Home() {
         </Card>
 
         {/* Taxa Conclusão */}
-        <Card className="border-l-4 border-l-emerald-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-emerald-500">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -391,7 +391,7 @@ export default function Home() {
         </Card>
 
         {/* Pontos de Função */}
-        <Card className="border-l-4 border-l-amber-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-amber-500">
           <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -408,7 +408,7 @@ export default function Home() {
         </Card>
 
         {/* Top Projeto */}
-        <Card className="border-l-4 border-l-rose-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-rose-500">
           <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -425,7 +425,7 @@ export default function Home() {
         </Card>
 
         {/* Top Colaborador */}
-        <Card className="border-l-4 border-l-indigo-500 glow-card hover-scale cursor-pointer group relative overflow-hidden">
+        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-indigo-500">
           <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
@@ -450,7 +450,7 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top 10 Projetos */}
-          <Card className="glow-card cyber-border hover-lift">
+          <Card className="cyber-card neon-border hover-lift scan-line">
             <CardHeader>
               <CardTitle className="text-lg">Top 10 Projetos por Horas</CardTitle>
             </CardHeader>
@@ -480,7 +480,7 @@ export default function Home() {
           </Card>
 
           {/* Top 10 Colaboradores */}
-          <Card className="glow-card cyber-border hover-lift">
+          <Card className="cyber-card neon-border hover-lift scan-line">
             <CardHeader>
               <CardTitle className="text-lg">Top 10 Colaboradores por Horas</CardTitle>
             </CardHeader>
@@ -519,7 +519,7 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribuição por Tipo */}
-          <Card className="glow-card cyber-border hover-lift">
+          <Card className="cyber-card neon-border hover-lift scan-line">
             <CardHeader>
               <CardTitle className="text-lg">Por Tipo de Atividade</CardTitle>
             </CardHeader>
@@ -543,7 +543,7 @@ export default function Home() {
           </Card>
 
           {/* Distribuição por Status */}
-          <Card className="glow-card cyber-border hover-lift">
+          <Card className="cyber-card neon-border hover-lift scan-line">
             <CardHeader>
               <CardTitle className="text-lg">Por Status</CardTitle>
             </CardHeader>
@@ -574,7 +574,7 @@ export default function Home() {
           <Filter className="h-6 w-6 text-primary" />
           Matriz de Alocação
         </h2>
-        <Card className="glow-card cyber-border hover-lift">
+        <Card className="cyber-card neon-border hover-lift scan-line">
           <CardHeader>
             <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
             <p className="text-sm text-muted-foreground">
