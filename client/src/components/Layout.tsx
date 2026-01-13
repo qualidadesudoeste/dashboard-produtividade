@@ -56,7 +56,7 @@ export default function Layout({ children }: LayoutProps) {
                     className={cn(
                       "w-full h-auto transition-all duration-300 group relative overflow-hidden border",
                       sidebarOpen ? "justify-start gap-3 py-3 px-4" : "justify-center p-3",
-                      isActive ? "bg-primary/20 border-primary/50 shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "border-transparent hover:border-primary/30 hover:bg-accent/50"
+                      isActive ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "border-transparent hover:border-primary/30 hover:bg-accent/50"
                     )}
                     title={!sidebarOpen ? item.label : undefined}
                   >
@@ -71,7 +71,7 @@ export default function Layout({ children }: LayoutProps) {
                         <span className="font-medium whitespace-nowrap">{item.label}</span>
                         <span className={cn(
                           "text-xs whitespace-nowrap",
-                          isActive ? "text-primary-foreground/80" : "text-muted-foreground"
+                          isActive ? "text-primary-foreground/90" : "text-muted-foreground"
                         )}>
                           {item.description}
                         </span>
@@ -116,25 +116,7 @@ export default function Layout({ children }: LayoutProps) {
           sidebarOpen ? "ml-72" : "ml-20"
         )}
       >
-        {/* Header */}
-        <header className="border-b border-primary/20 bg-card/50 backdrop-blur-md sticky top-0 z-10 shadow-[0_0_20px_rgba(59,130,246,0.1)]">
-          <div className="container py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div>
-                  <h1 className="text-2xl font-bold gradient-text">
-                    {navItems.find((item) => item.path === location)?.label || "Dashboard"}
-                  </h1>
-                  <p className="text-xs text-muted-foreground">
-                    {navItems.find((item) => item.path === location)?.description || "Análise de Produtividade"}
-                  </p>
-                </div>
-              </div>
 
-
-            </div>
-          </div>
-        </header>
 
         {/* Conteúdo */}
         <main className="container py-8">

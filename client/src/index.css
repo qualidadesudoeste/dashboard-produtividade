@@ -242,30 +242,7 @@
     }
   }
 
-  .scan-line {
-    position: relative;
-    overflow: hidden;
-  }
 
-  .scan-line::after {
-    content: '';
-    position: absolute;
-    top: -100%;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.6), transparent);
-    animation: scan 3s linear infinite;
-  }
-
-  @keyframes scan {
-    0% {
-      top: -100%;
-    }
-    100% {
-      top: 200%;
-    }
-  }
 
   .data-grid {
     background-image: 

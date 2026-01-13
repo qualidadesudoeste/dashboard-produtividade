@@ -213,7 +213,7 @@ export default function Home() {
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
       {/* Filtros Globais */}
-      <Card className="cyber-card neon-border scan-line hover-lift">
+      <Card className="cyber-card neon-border hover-lift">
         <CardContent className="pt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="space-y-2">
@@ -450,7 +450,7 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Top 10 Projetos */}
-          <Card className="cyber-card neon-border hover-lift scan-line">
+          <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Top 10 Projetos por Horas</CardTitle>
             </CardHeader>
@@ -480,7 +480,7 @@ export default function Home() {
           </Card>
 
           {/* Top 10 Colaboradores */}
-          <Card className="cyber-card neon-border hover-lift scan-line">
+          <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Top 10 Colaboradores por Horas</CardTitle>
             </CardHeader>
@@ -519,7 +519,7 @@ export default function Home() {
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Distribuição por Tipo */}
-          <Card className="cyber-card neon-border hover-lift scan-line">
+          <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Por Tipo de Atividade</CardTitle>
             </CardHeader>
@@ -543,7 +543,7 @@ export default function Home() {
           </Card>
 
           {/* Distribuição por Status */}
-          <Card className="cyber-card neon-border hover-lift scan-line">
+          <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
               <CardTitle className="text-lg">Por Status</CardTitle>
             </CardHeader>
@@ -574,7 +574,7 @@ export default function Home() {
           <Filter className="h-6 w-6 text-primary" />
           Matriz de Alocação
         </h2>
-        <Card className="cyber-card neon-border hover-lift scan-line">
+        <Card className="cyber-card neon-border hover-lift">
           <CardHeader>
             <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
             <p className="text-sm text-muted-foreground">
