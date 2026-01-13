@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
-import { Activity, AlertCircle, CheckCircle, Clock, FileText } from "lucide-react";
+import { Activity, AlertCircle, CheckCircle, Clock, FileText, X, Calendar, TrendingUp } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface CicloTeste {
   cliente: string;
@@ -26,6 +27,8 @@ export default function CiclosTeste() {
   const [loading, setLoading] = useState(true);
   const [filtroCliente, setFiltroCliente] = useState("Todos");
   const [filtroStatus, setFiltroStatus] = useState("Todos");
+  const [selectedCiclo, setSelectedCiclo] = useState<CicloTeste | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     fetch("/ciclos_teste.json")
@@ -300,7 +303,14 @@ export default function CiclosTeste() {
             </thead>
             <tbody>
               {ciclosFiltrados.map((ciclo, index) => (
-                <tr key={index} className="border-b border-gray-200/50 hover:bg-gray-700/30 transition-colors">
+                <tr 
+                  key={index} 
+                  className="border-b border-gray-200/50 hover:bg-blue-50 transition-colors cursor-pointer"
+                  onClick={() => {
+                    setSelectedCiclo(ciclo);
+                    setIsModalOpen(true);
+                  }}
+                >
                   <td className="py-3 px-4 text-foreground font-medium">{ciclo.cliente}</td>
                   <td className="py-3 px-4 text-foreground">{ciclo.projeto}</td>
                   <td className="py-3 px-4 text-muted-foreground">{ciclo.sprint}</td>
@@ -319,6 +329,146 @@ export default function CiclosTeste() {
           </table>
         </div>
       </div>
+
+      {/* Modal de Detalhes */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          {selectedCiclo && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
+                  {selectedCiclo.projeto}
+                </DialogTitle>
+                <p className="text-muted-foreground mt-2">{selectedCiclo.cliente} - {selectedCiclo.sprint}</p>
+              </DialogHeader>
+
+              <div className="space-y-6 mt-6">
+                {/* Informações Gerais */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Calendar className="w-4 h-4 text-blue-600" />
+                      <p className="text-xs text-muted-foreground">Duração</p>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.duracao}</p>
+                    <p className="text-xs text-muted-foreground">dias</p>
+                  </div>
+
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Clock className="w-4 h-4 text-green-600" />
+                      <p className="text-xs text-muted-foreground">Total Horas</p>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.total_horas.toFixed(1)}</p>
+                    <p className="text-xs text-muted-foreground">horas</p>
+                  </div>
+
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <FileText className="w-4 h-4 text-purple-600" />
+                      <p className="text-xs text-muted-foreground">Total Cards</p>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.total_cards}</p>
+                    <p className="text-xs text-muted-foreground">cards</p>
+                  </div>
+
+                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <TrendingUp className="w-4 h-4 text-orange-600" />
+                      <p className="text-xs text-muted-foreground">Retrabalho</p>
+                    </div>
+                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.retrabalho.toFixed(1)}%</p>
+                    <p className="text-xs text-muted-foreground">do total</p>
+                  </div>
+                </div>
+
+                {/* Período */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-blue-600" />
+                    Período de Execução
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Início</p>
+                      <p className="text-sm font-medium text-foreground">{selectedCiclo.inicio}</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground mb-1">Fim</p>
+                      <p className="text-sm font-medium text-foreground">{selectedCiclo.fim}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Ciclos de Teste */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-purple-600" />
+                    Ciclos de Teste
+                  </h4>
+                  <div className="space-y-3">
+                    {selectedCiclo.ciclo1 && (
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                        <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">1</div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Primeiro Ciclo</p>
+                          <p className="text-sm font-medium text-foreground">{selectedCiclo.ciclo1}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedCiclo.ciclo2 && (
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                        <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm">2</div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Segundo Ciclo</p>
+                          <p className="text-sm font-medium text-foreground">{selectedCiclo.ciclo2}</p>
+                        </div>
+                      </div>
+                    )}
+                    {selectedCiclo.ciclo3 && (
+                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                        <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm">3</div>
+                        <div className="flex-1">
+                          <p className="text-xs text-muted-foreground">Terceiro Ciclo</p>
+                          <p className="text-sm font-medium text-foreground">{selectedCiclo.ciclo3}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Correções */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-orange-600" />
+                    Correções e Retrabalho
+                  </h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="p-3 bg-white rounded-lg border border-gray-200">
+                      <p className="text-xs text-muted-foreground mb-1">Horas de Correção</p>
+                      <p className="text-xl font-bold text-foreground">{selectedCiclo.correcoes_horas.toFixed(1)}h</p>
+                      <p className="text-xs text-muted-foreground mt-1">de {selectedCiclo.total_horas.toFixed(1)}h totais</p>
+                    </div>
+                    <div className="p-3 bg-white rounded-lg border border-gray-200">
+                      <p className="text-xs text-muted-foreground mb-1">Cards Corrigidos</p>
+                      <p className="text-xl font-bold text-foreground">{selectedCiclo.correcoes_cards}</p>
+                      <p className="text-xs text-muted-foreground mt-1">de {selectedCiclo.total_cards} cards totais</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Status */}
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                  <h4 className="font-semibold text-foreground mb-3">Status Atual</h4>
+                  <div className="flex items-center gap-2">
+                    {getStatusBadge(selectedCiclo.status)}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
