@@ -433,8 +433,8 @@ export default function Auditoria() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Auditoria de Sprints</h1>
-            <p className="text-gray-600 mt-1">Checklist Maker Compass - Gestão de qualidade por sprint</p>
+            <h1 className="text-4xl font-bold text-gray-900">Auditoria de Qualidade</h1>
+            <p className="text-gray-600 mt-1"></p>
           </div>
           <Button
             onClick={() => setIsFormOpen(true)}

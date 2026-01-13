@@ -36,11 +36,11 @@ export default function Layout({ children }: LayoutProps) {
           )}>
             {sidebarOpen && (
               <div className="mb-2">
-                <h2 className="text-xl font-bold gradient-text">Dashboard</h2>
+                <h2 className="text-xl font-bold gradient-text">Fábrica de Software</h2>
               </div>
             )}
             {sidebarOpen && (
-              <p className="text-xs text-muted-foreground overflow-hidden">Gestão de Produtividade</p>
+              <p className="text-xs text-muted-foreground overflow-hidden"></p>
             )}
           </div>
 
@@ -127,8 +127,8 @@ export default function Layout({ children }: LayoutProps) {
         <footer className="border-t border-primary/30 bg-sidebar/50 backdrop-blur-xl py-6 mt-12 neon-border">
           <div className="container">
             <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <p>Dashboard Gerencial · Atualizado em tempo real</p>
-              <p className="text-xs">© 2025 - Gestão de Produtividade</p>
+              <p>Dashboard Gerencial</p>
+              <p className="text-xs">© Gestão de Produtividade</p>
             </div>
           </div>
         </footer>
