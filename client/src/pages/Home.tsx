@@ -91,6 +91,53 @@ export default function Home() {
     }
   };
 
+  // Filtros rápidos de período
+  const aplicarFiltroRapido = (tipo: string) => {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = hoje.getMonth(); // 0-11
+    const dia = hoje.getDate();
+
+    let inicio = "";
+    let fim = "";
+
+    switch (tipo) {
+      case "ultimos7":
+        const data7dias = new Date(hoje);
+        data7dias.setDate(dia - 7);
+        inicio = data7dias.toISOString().split("T")[0];
+        fim = hoje.toISOString().split("T")[0];
+        break;
+
+      case "ultimos30":
+        const data30dias = new Date(hoje);
+        data30dias.setDate(dia - 30);
+        inicio = data30dias.toISOString().split("T")[0];
+        fim = hoje.toISOString().split("T")[0];
+        break;
+
+      case "trimestre":
+        const trimestreInicio = Math.floor(mes / 3) * 3; // 0, 3, 6, 9
+        const inicioTrimestre = new Date(ano, trimestreInicio, 1);
+        inicio = inicioTrimestre.toISOString().split("T")[0];
+        fim = hoje.toISOString().split("T")[0];
+        break;
+
+      case "ano":
+        inicio = `${ano}-01-01`;
+        fim = hoje.toISOString().split("T")[0];
+        break;
+
+      case "limpar":
+        inicio = "";
+        fim = "";
+        break;
+    }
+
+    setDataInicio(inicio);
+    setDataFim(fim);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background data-grid">
@@ -285,6 +332,43 @@ export default function Home() {
                 className="hover-border-glow disabled:opacity-50"
                 title={!dataInicio ? "Selecione a data inicial primeiro" : ""}
               />
+            </div>
+          </div>
+
+          {/* Filtros Rápidos */}
+          <div className="mt-4 pt-4 border-t border-gray-200">
+            <p className="text-xs font-semibold text-muted-foreground mb-3">Filtros Rápidos de Período</p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => aplicarFiltroRapido("ultimos7")}
+                className="px-3 py-1.5 text-xs font-medium rounded-full bg-blue-100 text-blue-700 hover:bg-blue-200 transition-colors"
+              >
+                Últimos 7 dias
+              </button>
+              <button
+                onClick={() => aplicarFiltroRapido("ultimos30")}
+                className="px-3 py-1.5 text-xs font-medium rounded-full bg-green-100 text-green-700 hover:bg-green-200 transition-colors"
+              >
+                Últimos 30 dias
+              </button>
+              <button
+                onClick={() => aplicarFiltroRapido("trimestre")}
+                className="px-3 py-1.5 text-xs font-medium rounded-full bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
+              >
+                Trimestre atual
+              </button>
+              <button
+                onClick={() => aplicarFiltroRapido("ano")}
+                className="px-3 py-1.5 text-xs font-medium rounded-full bg-orange-100 text-orange-700 hover:bg-orange-200 transition-colors"
+              >
+                Ano atual
+              </button>
+              <button
+                onClick={() => aplicarFiltroRapido("limpar")}
+                className="px-3 py-1.5 text-xs font-medium rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+              >
+                Limpar filtros
+              </button>
             </div>
           </div>
         </CardContent>
