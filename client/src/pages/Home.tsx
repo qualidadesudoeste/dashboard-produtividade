@@ -49,6 +49,7 @@ export default function Home() {
   const [selectedColaborador, setSelectedColaborador] = useState<string>("todos");
   const [selectedProjeto, setSelectedProjeto] = useState<string>("todos");
   const [searchColaborador, setSearchColaborador] = useState<string>("");
+  const [searchProjeto, setSearchProjeto] = useState<string>("");
   const [dataInicio, setDataInicio] = useState<string>("");
   const [dataFim, setDataFim] = useState<string>("");
   const [matrizSearchColab, setMatrizSearchColab] = useState<string>("");
@@ -146,10 +147,19 @@ export default function Home() {
   const topColaborador = Object.entries(colaboradorHoras).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
 
   // Dados para gráficos
-  const top10Projetos = Object.entries(projetoHoras)
+  // Ranking completo de projetos (todos)
+  const rankingProjetos = Object.entries(projetoHoras)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
+    .map(([nome, horas], index) => ({ 
+      ranking: index + 1,
+      nome, 
+      horas: Number(horas.toFixed(1)) 
+    }));
+
+  // Filtrar projetos por busca
+  const rankingProjetosFiltrado = rankingProjetos.filter(p => 
+    p.nome.toLowerCase().includes(searchProjeto.toLowerCase())
+  );
 
   // Ranking completo de colaboradores (todos)
   const rankingColaboradores = Object.entries(colaboradorHoras)
@@ -459,33 +469,56 @@ export default function Home() {
           Rankings
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Top 10 Projetos */}
+          {/* Ranking Projetos */}
           <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
-              <CardTitle className="text-lg">Top 10 Projetos por Horas</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Ranking Projetos</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  {rankingProjetosFiltrado.length} de {rankingProjetos.length}
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar projeto..."
+                    value={searchProjeto}
+                    onChange={(e) => setSearchProjeto(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={top10Projetos} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis type="number" stroke="#888" />
-                  <YAxis
-                    dataKey="nome"
-                    type="category"
-                    width={150}
-                    stroke="#888"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(0,0,0,0.8)",
-                      border: "1px solid rgba(59,130,246,0.3)",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="horas" fill={CHART_COLOR} radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="max-h-[400px] overflow-y-auto pr-2">
+                <ResponsiveContainer width="100%" height={Math.max(400, rankingProjetosFiltrado.length * 40)}>
+                  <BarChart data={rankingProjetosFiltrado} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
+                    <XAxis type="number" stroke="#888" />
+                    <YAxis
+                      dataKey="nome"
+                      type="category"
+                      width={150}
+                      stroke="#888"
+                      tick={{ fontSize: 11 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(255,255,255,0.98)",
+                        border: "1px solid rgba(59,130,246,0.3)",
+                        borderRadius: "8px",
+                        color: "#0f172a"
+                      }}
+                      formatter={(value: number, name: string) => [
+                        `${value.toFixed(1)}h`,
+                        name === 'horas' ? 'Horas Trabalhadas' : name
+                      ]}
+                    />
+                    <Bar dataKey="horas" fill={CHART_COLOR} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
 
