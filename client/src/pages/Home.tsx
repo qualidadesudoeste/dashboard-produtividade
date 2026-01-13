@@ -48,6 +48,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [selectedColaborador, setSelectedColaborador] = useState<string>("todos");
   const [selectedProjeto, setSelectedProjeto] = useState<string>("todos");
+  const [searchColaborador, setSearchColaborador] = useState<string>("");
   const [dataInicio, setDataInicio] = useState<string>("");
   const [dataFim, setDataFim] = useState<string>("");
   const [matrizSearchColab, setMatrizSearchColab] = useState<string>("");
@@ -150,10 +151,19 @@ export default function Home() {
     .slice(0, 10)
     .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
 
-  const top10Colaboradores = Object.entries(colaboradorHoras)
+  // Ranking completo de colaboradores (todos)
+  const rankingColaboradores = Object.entries(colaboradorHoras)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
+    .map(([nome, horas], index) => ({ 
+      ranking: index + 1,
+      nome, 
+      horas: Number(horas.toFixed(1)) 
+    }));
+
+  // Filtrar colaboradores por busca
+  const rankingColaboradoresFiltrado = rankingColaboradores.filter(c => 
+    c.nome.toLowerCase().includes(searchColaborador.toLowerCase())
+  );
 
   const tipoDistribuicao = filteredData.reduce((acc, r) => {
     acc[r.Tipo] = (acc[r.Tipo] || 0) + r.Horas_Trabalhadas;
@@ -479,33 +489,56 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          {/* Top 10 Colaboradores */}
+          {/* Ranking Colaboradores */}
           <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
-              <CardTitle className="text-lg">Top 10 Colaboradores por Horas</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg">Ranking Colaboradores</CardTitle>
+                <div className="text-sm text-muted-foreground">
+                  {rankingColaboradoresFiltrado.length} de {rankingColaboradores.length}
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar colaborador..."
+                    value={searchColaborador}
+                    onChange={(e) => setSearchColaborador(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={top10Colaboradores} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis type="number" stroke="#888" />
-                  <YAxis
-                    dataKey="nome"
-                    type="category"
-                    width={150}
-                    stroke="#888"
-                    tick={{ fontSize: 12 }}
-                  />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(0,0,0,0.8)",
-                      border: "1px solid rgba(59,130,246,0.3)",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
+              <div className="max-h-[400px] overflow-y-auto pr-2">
+                <ResponsiveContainer width="100%" height={Math.max(400, rankingColaboradoresFiltrado.length * 40)}>
+                  <BarChart data={rankingColaboradoresFiltrado} layout="vertical">
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
+                    <XAxis type="number" stroke="#888" />
+                    <YAxis
+                      dataKey="nome"
+                      type="category"
+                      width={150}
+                      stroke="#888"
+                      tick={{ fontSize: 11 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "rgba(255,255,255,0.98)",
+                        border: "1px solid rgba(59,130,246,0.3)",
+                        borderRadius: "8px",
+                        color: "#0f172a"
+                      }}
+                      formatter={(value: number, name: string) => [
+                        `${value.toFixed(1)}h`,
+                        name === 'horas' ? 'Horas Trabalhadas' : name
+                      ]}
+                    />
+                    <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[0, 4, 4, 0]} />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </CardContent>
           </Card>
         </div>
