@@ -1,9 +1,10 @@
 /**
- * Design Philosophy: Swiss Precision meets Modern Data Visualization
- * - Clean, functional layout with strong grid system
- * - Data-driven color coding with meaningful gradients
- * - Micro-interactions and smooth animations
- * - Professional typography with clear hierarchy
+ * Design Philosophy: Executive Dashboard Layout
+ * - Compact KPIs in horizontal row (6 main metrics)
+ * - Prominent charts with better proportions (60/40 split)
+ * - Side column for rankings
+ * - Collapsible matrix section to reduce scrolling
+ * - Clear visual hierarchy with data-driven insights
  */
 
 import { useEffect, useState, useMemo } from "react";
@@ -24,8 +25,11 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
-import { Clock, Activity, FolderKanban, Users, TrendingUp, CheckCircle2, Target, Zap, Search, Filter, Calendar } from "lucide-react";
+import { Clock, Activity, FolderKanban, Users, CheckCircle2, Target, Zap, Search, Calendar, ChevronDown, ChevronUp } from "lucide-react";
 
 interface DataRecord {
   Colaborador: string;
@@ -54,6 +58,7 @@ export default function Home() {
   const [dataFim, setDataFim] = useState<string>("");
   const [matrizSearchColab, setMatrizSearchColab] = useState<string>("");
   const [matrizSearchProj, setMatrizSearchProj] = useState<string>("");
+  const [isMatrizExpanded, setIsMatrizExpanded] = useState(false);
 
   useEffect(() => {
     fetch("/data.json")
@@ -68,17 +73,19 @@ export default function Home() {
       });
   }, []);
 
+  // Hooks devem vir antes de qualquer early return
+  const colaboradores = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador)))], [data]);
+  const projetos = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Projeto)))], [data]);
+
   // Validação de datas
   const handleDataInicioChange = (value: string) => {
     setDataInicio(value);
-    // Se data fim estiver preenchida e for menor que a nova data início, limpa data fim
     if (dataFim && value > dataFim) {
       setDataFim("");
     }
   };
 
   const handleDataFimChange = (value: string) => {
-    // Só permite definir data fim se for maior ou igual à data início
     if (!dataInicio || value >= dataInicio) {
       setDataFim(value);
     }
@@ -99,105 +106,82 @@ export default function Home() {
     const matchColaborador = selectedColaborador === "todos" || record.Colaborador === selectedColaborador;
     const matchProjeto = selectedProjeto === "todos" || record.Projeto === selectedProjeto;
     
-    // Filtro de período com data início e fim
-    let matchPeriodo = true;
-    if (dataInicio && dataFim) {
-      const recordDate = record.Início.substring(0, 10); // YYYY-MM-DD
-      matchPeriodo = recordDate >= dataInicio && recordDate <= dataFim;
-    } else if (dataInicio) {
-      const recordDate = record.Início.substring(0, 10);
-      matchPeriodo = recordDate >= dataInicio;
-    } else if (dataFim) {
-      const recordDate = record.Início.substring(0, 10);
-      matchPeriodo = recordDate <= dataFim;
+    let matchDataInicio = true;
+    let matchDataFim = true;
+    
+    if (dataInicio) {
+      matchDataInicio = record.Início >= dataInicio;
+    }
+    if (dataFim) {
+      matchDataFim = record.Fim <= dataFim;
     }
     
-    return matchColaborador && matchProjeto && matchPeriodo;
+    return matchColaborador && matchProjeto && matchDataInicio && matchDataFim;
   });
 
-  // Métricas Principais
   const totalHoras = filteredData.reduce((sum, r) => sum + r.Horas_Trabalhadas, 0);
   const totalAtividades = filteredData.length;
-  const totalColaboradores = new Set(filteredData.map((r) => r.Colaborador)).size;
-  const totalProjetos = new Set(filteredData.map((r) => r.Projeto)).size;
-  const mediaHoras = totalAtividades > 0 ? totalHoras / totalAtividades : 0;
-  const taxaConclusao = totalAtividades > 0
-    ? (filteredData.filter((r) => r.Status === "Concluído").length / totalAtividades) * 100
-    : 0;
-
-  // Métricas Adicionais Detalhadas
   const atividadesConcluidas = filteredData.filter((r) => r.Status === "Concluído").length;
   const atividadesAndamento = filteredData.filter((r) => r.Status === "Em andamento").length;
-  const totalPF = filteredData.reduce((sum, r) => sum + (r.PF || 0), 0);
+  const totalColaboradores = new Set(filteredData.map((r) => r.Colaborador)).size;
+  const totalProjetos = new Set(filteredData.map((r) => r.Projeto)).size;
   const mediaPorColaborador = totalColaboradores > 0 ? totalHoras / totalColaboradores : 0;
   const mediaPorProjeto = totalProjetos > 0 ? totalHoras / totalProjetos : 0;
+  const mediaHoras = totalAtividades > 0 ? totalHoras / totalAtividades : 0;
+  const taxaConclusao = totalAtividades > 0 ? (atividadesConcluidas / totalAtividades) * 100 : 0;
+  const totalPF = filteredData.reduce((sum, r) => sum + r.PF, 0);
 
-  // Top Projeto e Colaborador
-  const projetoHoras = filteredData.reduce((acc, r) => {
+  // Rankings
+  const horasPorProjeto = filteredData.reduce((acc, r) => {
     acc[r.Projeto] = (acc[r.Projeto] || 0) + r.Horas_Trabalhadas;
     return acc;
   }, {} as Record<string, number>);
 
-  const colaboradorHoras = filteredData.reduce((acc, r) => {
+  const horasPorColaborador = filteredData.reduce((acc, r) => {
     acc[r.Colaborador] = (acc[r.Colaborador] || 0) + r.Horas_Trabalhadas;
     return acc;
   }, {} as Record<string, number>);
 
-  const topProjeto = Object.entries(projetoHoras).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
-  const topColaborador = Object.entries(colaboradorHoras).sort((a, b) => b[1] - a[1])[0] || ["N/A", 0];
+  const rankingProjetos = Object.entries(horasPorProjeto)
+    .map(([nome, horas]) => ({ nome, horas }))
+    .sort((a, b) => b.horas - a.horas);
 
-  // Dados para gráficos
-  // Ranking completo de projetos (todos)
-  const rankingProjetos = Object.entries(projetoHoras)
-    .sort((a, b) => b[1] - a[1])
-    .map(([nome, horas], index) => ({ 
-      ranking: index + 1,
-      nome, 
-      horas: Number(horas.toFixed(1)) 
-    }));
+  const rankingColaboradores = Object.entries(horasPorColaborador)
+    .map(([nome, horas]) => ({ nome, horas }))
+    .sort((a, b) => b.horas - a.horas);
 
-  // Filtrar projetos por busca
-  const rankingProjetosFiltrado = rankingProjetos.filter(p => 
-    p.nome.toLowerCase().includes(searchProjeto.toLowerCase())
-  );
+  const rankingProjetosFiltrado = searchProjeto
+    ? rankingProjetos.filter((p) => p.nome.toLowerCase().includes(searchProjeto.toLowerCase()))
+    : rankingProjetos;
 
-  // Ranking completo de colaboradores (todos)
-  const rankingColaboradores = Object.entries(colaboradorHoras)
-    .sort((a, b) => b[1] - a[1])
-    .map(([nome, horas], index) => ({ 
-      ranking: index + 1,
-      nome, 
-      horas: Number(horas.toFixed(1)) 
-    }));
+  const rankingColaboradoresFiltrado = searchColaborador
+    ? rankingColaboradores.filter((c) => c.nome.toLowerCase().includes(searchColaborador.toLowerCase()))
+    : rankingColaboradores;
 
-  // Filtrar colaboradores por busca
-  const rankingColaboradoresFiltrado = rankingColaboradores.filter(c => 
-    c.nome.toLowerCase().includes(searchColaborador.toLowerCase())
-  );
+  const topProjeto = rankingProjetos[0] || { nome: "N/A", horas: 0 };
+  const topColaborador = rankingColaboradores[0] || { nome: "N/A", horas: 0 };
 
-  const tipoDistribuicao = filteredData.reduce((acc, r) => {
-    acc[r.Tipo] = (acc[r.Tipo] || 0) + r.Horas_Trabalhadas;
+  // Distribuição por Tipo
+  const atividadesPorTipo = filteredData.reduce((acc, r) => {
+    acc[r.Tipo] = (acc[r.Tipo] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const top10Tipos = Object.entries(tipoDistribuicao)
-    .sort((a, b) => b[1] - a[1])
-    .slice(0, 10)
-    .map(([nome, horas]) => ({ nome, horas: Number(horas.toFixed(1)) }));
+  const dadosTipo = Object.entries(atividadesPorTipo)
+    .map(([nome, quantidade]) => ({ nome, quantidade }))
+    .sort((a, b) => b.quantidade - a.quantidade);
 
-  const statusDistribuicao = filteredData.reduce((acc, r) => {
-    acc[r.Status] = (acc[r.Status] || 0) + r.Horas_Trabalhadas;
+  // Distribuição por Status
+  const atividadesPorStatus = filteredData.reduce((acc, r) => {
+    acc[r.Status] = (acc[r.Status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const statusData = Object.entries(statusDistribuicao).map(([nome, horas]) => ({
-    nome,
-    horas: Number(horas.toFixed(1)),
-  }));
+  const dadosStatus = Object.entries(atividadesPorStatus)
+    .map(([nome, quantidade]) => ({ nome, quantidade }))
+    .sort((a, b) => b.quantidade - a.quantidade);
 
-  // Listas únicas para filtros
-  const colaboradores = ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador))).sort()];
-  const projetos = ["todos", ...Array.from(new Set(data.map((r) => r.Projeto))).sort()];
+  const COLORS = ["#10B981", "#3B82F6", "#F59E0B", "#EF4444", "#8B5CF6", "#EC4899"];
 
   // Matriz de Alocação
   const colaboradoresFiltrados = matrizSearchColab
@@ -231,7 +215,7 @@ export default function Home() {
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
+    <div className="space-y-6 animate-in fade-in duration-500">
       {/* Filtros Globais */}
       <Card className="cyber-card neon-border hover-lift">
         <CardContent className="pt-6">
@@ -306,218 +290,232 @@ export default function Home() {
         </CardContent>
       </Card>
 
-      {/* KPIs Principais - Grid 3x3 */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {/* KPIs Compactos - Linha Horizontal */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {/* Total de Horas */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-blue-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Total de Horas</p>
-                <p className="text-3xl font-bold">{totalHoras.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">h</span></p>
-                <p className="text-xs text-muted-foreground">Tempo total trabalhado</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-blue-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Clock className="h-6 w-6 text-blue-500" />
-              </div>
+        <Card className="cyber-card hover-lift border-l-4 border-l-blue-500">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col items-center text-center space-y-1">
+              <Clock className="h-5 w-5 text-blue-500 mb-1" />
+              <p className="text-xs font-medium text-muted-foreground">Total Horas</p>
+              <p className="text-2xl font-bold">{totalHoras.toFixed(1)}<span className="text-sm text-muted-foreground">h</span></p>
             </div>
           </CardContent>
         </Card>
 
         {/* Atividades */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-green-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-green-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Atividades</p>
-                <p className="text-3xl font-bold">{totalAtividades}</p>
-                <p className="text-xs text-green-500">{atividadesConcluidas} concluídas · {atividadesAndamento} em andamento</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Activity className="h-6 w-6 text-green-500" />
-              </div>
+        <Card className="cyber-card hover-lift border-l-4 border-l-green-500">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col items-center text-center space-y-1">
+              <Activity className="h-5 w-5 text-green-500 mb-1" />
+              <p className="text-xs font-medium text-muted-foreground">Atividades</p>
+              <p className="text-2xl font-bold">{totalAtividades}</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Colaboradores */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-purple-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Colaboradores</p>
-                <p className="text-3xl font-bold">{totalColaboradores}</p>
-                <p className="text-xs text-muted-foreground">Média: {mediaPorColaborador.toFixed(1)}h por colaborador</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-purple-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Users className="h-6 w-6 text-purple-500" />
-              </div>
+        <Card className="cyber-card hover-lift border-l-4 border-l-purple-500">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col items-center text-center space-y-1">
+              <Users className="h-5 w-5 text-purple-500 mb-1" />
+              <p className="text-xs font-medium text-muted-foreground">Colaboradores</p>
+              <p className="text-2xl font-bold">{totalColaboradores}</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Projetos */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-orange-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Projetos</p>
-                <p className="text-3xl font-bold">{totalProjetos}</p>
-                <p className="text-xs text-muted-foreground">Média: {mediaPorProjeto.toFixed(1)}h por projeto</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-orange-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <FolderKanban className="h-6 w-6 text-orange-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Média h/Atividade */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-cyan-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Média h/Atividade</p>
-                <p className="text-3xl font-bold">{mediaHoras.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">h</span></p>
-                <p className="text-xs text-muted-foreground">Tempo médio por atividade</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-cyan-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <TrendingUp className="h-6 w-6 text-cyan-500" />
-              </div>
+        <Card className="cyber-card hover-lift border-l-4 border-l-orange-500">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col items-center text-center space-y-1">
+              <FolderKanban className="h-5 w-5 text-orange-500 mb-1" />
+              <p className="text-xs font-medium text-muted-foreground">Projetos</p>
+              <p className="text-2xl font-bold">{totalProjetos}</p>
             </div>
           </CardContent>
         </Card>
 
         {/* Taxa Conclusão */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-emerald-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Taxa de Conclusão</p>
-                <p className="text-3xl font-bold">{taxaConclusao.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">%</span></p>
-                <p className="text-xs text-muted-foreground">{atividadesConcluidas} de {totalAtividades} atividades</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-emerald-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-              </div>
+        <Card className="cyber-card hover-lift border-l-4 border-l-emerald-500">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col items-center text-center space-y-1">
+              <CheckCircle2 className="h-5 w-5 text-emerald-500 mb-1" />
+              <p className="text-xs font-medium text-muted-foreground">Taxa Conclusão</p>
+              <p className="text-2xl font-bold">{taxaConclusao.toFixed(1)}<span className="text-sm text-muted-foreground">%</span></p>
             </div>
           </CardContent>
         </Card>
 
         {/* Pontos de Função */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-amber-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground">Pontos de Função</p>
-                <p className="text-3xl font-bold">{totalPF.toFixed(1)}<span className="text-lg text-muted-foreground ml-1">PF</span></p>
-                <p className="text-xs text-muted-foreground">{totalAtividades > 0 ? (totalPF / totalAtividades).toFixed(2) : 0} PF por atividade</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-amber-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Target className="h-6 w-6 text-amber-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Projeto */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-rose-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-rose-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1 flex-1 min-w-0">
-                <p className="text-sm font-medium text-muted-foreground">Top Projeto</p>
-                <p className="text-xl font-bold truncate" title={topProjeto[0]}>{topProjeto[0]}</p>
-                <p className="text-xs text-muted-foreground">{topProjeto[1].toFixed(1)}h trabalhadas</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-rose-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <Zap className="h-6 w-6 text-rose-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Top Colaborador */}
-        <Card className="cyber-card neon-glow hover-lift cursor-pointer group relative overflow-hidden border-l-4 border-l-indigo-500">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div className="space-y-1 flex-1 min-w-0">
-                <p className="text-sm font-medium text-muted-foreground">Top Colaborador</p>
-                <p className="text-xl font-bold truncate" title={topColaborador[0]}>{topColaborador[0]}</p>
-                <p className="text-xs text-muted-foreground">{topColaborador[1].toFixed(1)}h trabalhadas</p>
-              </div>
-              <div className="h-12 w-12 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                <Users className="h-6 w-6 text-indigo-500" />
-              </div>
+        <Card className="cyber-card hover-lift border-l-4 border-l-amber-500">
+          <CardContent className="pt-4 pb-4">
+            <div className="flex flex-col items-center text-center space-y-1">
+              <Target className="h-5 w-5 text-amber-500 mb-1" />
+              <p className="text-xs font-medium text-muted-foreground">Pontos Função</p>
+              <p className="text-2xl font-bold">{totalPF.toFixed(0)}<span className="text-sm text-muted-foreground">PF</span></p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Rankings */}
-      <div className="space-y-6">
+      {/* Layout Principal: Gráficos (60%) + Rankings (40%) */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        {/* Coluna Esquerda: Gráficos de Distribuição (3 colunas = 60%) */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Por Tipo de Atividade */}
+          <Card className="cyber-card neon-border hover-lift">
+            <CardHeader>
+              <CardTitle className="text-lg">Distribuição por Tipo de Atividade</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {dadosTipo[0] && `${dadosTipo[0].nome} representa ${((dadosTipo[0].quantidade / totalAtividades) * 100).toFixed(1)}% das atividades`}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={dadosTipo} margin={{ top: 20, right: 30, left: 20, bottom: 80 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
+                  <XAxis 
+                    dataKey="nome" 
+                    angle={-45} 
+                    textAnchor="end" 
+                    height={100} 
+                    stroke="#888"
+                    style={{ fontSize: '11px' }}
+                  />
+                  <YAxis stroke="#888" />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(255,255,255,0.95)",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "8px",
+                    }}
+                  />
+                  <Bar dataKey="quantidade" fill={CHART_COLOR} radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Por Status */}
+          <Card className="cyber-card neon-border hover-lift">
+            <CardHeader>
+              <CardTitle className="text-lg">Distribuição por Status</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                {atividadesConcluidas} concluídas · {atividadesAndamento} em andamento
+              </p>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={dadosStatus}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ nome, quantidade }) => `${nome}: ${quantidade}`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="quantidade"
+                  >
+                    {dadosStatus.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: "rgba(255,255,255,0.95)",
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "8px",
+                    }}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Coluna Direita: Rankings (2 colunas = 40%) */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Top Cards */}
+          <div className="grid grid-cols-1 gap-4">
+            {/* Top Projeto */}
+            <Card className="cyber-card hover-lift border-l-4 border-l-rose-500">
+              <CardContent className="pt-4 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-rose-500/20 flex items-center justify-center shrink-0">
+                    <Zap className="h-5 w-5 text-rose-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-muted-foreground">Top Projeto</p>
+                    <p className="text-sm font-bold truncate" title={topProjeto.nome}>{topProjeto.nome}</p>
+                    <p className="text-xs text-muted-foreground">{topProjeto.horas.toFixed(1)}h trabalhadas</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Top Colaborador */}
+            <Card className="cyber-card hover-lift border-l-4 border-l-indigo-500">
+              <CardContent className="pt-4 pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 rounded-full bg-indigo-500/20 flex items-center justify-center shrink-0">
+                    <Users className="h-5 w-5 text-indigo-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-muted-foreground">Top Colaborador</p>
+                    <p className="text-sm font-bold truncate" title={topColaborador.nome}>{topColaborador.nome}</p>
+                    <p className="text-xs text-muted-foreground">{topColaborador.horas.toFixed(1)}h trabalhadas</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Ranking Projetos */}
           <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Ranking Projetos</CardTitle>
-                <div className="text-sm text-muted-foreground">
+                <CardTitle className="text-base">Ranking Projetos</CardTitle>
+                <div className="text-xs text-muted-foreground">
                   {rankingProjetosFiltrado.length} de {rankingProjetos.length}
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="mt-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar projeto..."
                     value={searchProjeto}
                     onChange={(e) => setSearchProjeto(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9 text-sm"
                   />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="max-h-[500px] overflow-y-auto pr-2">
-                <ResponsiveContainer width="100%" height={Math.max(500, rankingProjetosFiltrado.length * 50)}>
-                  <BarChart data={rankingProjetosFiltrado} layout="vertical" margin={{ left: 20, right: 20 }}>
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                <ResponsiveContainer width="100%" height={Math.max(300, rankingProjetosFiltrado.length * 40)}>
+                  <BarChart data={rankingProjetosFiltrado.slice(0, 10)} layout="vertical" margin={{ left: 10, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
-                    <XAxis type="number" stroke="#888" />
+                    <XAxis type="number" stroke="#888" style={{ fontSize: '10px' }} />
                     <YAxis
                       dataKey="nome"
                       type="category"
-                      width={250}
+                      width={120}
                       stroke="#888"
-                      tick={{ fontSize: 12 }}
+                      style={{ fontSize: '10px' }}
                       interval={0}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "rgba(255,255,255,0.98)",
-                        border: "1px solid rgba(59,130,246,0.3)",
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        border: "1px solid #e2e8f0",
                         borderRadius: "8px",
-                        color: "#0f172a",
-                        maxWidth: "400px",
-                        whiteSpace: "normal",
-                        wordWrap: "break-word"
+                        fontSize: '11px'
                       }}
-                      formatter={(value: number, name: string) => [
-                        `${value.toFixed(1)}h`,
-                        name === 'horas' ? 'Horas Trabalhadas' : name
-                      ]}
-                      labelFormatter={(label: string) => `Projeto: ${label}`}
                     />
-                    <Bar dataKey="horas" fill={CHART_COLOR} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="horas" fill={CHART_COLOR} radius={[0, 8, 8, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -528,54 +526,46 @@ export default function Home() {
           <Card className="cyber-card neon-border hover-lift">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg">Ranking Colaboradores</CardTitle>
-                <div className="text-sm text-muted-foreground">
+                <CardTitle className="text-base">Ranking Colaboradores</CardTitle>
+                <div className="text-xs text-muted-foreground">
                   {rankingColaboradoresFiltrado.length} de {rankingColaboradores.length}
                 </div>
               </div>
-              <div className="mt-4">
+              <div className="mt-3">
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar colaborador..."
                     value={searchColaborador}
                     onChange={(e) => setSearchColaborador(e.target.value)}
-                    className="pl-10"
+                    className="pl-10 h-9 text-sm"
                   />
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="max-h-[500px] overflow-y-auto pr-2">
-                <ResponsiveContainer width="100%" height={Math.max(500, rankingColaboradoresFiltrado.length * 50)}>
-                  <BarChart data={rankingColaboradoresFiltrado} layout="vertical" margin={{ left: 20, right: 20 }}>
+              <div className="max-h-[300px] overflow-y-auto pr-2">
+                <ResponsiveContainer width="100%" height={Math.max(300, rankingColaboradoresFiltrado.length * 40)}>
+                  <BarChart data={rankingColaboradoresFiltrado.slice(0, 10)} layout="vertical" margin={{ left: 10, right: 10 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="rgba(59,130,246,0.1)" />
-                    <XAxis type="number" stroke="#888" />
+                    <XAxis type="number" stroke="#888" style={{ fontSize: '10px' }} />
                     <YAxis
                       dataKey="nome"
                       type="category"
-                      width={250}
+                      width={120}
                       stroke="#888"
-                      tick={{ fontSize: 12 }}
+                      style={{ fontSize: '10px' }}
                       interval={0}
                     />
                     <Tooltip
                       contentStyle={{
-                        backgroundColor: "rgba(255,255,255,0.98)",
-                        border: "1px solid rgba(59,130,246,0.3)",
+                        backgroundColor: "rgba(255,255,255,0.95)",
+                        border: "1px solid #e2e8f0",
                         borderRadius: "8px",
-                        color: "#0f172a",
-                        maxWidth: "400px",
-                        whiteSpace: "normal",
-                        wordWrap: "break-word"
+                        fontSize: '11px'
                       }}
-                      formatter={(value: number, name: string) => [
-                        `${value.toFixed(1)}h`,
-                        name === 'horas' ? 'Horas Trabalhadas' : name
-                      ]}
-                      labelFormatter={(label: string) => `Colaborador: ${label}`}
                     />
-                    <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[0, 4, 4, 0]} />
+                    <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[0, 8, 8, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -584,125 +574,82 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Distribuições */}
-      <div className="space-y-6">
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Distribuição por Tipo */}
-          <Card className="cyber-card neon-border hover-lift">
-            <CardHeader>
-              <CardTitle className="text-lg">Por Tipo de Atividade</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={top10Tipos}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="nome" stroke="#888" angle={-45} textAnchor="end" height={100} tick={{ fontSize: 10 }} />
-                  <YAxis stroke="#888" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(0,0,0,0.8)",
-                      border: "1px solid rgba(59,130,246,0.3)",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="horas" fill={CHART_COLOR} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-
-          {/* Distribuição por Status */}
-          <Card className="cyber-card neon-border hover-lift">
-            <CardHeader>
-              <CardTitle className="text-lg">Por Status</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={statusData}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
-                  <XAxis dataKey="nome" stroke="#888" />
-                  <YAxis stroke="#888" />
-                  <Tooltip
-                    contentStyle={{
-                      backgroundColor: "rgba(0,0,0,0.8)",
-                      border: "1px solid rgba(59,130,246,0.3)",
-                      borderRadius: "8px",
-                    }}
-                  />
-                  <Bar dataKey="horas" fill={CHART_COLOR_SECONDARY} radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* Matriz de Alocação */}
-      <div className="space-y-6">
-
-        <Card className="cyber-card neon-border hover-lift">
-          <CardHeader>
-            <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
-            <p className="text-sm text-muted-foreground">
-              Horas trabalhadas por colaborador em cada projeto · {colaboradoresFiltrados.length} colaboradores × {projetosFiltrados.length} projetos
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      {/* Matriz de Alocação - Seção Colapsável */}
+      <Card className="cyber-card neon-border hover-lift">
+        <CardHeader>
+          <div 
+            className="flex items-center justify-between cursor-pointer"
+            onClick={() => setIsMatrizExpanded(!isMatrizExpanded)}
+          >
+            <div>
+              <CardTitle className="text-lg">Colaborador × Projeto (Completo)</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">
+                Horas trabalhadas por colaborador em cada projeto · {colaboradoresFiltrados.length} colaboradores × {projetosFiltrados.length} projetos
+              </p>
+            </div>
+            <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
+              {isMatrizExpanded ? (
+                <ChevronUp className="h-5 w-5 text-muted-foreground" />
+              ) : (
+                <ChevronDown className="h-5 w-5 text-muted-foreground" />
+              )}
+            </button>
+          </div>
+        </CardHeader>
+        
+        {isMatrizExpanded && (
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar colaborador..."
                   value={matrizSearchColab}
                   onChange={(e) => setMatrizSearchColab(e.target.value)}
-                  className="pl-10 hover-border-glow"
+                  className="pl-10"
                 />
               </div>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Buscar projeto..."
                   value={matrizSearchProj}
                   onChange={(e) => setMatrizSearchProj(e.target.value)}
-                  className="pl-10 hover-border-glow"
+                  className="pl-10"
                 />
               </div>
             </div>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-auto max-h-[600px] border rounded-lg">
-              <table className="w-full text-sm">
-                <thead className="sticky top-0 bg-card z-10 border-b">
-                  <tr>
-                    <th className="sticky left-0 bg-card z-20 p-3 text-left font-semibold border-r min-w-[200px]">
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs border-collapse">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="sticky left-0 z-20 bg-white text-left py-2 px-3 font-semibold text-muted-foreground min-w-[180px]">
                       Colaborador
                     </th>
                     {projetosFiltrados.map((proj) => (
                       <th
                         key={proj}
-                        className="p-3 text-center font-semibold min-w-[120px] border-r last:border-r-0"
+                        className="text-left py-2 px-3 font-semibold text-muted-foreground min-w-[100px] max-w-[150px]"
                         title={proj}
                       >
-                        <div className="truncate max-w-[120px]">{proj}</div>
+                        <div className="truncate">{proj}</div>
                       </th>
                     ))}
                   </tr>
                 </thead>
                 <tbody>
                   {colaboradoresFiltrados.map((colab) => (
-                    <tr key={colab} className="border-b last:border-b-0 hover:bg-accent/50 transition-colors">
-                      <td className="sticky left-0 bg-card z-10 p-3 font-medium border-r">
-                        <div className="truncate max-w-[200px]" title={colab}>
-                          {colab}
-                        </div>
+                    <tr key={colab} className="border-b border-gray-200/50 hover:bg-gray-50 transition-colors">
+                      <td className="sticky left-0 z-10 bg-white py-2 px-3 font-medium text-foreground">
+                        {colab}
                       </td>
                       {projetosFiltrados.map((proj) => {
                         const horas = getHorasPorColabProj(colab, proj);
                         return (
                           <td
                             key={`${colab}-${proj}`}
-                            className={`p-3 text-center border-r last:border-r-0 transition-all hover:scale-105 cursor-pointer ${getColorIntensity(
-                              horas
-                            )}`}
+                            className={`py-2 px-3 text-center ${getColorIntensity(horas)} transition-colors`}
                             title={`${colab} - ${proj}: ${horas.toFixed(1)}h`}
                           >
                             {horas > 0 ? horas.toFixed(1) : "-"}
@@ -714,12 +661,9 @@ export default function Home() {
                 </tbody>
               </table>
             </div>
-            <p className="text-xs text-muted-foreground mt-4 text-center">
-              💡 Cores mais intensas indicam maior alocação de horas · Passe o mouse sobre as células para detalhes
-            </p>
           </CardContent>
-        </Card>
-      </div>
+        )}
+      </Card>
     </div>
   );
 }
