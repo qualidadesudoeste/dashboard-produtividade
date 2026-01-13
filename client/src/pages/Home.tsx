@@ -60,6 +60,10 @@ export default function Home() {
   const [matrizSearchProj, setMatrizSearchProj] = useState<string>("");
   const [isMatrizExpanded, setIsMatrizExpanded] = useState(false);
 
+  // useMemo deve vir ANTES do useEffect para manter ordem consistente dos hooks
+  const colaboradores = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador)))], [data]);
+  const projetos = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Projeto)))], [data]);
+
   useEffect(() => {
     fetch("/data.json")
       .then((res) => res.json())
@@ -72,10 +76,6 @@ export default function Home() {
         setLoading(false);
       });
   }, []);
-
-  // Hooks devem vir antes de qualquer early return
-  const colaboradores = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador)))], [data]);
-  const projetos = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Projeto)))], [data]);
 
   // Validação de datas
   const handleDataInicioChange = (value: string) => {
