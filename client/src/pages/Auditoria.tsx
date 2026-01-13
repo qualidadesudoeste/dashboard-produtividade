@@ -32,6 +32,7 @@ import {
   Plus,
   Eye,
   Trash2,
+  Pencil,
   FileCheck,
   BarChart3,
   TrendingUp,
@@ -128,6 +129,7 @@ export default function Auditoria() {
   const [auditorias, setAuditorias] = useState<Auditoria[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [selectedAuditoria, setSelectedAuditoria] = useState<Auditoria | null>(null);
+  const [editandoAuditoria, setEditandoAuditoria] = useState<Auditoria | null>(null);
   const [filtroProj, setFiltroProj] = useState<string>("todos");
   const [filtroStatus, setFiltroStatus] = useState<string>("todos");
 
@@ -280,25 +282,52 @@ export default function Auditoria() {
     const scoreTotal = calcularScore(formData.checklist);
     const status = determinarStatus(scoreTotal);
 
-    const novaAuditoria: Auditoria = {
-      id: Date.now().toString(),
-      projeto: formData.projeto,
-      sprint: formData.sprint,
-      dataInicio: formData.dataInicio,
-      dataFim: formData.dataFim,
-      duracao: formData.duracao,
-      data: formData.data,
-      auditor: formData.auditor,
-      checklist: { ...formData.checklist },
-      scoreTotal,
-      status,
-      observacoes: formData.observacoes,
-      acoesCorretivas: formData.acoesCorretivas,
-    };
+    if (editandoAuditoria) {
+      // EDITAR: atualizar registro existente
+      const auditoriaAtualizada: Auditoria = {
+        id: editandoAuditoria.id,
+        projeto: formData.projeto,
+        sprint: formData.sprint,
+        dataInicio: formData.dataInicio,
+        dataFim: formData.dataFim,
+        duracao: formData.duracao,
+        data: formData.data,
+        auditor: formData.auditor,
+        checklist: { ...formData.checklist },
+        scoreTotal,
+        status,
+        observacoes: formData.observacoes,
+        acoesCorretivas: formData.acoesCorretivas,
+      };
 
-    const novasAuditorias = [...auditorias, novaAuditoria];
-    setAuditorias(novasAuditorias);
-    localStorage.setItem("auditorias", JSON.stringify(novasAuditorias));
+      const auditoriasAtualizadas = auditorias.map((aud) =>
+        aud.id === editandoAuditoria.id ? auditoriaAtualizada : aud
+      );
+      setAuditorias(auditoriasAtualizadas);
+      localStorage.setItem("auditorias", JSON.stringify(auditoriasAtualizadas));
+      setEditandoAuditoria(null);
+    } else {
+      // CRIAR: adicionar novo registro
+      const novaAuditoria: Auditoria = {
+        id: Date.now().toString(),
+        projeto: formData.projeto,
+        sprint: formData.sprint,
+        dataInicio: formData.dataInicio,
+        dataFim: formData.dataFim,
+        duracao: formData.duracao,
+        data: formData.data,
+        auditor: formData.auditor,
+        checklist: { ...formData.checklist },
+        scoreTotal,
+        status,
+        observacoes: formData.observacoes,
+        acoesCorretivas: formData.acoesCorretivas,
+      };
+
+      const novasAuditorias = [...auditorias, novaAuditoria];
+      setAuditorias(novasAuditorias);
+      localStorage.setItem("auditorias", JSON.stringify(novasAuditorias));
+    }
 
     // Reset form
     setFormData({
@@ -331,6 +360,23 @@ export default function Auditoria() {
     });
 
     setIsFormOpen(false);
+  };
+
+  const handleEditarAuditoria = (auditoria: Auditoria) => {
+    setEditandoAuditoria(auditoria);
+    setFormData({
+      projeto: auditoria.projeto,
+      sprint: auditoria.sprint,
+      dataInicio: auditoria.dataInicio,
+      dataFim: auditoria.dataFim,
+      duracao: auditoria.duracao,
+      data: auditoria.data,
+      auditor: auditoria.auditor,
+      checklist: { ...auditoria.checklist },
+      observacoes: auditoria.observacoes,
+      acoesCorretivas: auditoria.acoesCorretivas,
+    });
+    setIsFormOpen(true);
   };
 
   const handleExcluirAuditoria = (id: string) => {
@@ -567,6 +613,14 @@ export default function Auditoria() {
                                 <Button
                                   size="sm"
                                   variant="outline"
+                                  className="text-blue-600 hover:bg-blue-50"
+                                  onClick={() => handleEditarAuditoria(aud)}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
                                   className="text-red-600 hover:bg-red-50"
                                   onClick={() => handleExcluirAuditoria(aud.id)}
                                 >
@@ -586,11 +640,16 @@ export default function Auditoria() {
       </div>
 
       {/* Modal Formulário */}
-      <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+      <Dialog open={isFormOpen} onOpenChange={(open) => {
+        setIsFormOpen(open);
+        if (!open) setEditandoAuditoria(null);
+      }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <div className="flex items-center justify-between">
-              <DialogTitle className="text-2xl">Nova Auditoria de Sprint</DialogTitle>
+              <DialogTitle className="text-2xl">
+                {editandoAuditoria ? `Editar Auditoria - ${editandoAuditoria.projeto} ${editandoAuditoria.sprint}` : "Nova Auditoria de Sprint"}
+              </DialogTitle>
               <Button
                 variant="ghost"
                 size="sm"

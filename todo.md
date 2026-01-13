@@ -1,92 +1,92 @@
-# TODO - Adicionar Campos de Data e Duração da Sprint
+# TODO - Funcionalidade de Edição de Auditorias
 
 ## ✅ Contexto
-- Adicionar campos: **dataInicio**, **dataFim**, **duracao** na interface Auditoria
-- Preencher automaticamente com dados de ciclos_teste.json
-- Exibir no formulário e no modal de detalhes
-- Permitir edição manual
+- Permitir edição de auditorias já criadas automaticamente
+- Botão "Editar" nos cards da lista
+- Formulário preenchido com dados existentes
+- Salvar atualiza registro (não cria novo)
 
 ## 📋 Tarefas
 
-### 1. Atualizar Interface TypeScript
-- [ ] Adicionar campos na interface `Auditoria`:
-  ```typescript
-  interface Auditoria {
-    id: string;
-    projeto: string;
-    sprint: string;
-    dataInicio: string;  // NOVO
-    dataFim: string;     // NOVO
-    duracao: number;     // NOVO (em dias)
-    data: string;        // data da auditoria
-    auditor: string;
-    checklist: Checklist;
-    scoreTotal: number;
-    status: "Aprovado" | "Aprovado com Ressalvas" | "Reprovado";
-    observacoes: string;
-    acoesCorretivas: string;
-  }
-  ```
+### 1. Adicionar Estado de Edição
+- [ ] Criar estado `editandoAuditoria` para armazenar auditoria sendo editada
+- [ ] Diferenciar modo "Nova" vs "Editar"
 
-### 2. Atualizar Rotina Automática
-- [ ] Ler campos `inicio`, `fim`, `duracao` de ciclos_teste.json
-- [ ] Preencher automaticamente ao criar auditorias:
-  ```typescript
-  novasAuditorias.push({
-    // ... campos existentes
-    dataInicio: ciclo.inicio,
-    dataFim: ciclo.fim,
-    duracao: ciclo.duracao,
-  });
-  ```
+### 2. Adicionar Botão Editar
+- [ ] Adicionar botão "Editar" (ícone lápis) nos cards
+- [ ] Ao clicar, preencher formulário com dados da auditoria
+- [ ] Abrir modal do formulário
 
-### 3. Atualizar Formulário
-- [ ] Adicionar 3 campos no formulário de Nova Auditoria:
-  - Data Início (date input)
-  - Data Fim (date input)
-  - Duração (number input, readonly calculado automaticamente)
-- [ ] Calcular duração automaticamente quando início/fim mudarem
-- [ ] Atualizar formData inicial com novos campos
-- [ ] Atualizar reset do formulário
+### 3. Atualizar Lógica de Salvamento
+- [ ] Se `editandoAuditoria` existe → atualizar registro
+- [ ] Se não existe → criar novo registro
+- [ ] Manter ID original ao editar
 
-### 4. Atualizar Modal de Detalhes
-- [ ] Exibir Data Início, Data Fim e Duração na seção de informações gerais
-- [ ] Formato: "DD/MM/YYYY" para datas, "X dias" para duração
+### 4. Atualizar Título do Modal
+- [ ] "Nova Auditoria de Sprint" quando criando
+- [ ] "Editar Auditoria de Sprint" quando editando
 
-### 5. Atualizar Cards da Lista
-- [ ] Considerar exibir duração no card (opcional)
+### 5. Reset ao Fechar
+- [ ] Limpar `editandoAuditoria` ao fechar modal
+- [ ] Limpar formulário
 
-## 🔄 Estrutura Atualizada
+## 🔄 Fluxo de Edição
 
 ```typescript
-interface Auditoria {
-  id: string;
-  projeto: string;
-  sprint: string;
-  dataInicio: string;      // "2025-12-01"
-  dataFim: string;         // "2025-12-15"
-  duracao: number;         // 14 (dias)
-  data: string;            // data da auditoria
-  auditor: string;
-  checklist: Checklist;
-  scoreTotal: number;
-  status: "Aprovado" | "Aprovado com Ressalvas" | "Reprovado";
-  observacoes: string;
-  acoesCorretivas: string;
-}
+// Estado
+const [editandoAuditoria, setEditandoAuditoria] = useState<Auditoria | null>(null);
+
+// Abrir edição
+const handleEditarAuditoria = (auditoria: Auditoria) => {
+  setEditandoAuditoria(auditoria);
+  setFormData({
+    projeto: auditoria.projeto,
+    sprint: auditoria.sprint,
+    dataInicio: auditoria.dataInicio,
+    dataFim: auditoria.dataFim,
+    duracao: auditoria.duracao,
+    data: auditoria.data,
+    auditor: auditoria.auditor,
+    checklist: { ...auditoria.checklist },
+    observacoes: auditoria.observacoes,
+    acoesCorretivas: auditoria.acoesCorretivas,
+  });
+  setIsFormOpen(true);
+};
+
+// Salvar
+const handleSalvarAuditoria = () => {
+  if (editandoAuditoria) {
+    // EDITAR: atualizar registro existente
+    const auditorias Atualizadas = auditorias.map((aud) =>
+      aud.id === editandoAuditoria.id
+        ? { ...novaAuditoria, id: editandoAuditoria.id }
+        : aud
+    );
+    setAuditorias(auditoriasAtualizadas);
+  } else {
+    // CRIAR: adicionar novo registro
+    const novasAuditorias = [...auditorias, novaAuditoria];
+    setAuditorias(novasAuditorias);
+  }
+};
+
+// Fechar
+const handleFecharFormulario = () => {
+  setIsFormOpen(false);
+  setEditandoAuditoria(null);
+  // reset formData
+};
 ```
 
-## 📊 Dados de ciclos_teste.json
+## 🎨 UI
 
-Estrutura esperada:
-```json
-{
-  "cliente": "SEDUR",
-  "projeto": "FISCALIZAÇÃO",
-  "sprint": "22.0.0",
-  "inicio": "2025-11-18",
-  "fim": "2025-12-02",
-  "duracao": 14,
-  // ... outros campos
-}
-```
+**Botão Editar:**
+- Ícone: Pencil (lucide-react)
+- Cor: Azul
+- Posição: Ao lado do botão "Ver Detalhes"
+- Tooltip: "Editar auditoria"
+
+**Título do Modal:**
+- Criar: "Nova Auditoria de Sprint"
+- Editar: "Editar Auditoria - {projeto} {sprint}"
