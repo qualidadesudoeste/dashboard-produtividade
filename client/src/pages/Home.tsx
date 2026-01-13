@@ -181,7 +181,7 @@ export default function Home() {
 
   const rankingColaboradores = rankingColaboradoresFull.filter(item =>
     item.colaborador.toLowerCase().includes(searchColaboradores.toLowerCase())
-  ).slice(0, 10);
+  );
 
   const topProjeto = rankingProjetosFull[0];
   const topColaborador = rankingColaboradoresFull[0];
@@ -378,8 +378,7 @@ export default function Home() {
           {/* Distribuição por Tipo - LISTA */}
           <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-lg font-bold text-gray-900">
                 Distribuição por Tipo de Atividade
               </CardTitle>
               <div className="relative mt-2">
@@ -395,23 +394,26 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
-                {tipoData.map((item, idx) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                        {idx + 1}
+                {tipoData.map((item) => {
+                  const originalIdx = tipoDataFull.findIndex(x => x.name === item.name);
+                  return (
+                    <div
+                      key={item.name}
+                      className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+                          {originalIdx + 1}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900 truncate">{item.name}</span>
                       </div>
-                      <span className="text-sm font-semibold text-gray-900 truncate">{item.name}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-blue-600">{item.value}</span>
+                        <span className="text-xs text-gray-500">({item.percent.toFixed(1)}%)</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-blue-600">{item.value}</span>
-                      <span className="text-xs text-gray-500">({item.percent.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -420,10 +422,7 @@ export default function Home() {
           <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-blue-600" />
-                  Ranking Projetos
-                </span>
+                <span>Ranking Projetos</span>
                 <span className="text-xs font-normal text-gray-500">{rankingProjetos.length} projetos</span>
               </CardTitle>
               <div className="relative mt-2">
@@ -439,25 +438,28 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-[280px] overflow-y-auto pr-2">
-                {rankingProjetos.map((item, idx) => (
-                  <div
-                    key={item.projeto}
-                    className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
-                  >
-                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      idx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
-                      idx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
-                      idx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
-                      "bg-blue-100 text-blue-700"
-                    }`}>
-                      {idx + 1}
+                {rankingProjetos.map((item) => {
+                  const originalIdx = rankingProjetosFull.findIndex(x => x.projeto === item.projeto);
+                  return (
+                    <div
+                      key={item.projeto}
+                      className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+                    >
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        originalIdx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
+                        originalIdx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
+                        originalIdx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
+                        "bg-blue-100 text-blue-700"
+                      }`}>
+                        {originalIdx + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{item.projeto}</p>
+                      </div>
+                      <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{item.projeto}</p>
-                    </div>
-                    <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -465,8 +467,7 @@ export default function Home() {
           {/* Distribuição por Status - LISTA */}
           <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-blue-600" />
+              <CardTitle className="text-lg font-bold text-gray-900">
                 Distribuição por Status
               </CardTitle>
               <div className="relative mt-2">
@@ -482,23 +483,26 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-[240px] overflow-y-auto pr-2">
-                {statusData.map((item, idx) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                        {idx + 1}
+                {statusData.map((item) => {
+                  const originalIdx = statusDataFull.findIndex(x => x.name === item.name);
+                  return (
+                    <div
+                      key={item.name}
+                      className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+                          {originalIdx + 1}
+                        </div>
+                        <span className="text-sm font-semibold text-gray-900 truncate">{item.name}</span>
                       </div>
-                      <span className="text-sm font-semibold text-gray-900 truncate">{item.name}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm font-bold text-blue-600">{item.value}</span>
+                        <span className="text-xs text-gray-500">({item.percent.toFixed(1)}%)</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-bold text-blue-600">{item.value}</span>
-                      <span className="text-xs text-gray-500">({item.percent.toFixed(1)}%)</span>
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>
@@ -507,11 +511,8 @@ export default function Home() {
           <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
-                <span className="flex items-center gap-2">
-                  <Crown className="h-5 w-5 text-blue-600" />
-                  Ranking Colaboradores
-                </span>
-                <span className="text-xs font-normal text-gray-500">Top 10</span>
+                <span>Ranking Colaboradores</span>
+                <span className="text-xs font-normal text-gray-500">{rankingColaboradores.length} colaboradores</span>
               </CardTitle>
               <div className="relative mt-2">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
@@ -526,25 +527,28 @@ export default function Home() {
             </CardHeader>
             <CardContent>
               <div className="space-y-2 max-h-[240px] overflow-y-auto pr-2">
-                {rankingColaboradores.map((item, idx) => (
-                  <div
-                    key={item.colaborador}
-                    className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
-                  >
-                    <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                      idx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
-                      idx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
-                      idx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
-                      "bg-blue-100 text-blue-700"
-                    }`}>
-                      {idx + 1}
+                {rankingColaboradores.map((item) => {
+                  const originalIdx = rankingColaboradoresFull.findIndex(x => x.colaborador === item.colaborador);
+                  return (
+                    <div
+                      key={item.colaborador}
+                      className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-50 to-transparent hover:from-blue-100 transition-all hover:scale-[1.02] duration-200"
+                    >
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        originalIdx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
+                        originalIdx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
+                        originalIdx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
+                        "bg-blue-100 text-blue-700"
+                      }`}>
+                        {originalIdx + 1}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-gray-900 truncate">{item.colaborador}</p>
+                      </div>
+                      <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold text-gray-900 truncate">{item.colaborador}</p>
-                    </div>
-                    <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </CardContent>
           </Card>

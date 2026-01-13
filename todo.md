@@ -1,89 +1,49 @@
-# TODO - Refinações do Dashboard
+# TODO - Ajustes Finais nas Listas
 
-## 1. Converter Gráficos em Listas Filtráveis
+## 1. Expandir Ranking Colaboradores
+- [ ] Remover `.slice(0, 10)` do rankingColaboradores
+- [ ] Mostrar TODOS os colaboradores
+- [ ] Atualizar contador no título (remover "Top 10")
+- [ ] Manter busca funcional
 
-### Distribuição por Tipo de Atividade
-- [ ] Remover gráfico de barras
-- [ ] Criar lista ordenada por quantidade
-- [ ] Adicionar campo de busca
-- [ ] Implementar scroll (max-height)
-- [ ] Mostrar contagem e percentual
-- [ ] Usar cor azul consistente
+## 2. Manter Posição Original ao Filtrar
+- [ ] Distribuição por Tipo: usar índice do array original (tipoDataFull)
+- [ ] Distribuição por Status: usar índice do array original (statusDataFull)
+- [ ] Ranking Projetos: usar índice do array original (rankingProjetosFull)
+- [ ] Ranking Colaboradores: usar índice do array original (rankingColaboradoresFull)
 
-### Distribuição por Status
-- [ ] Remover gráfico de pizza
-- [ ] Criar lista ordenada por quantidade
-- [ ] Adicionar campo de busca
-- [ ] Implementar scroll (max-height)
-- [ ] Mostrar contagem e percentual
-- [ ] Usar cor azul consistente
+## 3. Remover Ícones dos Títulos
+- [ ] Distribuição por Tipo: remover `<TrendingUp />`
+- [ ] Ranking Projetos: remover `<Trophy />`
+- [ ] Distribuição por Status: remover `<CheckCircle2 />`
+- [ ] Ranking Colaboradores: remover `<Crown />`
 
-## 2. Expandir Ranking Projetos
+## Implementação
 
-- [ ] Remover limite de top 10
-- [ ] Mostrar TODOS os projetos
-- [ ] Adicionar campo de busca
-- [ ] Implementar scroll eficiente
-- [ ] Manter badges de posição (1º, 2º, 3º)
-- [ ] Usar cor azul consistente
+### Estratégia para Posição Original:
+```typescript
+// Antes (errado - renumera após filtro):
+{tipoData.map((item, idx) => (
+  <div key={item.name}>
+    <div>{idx + 1}</div> // ❌ Sempre 1, 2, 3...
+  </div>
+))}
 
-## 3. Simplificar Matriz
+// Depois (correto - mantém posição original):
+{tipoData.map((item) => {
+  const originalIdx = tipoDataFull.findIndex(x => x.name === item.name);
+  return (
+    <div key={item.name}>
+      <div>{originalIdx + 1}</div> // ✅ Posição real no ranking
+    </div>
+  );
+})}
+```
 
-- [ ] Remover texto "(Completo)" do título
-- [ ] Adicionar filtros próprios dentro do card
-- [ ] Filtro de busca para colaborador
-- [ ] Filtro de busca para projeto
-- [ ] Manter funcionalidade colapsável
-
-## 4. Unificar Cores - Apenas Azul
-
-### Hero Cards
-- [ ] Top Projeto: gradiente azul (remover rosa)
-- [ ] Top Colaborador: gradiente azul (remover roxo)
-
-### KPIs
-- [ ] Total Horas: azul (manter)
-- [ ] Atividades: azul (mudar de verde)
-- [ ] Colaboradores: azul (mudar de roxo)
-- [ ] Projetos: azul (mudar de laranja)
-- [ ] Taxa Conclusão: azul (mudar de teal)
-- [ ] Pontos Função: azul (mudar de amber)
-
-### Listas e Rankings
-- [ ] Usar apenas tons de azul para badges
-- [ ] Gradientes azul claro → azul escuro
-- [ ] Hover effects em azul
-
-## 5. Adicionar Animações e Interações
-
-### Animações de Entrada
-- [ ] Fade-in escalonado nos cards (stagger 50ms)
-- [ ] Slide-in from bottom nos KPIs
-- [ ] Fade-in nos gráficos/listas
-
-### Hover Effects
-- [ ] Scale 1.02 nos cards principais
-- [ ] Shadow elevation nos KPIs
-- [ ] Background color change nas listas
-- [ ] Border glow nos inputs de busca
-
-### Transições
-- [ ] Smooth transitions 300ms
-- [ ] Ease-in-out timing
-- [ ] Transform GPU-accelerated
-
-### Micro-interações
-- [ ] Pulse animation nos badges de ranking
-- [ ] Ripple effect nos botões
-- [ ] Loading skeleton nos filtros
-- [ ] Smooth scroll behavior
-
-## Checklist de Implementação
-
-- [ ] Criar estados para campos de busca (tipo, status, projetos)
-- [ ] Implementar funções de filtro para cada lista
-- [ ] Atualizar paleta de cores para azul monocromático
-- [ ] Adicionar classes de animação CSS
-- [ ] Testar performance das animações
-- [ ] Validar responsividade
+## Checklist
+- [ ] Editar Home.tsx
+- [ ] Remover slice(0, 10) de colaboradores
+- [ ] Adicionar lógica de findIndex para todas as 4 listas
+- [ ] Remover 4 ícones dos CardTitle
+- [ ] Testar filtros e verificar numeração
 - [ ] Salvar checkpoint
