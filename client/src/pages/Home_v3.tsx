@@ -443,7 +443,7 @@ export default function Home() {
                 <div>
                   <p className="text-xs font-bold text-amber-600 uppercase tracking-wide">Pontos Função</p>
                   <p className="text-3xl font-extrabold text-gray-900 mt-1">
-                    {Math.round(totalPontosFuncao)}<span className="text-lg text-gray-500">PF</span>
+                    {totalPontosFuncao}<span className="text-lg text-gray-500">PF</span>
                   </p>
                 </div>
                 <Target className="h-10 w-10 text-amber-500 opacity-80" />

@@ -1,30 +1,72 @@
-# TODO - Filtros Rápidos de Período
+# TODO - Reorganização Radical do Dashboard
 
-## Funcionalidades a Implementar
+## Problemas Identificados no Layout Atual
 
-### Botões de Filtro Rápido
-- [ ] "Últimos 7 dias" - filtra dados dos últimos 7 dias
-- [ ] "Últimos 30 dias" - filtra dados do último mês
-- [ ] "Trimestre atual" - filtra dados do trimestre corrente (Q1/Q2/Q3/Q4)
-- [ ] "Ano atual" - filtra dados do ano corrente
-- [ ] "Limpar filtros" - remove todos os filtros de data
+### Estética
+- [ ] Visual genérico sem personalidade forte
+- [ ] Cards muito simples e sem profundidade
+- [ ] Espaçamentos inconsistentes
+- [ ] Falta de hierarquia visual clara
+- [ ] Cores muito suaves, pouco impacto
 
-### Lógica de Datas
-- [ ] Calcular data de hoje dinamicamente
-- [ ] Calcular início do trimestre atual baseado no mês corrente
-- [ ] Calcular início do ano atual (01/01/YYYY)
-- [ ] Aplicar filtros automaticamente ao clicar nos botões
-- [ ] Atualizar campos de data "De" e "Até" quando filtro rápido for aplicado
+### Aproveitamento de Espaço
+- [ ] KPIs ocupam linha inteira mas têm pouca informação
+- [ ] Gráficos de pizza muito grande para pouca informação
+- [ ] Espaços em branco excessivos entre elementos
+- [ ] Rankings com scroll desnecessário
+- [ ] Proporção 60/40 cria coluna direita muito estreita
 
-### Interface Visual
-- [ ] Adicionar linha de botões abaixo dos filtros principais
-- [ ] Usar badges/pills com cores distintas para cada período
-- [ ] Destacar botão ativo quando filtro estiver aplicado
-- [ ] Manter design consistente com tema claro tecnológico
+## Novo Layout Proposto
 
-### Testes
-- [ ] Testar cada botão de filtro rápido
-- [ ] Verificar se dados são filtrados corretamente
-- [ ] Testar botão "Limpar filtros"
-- [ ] Validar compatibilidade com filtros manuais de data
-- [ ] Salvar checkpoint após validação
+### Seção Superior: Filtros + KPIs Integrados
+- [ ] Filtros em linha única mais compacta
+- [ ] KPIs em grid 3x2 com visual mais impactante
+- [ ] Gradientes e sombras para profundidade
+- [ ] Mini-gráficos sparkline nos KPIs principais
+
+### Seção Principal: Grid Assimétrico 2x2
+- [ ] Gráfico de Tipo de Atividade (grande, superior esquerdo)
+- [ ] Ranking Projetos (médio, superior direito)
+- [ ] Gráfico de Status (médio, inferior esquerdo)  
+- [ ] Ranking Colaboradores (médio, inferior direito)
+- [ ] Usar grid CSS para layout fluido
+
+### Cards de Destaque
+- [ ] Top Projeto e Top Colaborador em cards horizontais compactos
+- [ ] Posicionar entre filtros e seção principal
+- [ ] Visual mais chamativo com ícones e gradientes
+
+### Matriz Colapsável
+- [ ] Manter funcionalidade atual
+- [ ] Melhorar visual do header
+- [ ] Adicionar animação suave de expansão
+
+## Melhorias Visuais
+
+### Tipografia
+- [ ] Aumentar contraste entre títulos e texto
+- [ ] Usar font-weight mais variado
+- [ ] Melhorar hierarquia de tamanhos
+
+### Cores e Profundidade
+- [ ] Adicionar gradientes sutis nos cards
+- [ ] Usar sombras mais pronunciadas
+- [ ] Aumentar saturação das cores de destaque
+- [ ] Melhorar contraste geral
+
+### Espaçamento
+- [ ] Reduzir gaps entre elementos relacionados
+- [ ] Aumentar padding interno dos cards
+- [ ] Usar espaçamento consistente (múltiplos de 4px)
+
+### Animações
+- [ ] Hover effects mais suaves
+- [ ] Transições de entrada escalonadas
+- [ ] Micro-interações nos botões
+
+## Métricas de Sucesso
+- [ ] Reduzir altura total em 30%+
+- [ ] Aumentar densidade de informação
+- [ ] Melhorar legibilidade dos gráficos
+- [ ] Visual mais moderno e profissional
+- [ ] Zero espaços desperdiçados
