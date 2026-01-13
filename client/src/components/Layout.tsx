@@ -1,7 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { useTheme } from "@/contexts/ThemeContext";
-import { Moon, Sun, BarChart3, FileCheck, TestTube, ChevronLeft, ChevronRight } from "lucide-react";
+import { BarChart3, FileCheck, TestTube, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -11,7 +10,7 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
-  const { theme, toggleTheme } = useTheme();
+
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navItems = [
@@ -89,29 +88,7 @@ export default function Layout({ children }: LayoutProps) {
           </nav>
 
           {/* Footer do Sidebar */}
-          <div className="p-4 border-t space-y-2">
-            <Button
-              variant="outline"
-              className={cn(
-                "w-full transition-all duration-300",
-                sidebarOpen ? "justify-start gap-2" : "justify-center p-3"
-              )}
-              onClick={toggleTheme}
-              title={!sidebarOpen ? (theme === "dark" ? "Modo Claro" : "Modo Escuro") : undefined}
-            >
-              {theme === "dark" ? (
-                <>
-                  <Sun className={cn("shrink-0", sidebarOpen ? "h-4 w-4" : "h-5 w-5")} />
-                  {sidebarOpen && <span>Modo Claro</span>}
-                </>
-              ) : (
-                <>
-                  <Moon className={cn("shrink-0", sidebarOpen ? "h-4 w-4" : "h-5 w-5")} />
-                  {sidebarOpen && <span>Modo Escuro</span>}
-                </>
-              )}
-            </Button>
-          </div>
+
         </div>
 
         {/* Botão de Toggle do Sidebar */}
@@ -154,14 +131,7 @@ export default function Layout({ children }: LayoutProps) {
                 </div>
               </div>
 
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={toggleTheme}
-                className="h-10 w-10 hover:scale-110 transition-transform"
-              >
-                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-              </Button>
+
             </div>
           </div>
         </header>
