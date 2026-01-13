@@ -74,6 +74,9 @@ interface Auditoria {
   id: string;
   projeto: string;
   sprint: string;
+  dataInicio: string;
+  dataFim: string;
+  duracao: number;
   data: string;
   auditor: string;
   checklist: Checklist;
@@ -132,6 +135,9 @@ export default function Auditoria() {
   const [formData, setFormData] = useState({
     projeto: "",
     sprint: "",
+    dataInicio: "",
+    dataFim: "",
+    duracao: 0,
     data: new Date().toISOString().split("T")[0],
     auditor: "",
     checklist: {
@@ -197,6 +203,9 @@ export default function Auditoria() {
               id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               projeto,
               sprint,
+              dataInicio: ciclo.inicio || "",
+              dataFim: ciclo.fim || "",
+              duracao: ciclo.duracao || 0,
               data: new Date().toISOString().split("T")[0],
               auditor: "Pendente",
               checklist: {
@@ -275,6 +284,9 @@ export default function Auditoria() {
       id: Date.now().toString(),
       projeto: formData.projeto,
       sprint: formData.sprint,
+      dataInicio: formData.dataInicio,
+      dataFim: formData.dataFim,
+      duracao: formData.duracao,
       data: formData.data,
       auditor: formData.auditor,
       checklist: { ...formData.checklist },
@@ -292,6 +304,9 @@ export default function Auditoria() {
     setFormData({
       projeto: "",
       sprint: "",
+      dataInicio: "",
+      dataFim: "",
+      duracao: 0,
       data: new Date().toISOString().split("T")[0],
       auditor: "",
       checklist: {
@@ -621,7 +636,48 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Data</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Data Início Sprint</label>
+                <Input
+                  type="date"
+                  value={formData.dataInicio}
+                  onChange={(e) => {
+                    const novaDataInicio = e.target.value;
+                    const duracao = formData.dataFim && novaDataInicio
+                      ? Math.ceil((new Date(formData.dataFim).getTime() - new Date(novaDataInicio).getTime()) / (1000 * 60 * 60 * 24))
+                      : 0;
+                    setFormData({ ...formData, dataInicio: novaDataInicio, duracao });
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Data Fim Sprint</label>
+                <Input
+                  type="date"
+                  value={formData.dataFim}
+                  onChange={(e) => {
+                    const novaDataFim = e.target.value;
+                    const duracao = formData.dataInicio && novaDataFim
+                      ? Math.ceil((new Date(novaDataFim).getTime() - new Date(formData.dataInicio).getTime()) / (1000 * 60 * 60 * 24))
+                      : 0;
+                    setFormData({ ...formData, dataFim: novaDataFim, duracao });
+                  }}
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Duração (dias)</label>
+                <Input
+                  type="number"
+                  value={formData.duracao}
+                  readOnly
+                  className="bg-gray-50"
+                  placeholder="Calculado automaticamente"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Data Auditoria</label>
                 <Input
                   type="date"
                   value={formData.data}
@@ -768,7 +824,23 @@ export default function Auditoria() {
                   <p className="font-semibold text-gray-900">{selectedAuditoria.sprint}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Data</p>
+                  <p className="text-sm text-gray-600">Data Início Sprint</p>
+                  <p className="font-semibold text-gray-900">
+                    {selectedAuditoria.dataInicio ? new Date(selectedAuditoria.dataInicio).toLocaleDateString("pt-BR") : "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Data Fim Sprint</p>
+                  <p className="font-semibold text-gray-900">
+                    {selectedAuditoria.dataFim ? new Date(selectedAuditoria.dataFim).toLocaleDateString("pt-BR") : "N/A"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Duração</p>
+                  <p className="font-semibold text-gray-900">{selectedAuditoria.duracao} dias</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-600">Data Auditoria</p>
                   <p className="font-semibold text-gray-900">
                     {new Date(selectedAuditoria.data).toLocaleDateString("pt-BR")}
                   </p>

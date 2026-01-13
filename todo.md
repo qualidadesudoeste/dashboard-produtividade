@@ -1,105 +1,92 @@
-# TODO - Rotina Automática de Criação de Auditorias
+# TODO - Adicionar Campos de Data e Duração da Sprint
 
 ## ✅ Contexto
-- Usar dados da página **Ciclos de Teste** como fonte
-- Criar auditorias vazias automaticamente para cada projeto/sprint
-- Evitar duplicação de auditorias já existentes
-- Executar ao carregar página de Auditoria
+- Adicionar campos: **dataInicio**, **dataFim**, **duracao** na interface Auditoria
+- Preencher automaticamente com dados de ciclos_teste.json
+- Exibir no formulário e no modal de detalhes
+- Permitir edição manual
 
 ## 📋 Tarefas
 
-### 1. Analisar Estrutura de Dados
-- [ ] Ler CiclosTeste.tsx para entender estrutura de dados
-- [ ] Identificar como projetos e sprints estão organizados
-- [ ] Verificar se há campo de identificação única de sprint
+### 1. Atualizar Interface TypeScript
+- [ ] Adicionar campos na interface `Auditoria`:
+  ```typescript
+  interface Auditoria {
+    id: string;
+    projeto: string;
+    sprint: string;
+    dataInicio: string;  // NOVO
+    dataFim: string;     // NOVO
+    duracao: number;     // NOVO (em dias)
+    data: string;        // data da auditoria
+    auditor: string;
+    checklist: Checklist;
+    scoreTotal: number;
+    status: "Aprovado" | "Aprovado com Ressalvas" | "Reprovado";
+    observacoes: string;
+    acoesCorretivas: string;
+  }
+  ```
 
-### 2. Implementar Rotina Automática
-- [ ] Criar função `criarAuditoriasAutomaticas()` em Auditoria.tsx
-- [ ] Ler dados do data.json (mesma fonte que Ciclos de Teste)
-- [ ] Extrair lista única de Projeto + Sprint
-- [ ] Para cada combinação, verificar se já existe auditoria
-- [ ] Se não existir, criar auditoria vazia com:
-  - projeto: nome do projeto
-  - sprint: identificação da sprint
-  - data: data atual
-  - auditor: "Pendente"
-  - checklist: todos os 15 critérios = false
-  - scoreTotal: 0
-  - status: "Reprovado"
-  - observacoes: ""
-  - acoesCorretivas: ""
+### 2. Atualizar Rotina Automática
+- [ ] Ler campos `inicio`, `fim`, `duracao` de ciclos_teste.json
+- [ ] Preencher automaticamente ao criar auditorias:
+  ```typescript
+  novasAuditorias.push({
+    // ... campos existentes
+    dataInicio: ciclo.inicio,
+    dataFim: ciclo.fim,
+    duracao: ciclo.duracao,
+  });
+  ```
 
-### 3. Integrar com useEffect
-- [ ] Adicionar useEffect que executa ao montar componente
-- [ ] Executar apenas uma vez (dependency array vazio)
-- [ ] Salvar auditorias criadas no localStorage
+### 3. Atualizar Formulário
+- [ ] Adicionar 3 campos no formulário de Nova Auditoria:
+  - Data Início (date input)
+  - Data Fim (date input)
+  - Duração (number input, readonly calculado automaticamente)
+- [ ] Calcular duração automaticamente quando início/fim mudarem
+- [ ] Atualizar formData inicial com novos campos
+- [ ] Atualizar reset do formulário
 
-### 4. Evitar Duplicação
-- [ ] Criar chave única: `${projeto}_${sprint}`
-- [ ] Verificar se já existe auditoria com mesma chave
-- [ ] Pular criação se já existir
+### 4. Atualizar Modal de Detalhes
+- [ ] Exibir Data Início, Data Fim e Duração na seção de informações gerais
+- [ ] Formato: "DD/MM/YYYY" para datas, "X dias" para duração
 
-### 5. Feedback Visual
-- [ ] Mostrar toast/notificação quando auditorias forem criadas
-- [ ] Indicar quantas auditorias foram criadas automaticamente
+### 5. Atualizar Cards da Lista
+- [ ] Considerar exibir duração no card (opcional)
 
-## 🔄 Lógica de Criação
+## 🔄 Estrutura Atualizada
 
 ```typescript
-useEffect(() => {
-  // Executar apenas uma vez ao montar
-  if (data.length > 0 && auditorias.length === 0) {
-    criarAuditoriasAutomaticas();
-  }
-}, [data]);
-
-const criarAuditoriasAutomaticas = () => {
-  // 1. Extrair projetos e sprints únicos do data.json
-  const sprintsUnicas = extrairSprintsUnicas(data);
-  
-  // 2. Para cada sprint, verificar se já existe auditoria
-  const novasAuditorias: Auditoria[] = [];
-  
-  sprintsUnicas.forEach(({ projeto, sprint }) => {
-    const jaExiste = auditorias.some(
-      (aud) => aud.projeto === projeto && aud.sprint === sprint
-    );
-    
-    if (!jaExiste) {
-      novasAuditorias.push({
-        id: `${Date.now()}_${projeto}_${sprint}`,
-        projeto,
-        sprint,
-        data: new Date().toISOString().split("T")[0],
-        auditor: "Pendente",
-        checklist: {
-          makerCompass: false,
-          especificacaoRequisitos: false,
-          // ... todos os 15 critérios false
-        },
-        scoreTotal: 0,
-        status: "Reprovado",
-        observacoes: "",
-        acoesCorretivas: "",
-      });
-    }
-  });
-  
-  // 3. Salvar no localStorage
-  if (novasAuditorias.length > 0) {
-    const todasAuditorias = [...auditorias, ...novasAuditorias];
-    setAuditorias(todasAuditorias);
-    localStorage.setItem("auditorias", JSON.stringify(todasAuditorias));
-    
-    // 4. Notificar usuário
-    console.log(`${novasAuditorias.length} auditorias criadas automaticamente`);
-  }
-};
+interface Auditoria {
+  id: string;
+  projeto: string;
+  sprint: string;
+  dataInicio: string;      // "2025-12-01"
+  dataFim: string;         // "2025-12-15"
+  duracao: number;         // 14 (dias)
+  data: string;            // data da auditoria
+  auditor: string;
+  checklist: Checklist;
+  scoreTotal: number;
+  status: "Aprovado" | "Aprovado com Ressalvas" | "Reprovado";
+  observacoes: string;
+  acoesCorretivas: string;
+}
 ```
 
-## 🎯 Resultado Esperado
+## 📊 Dados de ciclos_teste.json
 
-- Ao abrir página de Auditoria pela primeira vez, auditorias vazias são criadas automaticamente
-- Cada projeto/sprint dos Ciclos de Teste terá uma auditoria correspondente
-- Auditorias aparecem na lista com status "Reprovado" (0%)
-- Usuário pode clicar e preencher os checklists
+Estrutura esperada:
+```json
+{
+  "cliente": "SEDUR",
+  "projeto": "FISCALIZAÇÃO",
+  "sprint": "22.0.0",
+  "inicio": "2025-11-18",
+  "fim": "2025-12-02",
+  "duracao": 14,
+  // ... outros campos
+}
+```
