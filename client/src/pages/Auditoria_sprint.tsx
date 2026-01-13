@@ -53,7 +53,6 @@ interface DataRecord {
 }
 
 interface Checklist {
-  makerCompass: boolean;
   especificacaoRequisitos: boolean;
   planejamentSprint: boolean;
   cardsCriados: boolean;
@@ -84,7 +83,6 @@ interface Auditoria {
 }
 
 const CRITERIOS_LABELS = [
-  "Maker Compass",
   "Especificação de Requisitos",
   "Planejamento da Sprint (Planning)",
   "Cards criados no SIG",
@@ -102,7 +100,6 @@ const CRITERIOS_LABELS = [
 ];
 
 const CRITERIOS_KEYS: (keyof Checklist)[] = [
-  "makerCompass",
   "especificacaoRequisitos",
   "planejamentSprint",
   "cardsCriados",
@@ -135,7 +132,6 @@ export default function Auditoria() {
     data: new Date().toISOString().split("T")[0],
     auditor: "",
     checklist: {
-      makerCompass: false,
       especificacaoRequisitos: false,
       planejamentSprint: false,
       cardsCriados: false,
@@ -233,7 +229,6 @@ export default function Auditoria() {
       data: new Date().toISOString().split("T")[0],
       auditor: "",
       checklist: {
-        makerCompass: false,
         especificacaoRequisitos: false,
         planejamentSprint: false,
         cardsCriados: false,
@@ -463,7 +458,7 @@ export default function Auditoria() {
                               <div className="text-right">
                                 <p className="text-3xl font-bold text-blue-600">{aud.scoreTotal}%</p>
                                 <p className="text-xs text-gray-500">
-                                  {itensAtendidos}/15 critérios
+                                  {itensAtendidos}/14 critérios
                                 </p>
                               </div>
 
@@ -592,7 +587,7 @@ export default function Auditoria() {
                     <p className="text-sm text-gray-600">Score Total Calculado:</p>
                     <p className="text-4xl font-bold text-blue-600 mt-1">{scoreAtual}%</p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {itensAtendidos}/15 critérios atendidos
+                      {itensAtendidos}/14 critérios atendidos
                     </p>
                   </div>
                   <Badge
@@ -736,7 +731,7 @@ export default function Auditoria() {
                 <p className="text-sm text-gray-600 mb-2">Score Total</p>
                 <p className="text-5xl font-bold text-blue-600">{selectedAuditoria.scoreTotal}%</p>
                 <p className="text-sm text-gray-500 mt-2">
-                  {CRITERIOS_KEYS.filter((key) => selectedAuditoria.checklist[key]).length}/15 critérios atendidos
+                  {CRITERIOS_KEYS.filter((key) => selectedAuditoria.checklist[key]).length}/14 critérios atendidos
                 </p>
               </div>
 
