@@ -228,7 +228,7 @@ export default function Home() {
         <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl animate-slide-down">
           <CardContent className="pt-4 pb-4">
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
-              <div className="space-y-1">
+              <div className="space-y-1 relative z-[10000]">
                 <label className="text-xs font-bold text-gray-300">
                   Colaborador
                 </label>
@@ -262,7 +262,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1 relative z-[10000]">
                 <label className="text-xs font-bold text-gray-300">
                   Projeto
                 </label>
