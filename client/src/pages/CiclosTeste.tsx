@@ -38,6 +38,8 @@ export default function CiclosTeste() {
   const [dataFim, setDataFim] = useState("");
   const [selectedCiclo, setSelectedCiclo] = useState<CicloTeste | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [filtroRankingRetrabalho, setFiltroRankingRetrabalho] = useState("");
+  const [filtroRankingDuracao, setFiltroRankingDuracao] = useState("");
 
   useEffect(() => {
     fetch("/ciclos_teste.json")
@@ -161,7 +163,7 @@ export default function CiclosTeste() {
   ].filter((item) => item.value > 0);
 
   // Rankings completos (todos os projetos)
-  const retrabalhoRanking = ciclosFiltrados
+  const retrabalhoRankingCompleto = ciclosFiltrados
     .sort((a, b) => b.retrabalho - a.retrabalho)
     .map((c, index) => ({
       posicao: index + 1,
@@ -170,7 +172,15 @@ export default function CiclosTeste() {
       retrabalho: c.retrabalho,
     }));
 
-  const duracaoRanking = ciclosFiltrados
+  const retrabalhoRanking = retrabalhoRankingCompleto.filter((item) => {
+    const busca = filtroRankingRetrabalho.toLowerCase();
+    return (
+      item.cliente.toLowerCase().includes(busca) ||
+      item.projeto.toLowerCase().includes(busca)
+    );
+  });
+
+  const duracaoRankingCompleto = ciclosFiltrados
     .sort((a, b) => b.duracao - a.duracao)
     .map((c, index) => ({
       posicao: index + 1,
@@ -178,6 +188,14 @@ export default function CiclosTeste() {
       projeto: c.projeto,
       duracao: c.duracao,
     }));
+
+  const duracaoRanking = duracaoRankingCompleto.filter((item) => {
+    const busca = filtroRankingDuracao.toLowerCase();
+    return (
+      item.cliente.toLowerCase().includes(busca) ||
+      item.projeto.toLowerCase().includes(busca)
+    );
+  });
 
   const getStatusBadge = (status: string) => {
     const badges: Record<string, { bg: string; text: string; icon: any }> = {
@@ -424,7 +442,16 @@ export default function CiclosTeste() {
 
         {/* Ranking Retrabalho */}
         <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-border-glow">
-          <h3 className="text-xl font-semibold text-foreground mb-6">Ranking Retrabalho</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold text-foreground">Ranking Retrabalho</h3>
+            <input
+              type="text"
+              placeholder="Buscar cliente ou projeto..."
+              value={filtroRankingRetrabalho}
+              onChange={(e) => setFiltroRankingRetrabalho(e.target.value)}
+              className="px-4 py-2 bg-slate-800/50 border border-blue-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-64"
+            />
+          </div>
           <div className="max-h-[400px] overflow-y-auto">
             <table className="w-full">
               <thead className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
@@ -466,7 +493,16 @@ export default function CiclosTeste() {
 
       {/* Ranking Duração */}
       <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
-        <h3 className="text-xl font-semibold text-foreground mb-6">Ranking Duração</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-semibold text-foreground">Ranking Duração</h3>
+          <input
+            type="text"
+            placeholder="Buscar cliente ou projeto..."
+            value={filtroRankingDuracao}
+            onChange={(e) => setFiltroRankingDuracao(e.target.value)}
+            className="px-4 py-2 bg-slate-800/50 border border-blue-500/30 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500/50 w-64"
+          />
+        </div>
         <div className="max-h-[400px] overflow-y-auto">
           <table className="w-full">
             <thead className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
