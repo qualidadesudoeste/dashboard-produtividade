@@ -236,8 +236,8 @@ export default function Auditoria() {
           );
 
           if (!jaExiste) {
-            const tempoEstimado = ciclo.tempoPrevisto || 0;
-            const tempoTotal = ciclo.totalHoras || 0;
+            const tempoEstimado = ciclo.tempo_previsto || 0;
+            const tempoTotal = ciclo.total_horas || 0;
             const diferencaTempo = tempoTotal - tempoEstimado;
 
             novasAuditorias.push({
@@ -409,7 +409,37 @@ export default function Auditoria() {
   };
 
   const handleEditarAuditoria = (auditoria: Auditoria) => {
-    setEditandoAuditoria(auditoria);
+    // Carregar dados de tempo de ciclos_teste.json
+    fetch("/ciclos_teste.json")
+      .then((res) => res.json())
+      .then((ciclosData) => {
+        const cicloCorrespondente = ciclosData.find(
+          (c: any) => c.projeto === auditoria.projeto && c.sprint === auditoria.sprint
+        );
+
+        if (cicloCorrespondente) {
+          const tempoEstimado = cicloCorrespondente.tempo_previsto || 0;
+          const tempoTotal = cicloCorrespondente.total_horas || 0;
+          const diferencaTempo = tempoTotal - tempoEstimado;
+
+          // Atualizar auditoria com dados de tempo
+          const auditoriaAtualizada = {
+            ...auditoria,
+            tempoEstimado,
+            tempoTotal,
+            diferencaTempo,
+          };
+
+          setEditandoAuditoria(auditoriaAtualizada);
+        } else {
+          setEditandoAuditoria(auditoria);
+        }
+      })
+      .catch((error) => {
+        console.error("Erro ao carregar ciclos de teste:", error);
+        setEditandoAuditoria(auditoria);
+      });
+
     setFormData({
       gerente: auditoria.gerente,
       projeto: auditoria.projeto,
@@ -749,7 +779,35 @@ export default function Auditoria() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => setSelectedAuditoria(aud)}
+                                  onClick={() => {
+                                    // Carregar dados de tempo de ciclos_teste.json
+                                    fetch("/ciclos_teste.json")
+                                      .then((res) => res.json())
+                                      .then((ciclosData) => {
+                                        const cicloCorrespondente = ciclosData.find(
+                                          (c: any) => c.projeto === aud.projeto && c.sprint === aud.sprint
+                                        );
+
+                                        if (cicloCorrespondente) {
+                                          const tempoEstimado = cicloCorrespondente.tempo_previsto || 0;
+                                          const tempoTotal = cicloCorrespondente.total_horas || 0;
+                                          const diferencaTempo = tempoTotal - tempoEstimado;
+
+                                          setSelectedAuditoria({
+                                            ...aud,
+                                            tempoEstimado,
+                                            tempoTotal,
+                                            diferencaTempo,
+                                          });
+                                        } else {
+                                          setSelectedAuditoria(aud);
+                                        }
+                                      })
+                                      .catch((error) => {
+                                        console.error("Erro ao carregar ciclos de teste:", error);
+                                        setSelectedAuditoria(aud);
+                                      });
+                                  }}
                                 >
                                   <Eye className="w-4 h-4" />
                                 </Button>

@@ -163,13 +163,31 @@ export default function CiclosTeste() {
   ].filter((item) => item.value > 0);
 
   // Rankings completos (todos os projetos)
-  const retrabalhoRankingCompleto = ciclosFiltrados
+  // Agrupar por projeto e calcular média de retrabalho
+  const retrabalhosPorProjeto = ciclosFiltrados.reduce((acc, ciclo) => {
+    const chave = `${ciclo.cliente}|${ciclo.projeto}`;
+    if (!acc[chave]) {
+      acc[chave] = {
+        cliente: ciclo.cliente,
+        projeto: ciclo.projeto,
+        retrabalhos: [],
+      };
+    }
+    acc[chave].retrabalhos.push(ciclo.retrabalho);
+    return acc;
+  }, {} as Record<string, { cliente: string; projeto: string; retrabalhos: number[] }>);
+
+  const retrabalhoRankingCompleto = Object.values(retrabalhosPorProjeto)
+    .map((item) => ({
+      cliente: item.cliente,
+      projeto: item.projeto,
+      retrabalho: item.retrabalhos.reduce((sum, r) => sum + r, 0) / item.retrabalhos.length,
+      numSprints: item.retrabalhos.length,
+    }))
     .sort((a, b) => b.retrabalho - a.retrabalho)
-    .map((c, index) => ({
+    .map((item, index) => ({
       posicao: index + 1,
-      cliente: c.cliente,
-      projeto: c.projeto,
-      retrabalho: c.retrabalho,
+      ...item,
     }));
 
   const retrabalhoRanking = retrabalhoRankingCompleto.filter((item) => {
@@ -186,6 +204,7 @@ export default function CiclosTeste() {
       posicao: index + 1,
       cliente: c.cliente,
       projeto: c.projeto,
+      sprint: c.sprint,
       duracao: c.duracao,
     }));
 
@@ -479,7 +498,14 @@ export default function CiclosTeste() {
                       </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-300">{item.cliente}</td>
-                    <td className="py-3 px-4 text-sm text-white font-medium">{item.projeto}</td>
+                    <td className="py-3 px-4">
+                      <div className="flex flex-col">
+                        <span className="text-sm text-white font-medium">{item.projeto}</span>
+                        {item.numSprints > 1 && (
+                          <span className="text-xs text-gray-400">Média de {item.numSprints} sprints</span>
+                        )}
+                      </div>
+                    </td>
                     <td className="py-3 px-4 text-right">
                       <span className="text-orange-400 font-bold">{item.retrabalho.toFixed(1)}%</span>
                     </td>
@@ -510,6 +536,7 @@ export default function CiclosTeste() {
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">#</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Cliente</th>
                 <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Projeto</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Sprint</th>
                 <th className="text-right py-3 px-4 text-sm font-semibold text-gray-300">Duração</th>
               </tr>
             </thead>
@@ -531,6 +558,7 @@ export default function CiclosTeste() {
                   </td>
                   <td className="py-3 px-4 text-sm text-gray-300">{item.cliente}</td>
                   <td className="py-3 px-4 text-sm text-white font-medium">{item.projeto}</td>
+                  <td className="py-3 px-4 text-sm text-gray-400">{item.sprint}</td>
                   <td className="py-3 px-4 text-right">
                     <span className="text-blue-400 font-bold">{item.duracao} dias</span>
                   </td>
