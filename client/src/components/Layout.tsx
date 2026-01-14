@@ -36,7 +36,7 @@ export default function Layout({ children }: LayoutProps) {
           )}>
             {sidebarOpen && (
               <div className="mb-2 flex justify-center">
-                <img src="/images/logo.png" alt="Produtividade" className="h-20 w-auto" />
+                <img src="/images/logo.png" alt="Produtividade" className="h-32 w-auto" />
               </div>
             )}
           </div>
