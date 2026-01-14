@@ -27,6 +27,8 @@ export default function CiclosTeste() {
   const [loading, setLoading] = useState(true);
   const [filtroCliente, setFiltroCliente] = useState("Todos");
   const [filtroStatus, setFiltroStatus] = useState("Todos");
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
   const [selectedCiclo, setSelectedCiclo] = useState<CicloTeste | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -51,11 +53,35 @@ export default function CiclosTeste() {
     );
   }
 
+  // Função auxiliar para converter DD/MM/YYYY para Date
+  const parseDate = (dateStr: string): Date => {
+    const [day, month, year] = dateStr.split("/").map(Number);
+    return new Date(year, month - 1, day);
+  };
+
   // Filtros
   const ciclosFiltrados = ciclos.filter((ciclo) => {
     const matchCliente = filtroCliente === "Todos" || ciclo.cliente === filtroCliente;
     const matchStatus = filtroStatus === "Todos" || ciclo.status === filtroStatus;
-    return matchCliente && matchStatus;
+    
+    // Filtro de data
+    let matchData = true;
+    if (dataInicio || dataFim) {
+      const cicloInicio = parseDate(ciclo.inicio);
+      const cicloFim = parseDate(ciclo.fim);
+      
+      if (dataInicio) {
+        const filtroInicio = new Date(dataInicio);
+        matchData = matchData && cicloFim >= filtroInicio;
+      }
+      
+      if (dataFim) {
+        const filtroFim = new Date(dataFim);
+        matchData = matchData && cicloInicio <= filtroFim;
+      }
+    }
+    
+    return matchCliente && matchStatus && matchData;
   });
 
   const clientes = ["Todos", ...Array.from(new Set(ciclos.map((c) => c.cliente)))];
@@ -126,7 +152,9 @@ export default function CiclosTeste() {
       </div>
 
       {/* Filtros */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="space-y-4 mb-8">
+        {/* Filtros Cliente e Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="hover-lift">
           <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
           <select
@@ -155,6 +183,69 @@ export default function CiclosTeste() {
               </option>
             ))}
           </select>
+        </div>
+        </div>
+
+        {/* Filtros de Data */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="hover-lift">
+            <label className="block text-sm font-medium text-foreground mb-2">Data Início</label>
+            <input
+              type="date"
+              value={dataInicio}
+              onChange={(e) => setDataInicio(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            />
+          </div>
+
+          <div className="hover-lift">
+            <label className="block text-sm font-medium text-foreground mb-2">Data Fim</label>
+            <input
+              type="date"
+              value={dataFim}
+              onChange={(e) => setDataFim(e.target.value)}
+              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Filtros Rápidos</label>
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => {
+                  const hoje = new Date();
+                  const seteDiasAtras = new Date(hoje);
+                  seteDiasAtras.setDate(hoje.getDate() - 7);
+                  setDataInicio(seteDiasAtras.toISOString().split('T')[0]);
+                  setDataFim(hoje.toISOString().split('T')[0]);
+                }}
+                className="px-3 py-1.5 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-all"
+              >
+                Últimos 7 dias
+              </button>
+              <button
+                onClick={() => {
+                  const hoje = new Date();
+                  const trintaDiasAtras = new Date(hoje);
+                  trintaDiasAtras.setDate(hoje.getDate() - 30);
+                  setDataInicio(trintaDiasAtras.toISOString().split('T')[0]);
+                  setDataFim(hoje.toISOString().split('T')[0]);
+                }}
+                className="px-3 py-1.5 text-sm bg-blue-500 text-white rounded-full hover:bg-blue-600 transition-all"
+              >
+                Últimos 30 dias
+              </button>
+              <button
+                onClick={() => {
+                  setDataInicio("");
+                  setDataFim("");
+                }}
+                className="px-3 py-1.5 text-sm bg-gray-500 text-white rounded-full hover:bg-gray-600 transition-all"
+              >
+                Limpar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
