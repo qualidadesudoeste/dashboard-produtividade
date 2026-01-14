@@ -26,8 +26,7 @@ interface DataRecord {
   Status: string;
   Início: string;
   Fim: string;
-  "Hrs Trab.": string;
-  Horas_Trabalhadas: number;
+  Horas: number;
   PF: number;
 }
 
@@ -64,7 +63,7 @@ export default function Home() {
   }, [projetos, filterProjetoInput]);
 
   useEffect(() => {
-    fetch("/data.json")
+    fetch("/dados_atualizados.json")
       .then((res) => res.json())
       .then((jsonData) => {
         setData(jsonData);
@@ -137,7 +136,7 @@ export default function Home() {
     return true;
   });
 
-  const totalHoras = filteredData.reduce((sum, r) => sum + r.Horas_Trabalhadas, 0);
+  const totalHoras = filteredData.reduce((sum, r) => sum + r.Horas, 0);
   const totalAtividades = filteredData.length;
   const totalColaboradores = new Set(filteredData.map((r) => r.Colaborador)).size;
   const totalProjetos = new Set(filteredData.map((r) => r.Projeto)).size;
@@ -175,7 +174,7 @@ export default function Home() {
 
   // Rankings
   const projetoHoras = filteredData.reduce((acc, r) => {
-    acc[r.Projeto] = (acc[r.Projeto] || 0) + r.Horas_Trabalhadas;
+    acc[r.Projeto] = (acc[r.Projeto] || 0) + r.Horas;
     return acc;
   }, {} as Record<string, number>);
 
@@ -188,7 +187,7 @@ export default function Home() {
   );
 
   const colaboradorHoras = filteredData.reduce((acc, r) => {
-    acc[r.Colaborador] = (acc[r.Colaborador] || 0) + r.Horas_Trabalhadas;
+    acc[r.Colaborador] = (acc[r.Colaborador] || 0) + r.Horas;
     return acc;
   }, {} as Record<string, number>);
 
@@ -206,7 +205,7 @@ export default function Home() {
   // Matriz
   const matrizData = filteredData.reduce((acc, r) => {
     const key = `${r.Colaborador}|||${r.Projeto}`;
-    acc[key] = (acc[key] || 0) + r.Horas_Trabalhadas;
+    acc[key] = (acc[key] || 0) + r.Horas;
     return acc;
   }, {} as Record<string, number>);
 
