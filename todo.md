@@ -1,20 +1,21 @@
-# TODO - Filtros de Data em Ciclos de Teste
+# TODO - Remover Background e Adicionar Efeitos
 
 ## Tarefas
 
-### 1. Salvar Checkpoint com Alteração Visual
-- [x] Verificar alteração em CiclosTeste.tsx (linha 125)
-- [ ] Criar checkpoint com descrição da alteração
+### 1. Remover Background Pattern
+- [ ] Remover classe `data-grid` de Home.tsx
+- [ ] Remover classe `data-grid` de Auditoria.tsx
+- [ ] Remover classe `data-grid` de CiclosTeste.tsx
+- [ ] Remover CSS do pattern no index.css
 
-### 2. Implementar Filtros de Data
-- [ ] Adicionar estados para dataInicio e dataFim
-- [ ] Criar campos de input de data no header
-- [ ] Implementar lógica de filtragem por período
-- [ ] Adicionar botões de filtro rápido (7d, 30d, trimestre, ano)
-- [ ] Aplicar filtros nos KPIs e tabela de detalhamento
+### 2. Adicionar Animações e Efeitos
+- [ ] Adicionar animações de entrada (fade-in, slide-up)
+- [ ] Adicionar efeitos de hover avançados (glow, scale, rotate)
+- [ ] Adicionar transições suaves
+- [ ] Adicionar micro-interações em botões e cards
 
-### 3. Testar Funcionalidade
-- [ ] Testar filtro de data no navegador
-- [ ] Validar cálculo de KPIs filtrados
-- [ ] Verificar tabela filtrada
-- [ ] Criar checkpoint final
+### 3. Testar
+- [ ] Testar Dashboard
+- [ ] Testar Auditoria
+- [ ] Testar Ciclos de Teste
+- [ ] Criar checkpoint

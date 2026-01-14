@@ -142,7 +142,7 @@ export default function CiclosTeste() {
   };
 
   return (
-    <div className="min-h-screen p-6 bg-background data-grid">
+    <div className="min-h-screen p-6 bg-background">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
