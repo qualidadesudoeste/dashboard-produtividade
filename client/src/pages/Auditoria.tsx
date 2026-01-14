@@ -148,6 +148,11 @@ export default function Auditoria() {
   const [editandoAuditoria, setEditandoAuditoria] = useState<Auditoria | null>(null);
   const [filtroProj, setFiltroProj] = useState<string>("todos");
   const [filtroStatus, setFiltroStatus] = useState<string>("todos");
+  const [filtroSprint, setFiltroSprint] = useState<string>("");
+  const [filtroAuditor, setFiltroAuditor] = useState<string>("");
+  const [filtroDataInicio, setFiltroDataInicio] = useState<string>("");
+  const [filtroDataFim, setFiltroDataFim] = useState<string>("");
+  const [filtroScoreMin, setFiltroScoreMin] = useState<string>("");
 
   // Form state
   const [formData, setFormData] = useState({
@@ -407,9 +412,14 @@ export default function Auditoria() {
     return auditorias.filter((aud) => {
       const matchProj = filtroProj === "todos" || aud.projeto === filtroProj;
       const matchStatus = filtroStatus === "todos" || aud.status === filtroStatus;
-      return matchProj && matchStatus;
+      const matchSprint = !filtroSprint || aud.sprint.toLowerCase().includes(filtroSprint.toLowerCase());
+      const matchAuditor = !filtroAuditor || aud.auditor.toLowerCase().includes(filtroAuditor.toLowerCase());
+      const matchDataInicio = !filtroDataInicio || aud.data >= filtroDataInicio;
+      const matchDataFim = !filtroDataFim || aud.data <= filtroDataFim;
+      const matchScoreMin = !filtroScoreMin || aud.scoreTotal >= parseFloat(filtroScoreMin);
+      return matchProj && matchStatus && matchSprint && matchAuditor && matchDataInicio && matchDataFim && matchScoreMin;
     });
-  }, [auditorias, filtroProj, filtroStatus]);
+  }, [auditorias, filtroProj, filtroStatus, filtroSprint, filtroAuditor, filtroDataInicio, filtroDataFim, filtroScoreMin]);
 
   const kpis = useMemo(() => {
     const total = auditorias.length;
@@ -519,34 +529,117 @@ export default function Auditoria() {
         {/* Histórico */}
         <Card className="shadow-lg bg-slate-900/50 backdrop-blur-xl border-2 border-blue-500/30">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl text-white">Auditorias</CardTitle>
-              <div className="flex gap-3">
-                <Select value={filtroProj} onValueChange={setFiltroProj}>
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Filtrar por projeto" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos os Projetos</SelectItem>
-                    {projetos.map((proj) => (
-                      <SelectItem key={proj} value={proj}>
-                        {proj}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-2xl text-white">Auditorias</CardTitle>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setFiltroProj("todos");
+                    setFiltroStatus("todos");
+                    setFiltroSprint("");
+                    setFiltroAuditor("");
+                    setFiltroDataInicio("");
+                    setFiltroDataFim("");
+                    setFiltroScoreMin("");
+                  }}
+                  className="text-white border-blue-500/50 hover:bg-blue-500/20"
+                >
+                  <X className="w-4 h-4 mr-2" />
+                  Limpar Filtros
+                </Button>
+              </div>
+              
+              {/* Linha 1 de Filtros */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Projeto</label>
+                  <Select value={filtroProj} onValueChange={setFiltroProj}>
+                    <SelectTrigger className="w-full bg-slate-800 border-slate-700 text-white">
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos os Projetos</SelectItem>
+                      {projetos.map((proj) => (
+                        <SelectItem key={proj} value={proj}>
+                          {proj}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Filtrar por status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="todos">Todos os Status</SelectItem>
-                    <SelectItem value="Aprovado">Aprovado</SelectItem>
-                    <SelectItem value="Aprovado com Ressalvas">Aprovado com Ressalvas</SelectItem>
-                    <SelectItem value="Reprovado">Reprovado</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Sprint</label>
+                  <Input
+                    placeholder="Buscar sprint..."
+                    value={filtroSprint}
+                    onChange={(e) => setFiltroSprint(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white placeholder:text-gray-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Auditor</label>
+                  <Input
+                    placeholder="Buscar auditor..."
+                    value={filtroAuditor}
+                    onChange={(e) => setFiltroAuditor(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white placeholder:text-gray-500"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Status</label>
+                  <Select value={filtroStatus} onValueChange={setFiltroStatus}>
+                    <SelectTrigger className="w-full bg-slate-800 border-slate-700 text-white">
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="todos">Todos os Status</SelectItem>
+                      <SelectItem value="Aprovado">Aprovado</SelectItem>
+                      <SelectItem value="Aprovado com Ressalvas">Aprovado com Ressalvas</SelectItem>
+                      <SelectItem value="Reprovado">Reprovado</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Linha 2 de Filtros */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Data Início</label>
+                  <Input
+                    type="date"
+                    value={filtroDataInicio}
+                    onChange={(e) => setFiltroDataInicio(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Data Fim</label>
+                  <Input
+                    type="date"
+                    value={filtroDataFim}
+                    onChange={(e) => setFiltroDataFim(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs text-gray-300 font-medium">Score Mínimo (%)</label>
+                  <Input
+                    type="number"
+                    placeholder="0-100"
+                    min="0"
+                    max="100"
+                    value={filtroScoreMin}
+                    onChange={(e) => setFiltroScoreMin(e.target.value)}
+                    className="bg-slate-800 border-slate-700 text-white placeholder:text-gray-500"
+                  />
+                </div>
               </div>
             </div>
           </CardHeader>
