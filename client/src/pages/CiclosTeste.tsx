@@ -122,7 +122,7 @@ export default function CiclosTeste() {
         <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
           Ciclos de Teste
         </h1>
-        <p className="text-muted-foreground">Gestão de testes e bugs - Janeiro 2026</p>
+        <p className="text-muted-foreground"></p>
       </div>
 
       {/* Filtros */}
