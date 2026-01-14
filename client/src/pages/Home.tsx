@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Clock, Activity, FolderKanban, Users, CheckCircle2, Target, Trophy, Crown, TrendingUp, Search, ChevronDown, ChevronUp } from "lucide-react";
+import { Clock, Activity, FolderKanban, Users, CheckCircle2, Target, Trophy, Crown, TrendingUp, Search, ChevronDown, ChevronUp, Calendar } from "lucide-react";
 
 interface DataRecord {
   Colaborador: string;
@@ -298,24 +298,30 @@ export default function Home() {
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-300">De</label>
-                <Input
-                  type="date"
-                  value={dataInicio}
-                  onChange={(e) => setDataInicio(e.target.value)}
-                  className="h-9 text-sm"
-                />
+                <div className="relative">
+                  <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <Input
+                    type="date"
+                    value={dataInicio}
+                    onChange={(e) => setDataInicio(e.target.value)}
+                    className="h-9 text-sm pl-8"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
                 <label className="text-xs font-bold text-gray-300">Até</label>
-                <Input
-                  type="date"
-                  value={dataFim}
-                  onChange={(e) => setDataFim(e.target.value)}
-                  min={dataInicio || undefined}
-                  disabled={!dataInicio}
-                  className="h-9 text-sm disabled:opacity-50"
-                />
+                <div className="relative">
+                  <Calendar className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                  <Input
+                    type="date"
+                    value={dataFim}
+                    onChange={(e) => setDataFim(e.target.value)}
+                    min={dataInicio || undefined}
+                    disabled={!dataInicio}
+                    className="h-9 text-sm disabled:opacity-50 pl-8"
+                  />
+                </div>
               </div>
 
               <div className="col-span-2 space-y-1">
