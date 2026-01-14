@@ -649,16 +649,16 @@ export default function Home() {
                   />
                 </div>
               </div>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto overflow-y-auto max-h-[600px]">
                 <table className="min-w-full text-xs border-collapse">
-                  <thead>
+                  <thead className="sticky top-0 z-20">
                     <tr className="bg-blue-900/40">
-                      <th className="border border-blue-500/30 px-2 py-1 text-left font-bold sticky left-0 bg-blue-900/60 z-10 text-white">
+                      <th className="border border-blue-500/30 px-3 py-2 text-left font-bold sticky left-0 bg-blue-900/90 z-30 text-white min-w-[200px] max-w-[200px]">
                         Colaborador
                       </th>
                       {projetosUnicos.map((p) => (
-                        <th key={p} className="border border-blue-500/30 px-2 py-1 text-center font-semibold min-w-[80px] text-gray-300">
-                          {p}
+                        <th key={p} className="border border-blue-500/30 px-3 py-2 text-center font-semibold min-w-[150px] max-w-[150px] text-gray-300 bg-blue-900/90">
+                          <div className="truncate" title={p}>{p}</div>
                         </th>
                       ))}
                     </tr>
@@ -666,8 +666,8 @@ export default function Home() {
                   <tbody>
                     {colaboradoresUnicos.map((c) => (
                       <tr key={c} className="hover:bg-blue-900/30 transition-colors">
-                        <td className="border border-blue-500/30 px-2 py-1 font-semibold sticky left-0 bg-slate-900/80 text-white">
-                          {c}
+                        <td className="border border-blue-500/30 px-3 py-2 font-semibold sticky left-0 bg-slate-900/95 text-white min-w-[200px] max-w-[200px] z-10">
+                          <div className="truncate" title={c}>{c}</div>
                         </td>
                         {projetosUnicos.map((p) => {
                           const horas = matrizData[`${c}|||${p}`] || 0;
