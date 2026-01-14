@@ -150,8 +150,19 @@ export default function Home() {
     return acc;
   }, {} as Record<string, number>);
 
+  const tipoHoras = filteredData.reduce((acc, r) => {
+    acc[r.Tipo] = (acc[r.Tipo] || 0) + r.Horas;
+    return acc;
+  }, {} as Record<string, number>);
+
   const tipoDataFull = Object.entries(tipoCount)
-    .map(([name, value]) => ({ name, value, percent: (value / totalAtividades) * 100 }))
+    .map(([name, value]) => ({ 
+      name, 
+      value, 
+      horas: tipoHoras[name] || 0,
+      percent: (value / totalAtividades) * 100,
+      horasPercent: ((tipoHoras[name] || 0) / totalHoras) * 100
+    }))
     .sort((a, b) => b.value - a.value);
 
   const tipoData = tipoDataFull.filter(item =>
@@ -463,8 +474,12 @@ export default function Home() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{item.name}</p>
+                        <p className="text-xs text-gray-400">{item.horas.toFixed(1)}h ({item.horasPercent.toFixed(1)}%)</p>
                       </div>
-                      <div className="text-sm font-bold text-blue-400">{item.value}</div>
+                      <div className="text-right">
+                        <div className="text-sm font-bold text-blue-400">{item.value}</div>
+                        <div className="text-xs text-gray-400">{item.percent.toFixed(1)}%</div>
+                      </div>
                     </div>
                   );
                 })}
