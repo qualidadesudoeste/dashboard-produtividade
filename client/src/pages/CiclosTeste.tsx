@@ -12,9 +12,12 @@ interface CicloTeste {
   inicio: string;
   fim: string;
   duracao: number;
-  ciclo1: string;
-  ciclo2: string;
-  ciclo3: string;
+  ciclo1?: string;
+  ciclo2?: string;
+  ciclo3?: string;
+  ciclo4?: string;
+  ciclo5?: string;
+  [key: `ciclo${number}`]: string | undefined;
   status: string;
   correcoes_horas: number;
   correcoes_cards: number;
@@ -28,6 +31,8 @@ export default function CiclosTeste() {
   const [ciclos, setCiclos] = useState<CicloTeste[]>([]);
   const [loading, setLoading] = useState(true);
   const [filtroCliente, setFiltroCliente] = useState("Todos");
+  const [filtroProjeto, setFiltroProjeto] = useState("Todos");
+  const [filtroGerente, setFiltroGerente] = useState("Todos");
   const [filtroStatus, setFiltroStatus] = useState("Todos");
   const [dataInicio, setDataInicio] = useState("");
   const [dataFim, setDataFim] = useState("");
@@ -69,30 +74,70 @@ export default function CiclosTeste() {
   // Filtros
   const ciclosFiltrados = ciclos.filter((ciclo) => {
     const matchCliente = filtroCliente === "Todos" || ciclo.cliente === filtroCliente;
+    const matchProjeto = filtroProjeto === "Todos" || ciclo.projeto === filtroProjeto;
+    const matchGerente = filtroGerente === "Todos" || ciclo.gerente === filtroGerente;
     const matchStatus = filtroStatus === "Todos" || ciclo.status === filtroStatus;
     
-    // Filtro de data
+    // Filtro de data (considerando datas dos ciclos)
     let matchData = true;
     if (dataInicio || dataFim) {
-      const cicloInicio = parseDate(ciclo.inicio);
-      const cicloFim = parseDate(ciclo.fim);
+      const datasCiclos: Date[] = [];
       
-      if (dataInicio) {
-        const filtroInicio = new Date(dataInicio);
-        matchData = matchData && cicloFim >= filtroInicio;
-      }
+      // Coletar todas as datas de ciclos que não são vazias
+      if (ciclo.ciclo1 && ciclo.ciclo1 !== "-") datasCiclos.push(parseDate(ciclo.ciclo1));
+      if (ciclo.ciclo2 && ciclo.ciclo2 !== "-") datasCiclos.push(parseDate(ciclo.ciclo2));
+      if (ciclo.ciclo3 && ciclo.ciclo3 !== "-") datasCiclos.push(parseDate(ciclo.ciclo3));
       
-      if (dataFim) {
-        const filtroFim = new Date(dataFim);
-        matchData = matchData && cicloInicio <= filtroFim;
+      if (datasCiclos.length > 0) {
+        const menorData = new Date(Math.min(...datasCiclos.map(d => d.getTime())));
+        const maiorData = new Date(Math.max(...datasCiclos.map(d => d.getTime())));
+        
+        if (dataInicio) {
+          const filtroInicio = new Date(dataInicio);
+          matchData = matchData && maiorData >= filtroInicio;
+        }
+        
+        if (dataFim) {
+          const filtroFim = new Date(dataFim);
+          matchData = matchData && menorData <= filtroFim;
+        }
+      } else {
+        // Se não há ciclos, usar datas de início/fim da sprint
+        const cicloInicio = parseDate(ciclo.inicio);
+        const cicloFim = parseDate(ciclo.fim);
+        
+        if (dataInicio) {
+          const filtroInicio = new Date(dataInicio);
+          matchData = matchData && cicloFim >= filtroInicio;
+        }
+        
+        if (dataFim) {
+          const filtroFim = new Date(dataFim);
+          matchData = matchData && cicloInicio <= filtroFim;
+        }
       }
     }
     
-    return matchCliente && matchStatus && matchData;
+    return matchCliente && matchProjeto && matchGerente && matchStatus && matchData;
   });
 
   const clientes = ["Todos", ...Array.from(new Set(ciclos.map((c) => c.cliente)))];
+  const projetos = ["Todos", ...Array.from(new Set(ciclos.map((c) => c.projeto)))];
+  const gerentes = ["Todos", ...Array.from(new Set(ciclos.map((c) => c.gerente)))];
   const statusList = ["Todos", ...Array.from(new Set(ciclos.map((c) => c.status)))];
+
+  // Calcular número máximo de ciclos dinamicamente
+  const maxCiclos = Math.max(
+    ...ciclos.map((ciclo) => {
+      let count = 0;
+      for (let i = 1; i <= 10; i++) { // Verificar até 10 ciclos
+        const key = `ciclo${i}` as keyof CicloTeste;
+        if (ciclo[key] && ciclo[key] !== "-") count = i;
+      }
+      return count;
+    }),
+    3 // Mínimo de 3 ciclos
+  );
 
   // Métricas
   const totalCiclos = ciclosFiltrados.length;
@@ -160,14 +205,14 @@ export default function CiclosTeste() {
 
       {/* Filtros */}
       <div className="space-y-4 mb-8">
-        {/* Filtros Cliente e Status */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Filtros Cliente, Projeto, Gerente e Status */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="hover-lift">
           <label className="block text-sm font-medium text-foreground mb-2">Cliente</label>
           <select
             value={filtroCliente}
             onChange={(e) => setFiltroCliente(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all [&>option]:bg-slate-800 [&>option]:text-white"
           >
             {clientes.map((cliente) => (
               <option key={cliente} value={cliente}>
@@ -178,11 +223,41 @@ export default function CiclosTeste() {
         </div>
 
         <div className="hover-lift">
+          <label className="block text-sm font-medium text-foreground mb-2">Projeto</label>
+          <select
+            value={filtroProjeto}
+            onChange={(e) => setFiltroProjeto(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all [&>option]:bg-slate-800 [&>option]:text-white"
+          >
+            {projetos.map((projeto) => (
+              <option key={projeto} value={projeto}>
+                {projeto}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="hover-lift">
+          <label className="block text-sm font-medium text-foreground mb-2">Gerente</label>
+          <select
+            value={filtroGerente}
+            onChange={(e) => setFiltroGerente(e.target.value)}
+            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all [&>option]:bg-slate-800 [&>option]:text-white"
+          >
+            {gerentes.map((gerente) => (
+              <option key={gerente} value={gerente}>
+                {gerente}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="hover-lift">
           <label className="block text-sm font-medium text-foreground mb-2">Status</label>
           <select
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value)}
-            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all [&>option]:bg-slate-800 [&>option]:text-white"
           >
             {statusList.map((status) => (
               <option key={status} value={status}>
@@ -315,7 +390,7 @@ export default function CiclosTeste() {
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={(entry) => `${entry.name}: ${entry.value}`}
+                label={(entry) => entry.value}
                 outerRadius={100}
                 fill="#8884d8"
                 dataKey="value"
@@ -326,13 +401,20 @@ export default function CiclosTeste() {
               </Pie>
               <Tooltip
                 contentStyle={{
-                  backgroundColor: "rgba(17, 24, 39, 0.95)",
-                  border: "1px solid rgba(75, 85, 99, 0.5)",
+                  backgroundColor: "rgba(15, 23, 42, 0.95)",
+                  border: "1px solid rgba(59, 130, 246, 0.5)",
                   borderRadius: "8px",
                   color: "#fff",
                 }}
+                itemStyle={{
+                  color: "#e5e7eb",
+                }}
               />
-              <Legend />
+              <Legend
+                wrapperStyle={{
+                  color: "#e5e7eb",
+                }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </div>
@@ -354,7 +436,17 @@ export default function CiclosTeste() {
                 }}
                 formatter={(value: number) => `${value.toFixed(1)}%`}
               />
-              <Bar dataKey="retrabalho" fill="#f59e0b" radius={[0, 8, 8, 0]} />
+              <Bar 
+                dataKey="retrabalho" 
+                fill="#f59e0b" 
+                radius={[0, 8, 8, 0]}
+                activeBar={{
+                  fill: "#f59e0b",
+                  stroke: "#fbbf24",
+                  strokeWidth: 3,
+                  filter: "drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))",
+                }}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -377,7 +469,17 @@ export default function CiclosTeste() {
               }}
               formatter={(value: number) => `${value} dias`}
             />
-            <Bar dataKey="duracao" fill="#3b82f6" radius={[8, 8, 0, 0]} />
+            <Bar 
+              dataKey="duracao" 
+              fill="#3b82f6" 
+              radius={[8, 8, 0, 0]}
+              activeBar={{
+                fill: "#3b82f6",
+                stroke: "#60a5fa",
+                strokeWidth: 3,
+                filter: "drop-shadow(0 0 8px rgba(96, 165, 250, 0.8))",
+              }}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>
@@ -396,9 +498,11 @@ export default function CiclosTeste() {
                 <th className="text-center py-3 px-4 text-gray-300 font-medium">Início</th>
                 <th className="text-center py-3 px-4 text-gray-300 font-medium">Fim</th>
                 <th className="text-center py-3 px-4 text-gray-300 font-medium">Duração</th>
-                <th className="text-center py-3 px-4 text-gray-300 font-medium">1º Ciclo</th>
-                <th className="text-center py-3 px-4 text-gray-300 font-medium">2º Ciclo</th>
-                <th className="text-center py-3 px-4 text-gray-300 font-medium">3º Ciclo</th>
+                {Array.from({ length: maxCiclos }, (_, i) => (
+                  <th key={`ciclo-header-${i + 1}`} className="text-center py-3 px-4 text-gray-300 font-medium">
+                    {i + 1}º Ciclo
+                  </th>
+                ))}
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Status</th>
                 <th className="text-right py-3 px-4 text-gray-300 font-medium">Correções<br/>(horas)</th>
                 <th className="text-right py-3 px-4 text-gray-300 font-medium">Correções<br/>(cards)</th>
@@ -425,9 +529,15 @@ export default function CiclosTeste() {
                   <td className="py-3 px-4 text-center text-gray-300">{ciclo.inicio}</td>
                   <td className="py-3 px-4 text-center text-gray-300">{ciclo.fim}</td>
                   <td className="py-3 px-4 text-center text-white">{ciclo.duracao}</td>
-                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.ciclo1 || '-'}</td>
-                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.ciclo2 || '-'}</td>
-                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.ciclo3 || '-'}</td>
+                  {Array.from({ length: maxCiclos }, (_, i) => {
+                    const cicloKey = `ciclo${i + 1}` as keyof CicloTeste;
+                    const cicloValue = ciclo[cicloKey];
+                    return (
+                      <td key={`ciclo-${index}-${i + 1}`} className="py-3 px-4 text-center text-gray-300">
+                        {cicloValue && cicloValue !== "-" ? cicloValue : "-"}
+                      </td>
+                    );
+                  })}
                   <td className="py-3 px-4">{getStatusBadge(ciclo.status)}</td>
                   <td className="py-3 px-4 text-right text-white">{ciclo.correcoes_horas > 0 ? ciclo.correcoes_horas.toFixed(2) : '-'}</td>
                   <td className="py-3 px-4 text-right text-white">{ciclo.correcoes_cards > 0 ? ciclo.correcoes_cards : '-'}</td>
