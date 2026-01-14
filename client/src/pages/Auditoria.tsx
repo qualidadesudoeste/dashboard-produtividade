@@ -437,20 +437,20 @@ export default function Auditoria() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 flex items-center justify-center">
+      <div className="min-h-screen bg-[#0a1929] flex items-center justify-center">
         <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 p-6">
+    <div className="min-h-screen bg-[#0a1929] p-6">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Conformidade Maker Express</h1>
-            <p className="text-gray-600 mt-1"></p>
+            <h1 className="text-4xl font-bold text-white">Conformidade Maker Express</h1>
+            <p className="text-gray-300 mt-1"></p>
           </div>
           <Button
             onClick={() => setIsFormOpen(true)}

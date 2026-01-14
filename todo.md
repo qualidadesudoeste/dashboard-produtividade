@@ -1,24 +1,26 @@
-# TODO - Correção de Fundos Brancos
+# TODO - Correção de Cards Brancos Restantes
 
 ## Data: 14/01/2026
 
 ## Problema Identificado
-- Containers de gráficos ainda com fundo branco em todas páginas
-- Precisa aplicar tema escuro transparente
+Ainda existem cards com fundo branco em:
+- Dashboard
+- Auditoria  
+- Último card da tela de Ciclos de Teste
 
 ## Tarefas
 
-### ⬜ 1. Identificar Cards Brancos
-- [ ] Dashboard: cards de listas e gráficos
-- [ ] Auditoria: cards de auditorias
-- [ ] Ciclos de Teste: cards de detalhamento
+### ⬜ 1. Investigar Cards Brancos
+- [ ] Dashboard: verificar KPIs e outros elementos
+- [ ] Auditoria: verificar cards de auditorias na lista
+- [ ] Ciclos de Teste: verificar último card
 
 ### ⬜ 2. Aplicar Tema Escuro
 - [ ] Substituir bg-white por bg-slate-900/50
 - [ ] Adicionar backdrop-blur-xl
 - [ ] Manter bordas azuis
 
-### ⬜ 3. Testar
+### ⬜ 3. Testar e Checkpoint
 - [ ] Verificar todas 3 páginas
 - [ ] Confirmar legibilidade
 - [ ] Checkpoint

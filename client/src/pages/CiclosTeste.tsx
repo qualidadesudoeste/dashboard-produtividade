@@ -376,39 +376,39 @@ export default function CiclosTeste() {
       </div>
 
       {/* Tabela de Ciclos */}
-      <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover-lift hover-border-glow">
-        <h3 className="text-xl font-semibold text-foreground mb-6">Detalhamento dos Ciclos</h3>
+      <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-border-glow shadow-lg">
+        <h3 className="text-xl font-semibold text-white mb-6">Detalhamento dos Ciclos</h3>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Cliente</th>
-                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Projeto</th>
-                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Sprint</th>
-                <th className="text-center py-3 px-4 text-muted-foreground font-medium">Duração</th>
-                <th className="text-left py-3 px-4 text-muted-foreground font-medium">Status</th>
-                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Horas</th>
-                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Cards</th>
-                <th className="text-right py-3 px-4 text-muted-foreground font-medium">Retrabalho</th>
+              <tr className="border-b border-blue-500/20">
+                <th className="text-left py-3 px-4 text-gray-300 font-medium">Cliente</th>
+                <th className="text-left py-3 px-4 text-gray-300 font-medium">Projeto</th>
+                <th className="text-left py-3 px-4 text-gray-300 font-medium">Sprint</th>
+                <th className="text-center py-3 px-4 text-gray-300 font-medium">Duração</th>
+                <th className="text-left py-3 px-4 text-gray-300 font-medium">Status</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Horas</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Cards</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Retrabalho</th>
               </tr>
             </thead>
             <tbody>
               {ciclosFiltrados.map((ciclo, index) => (
                 <tr 
                   key={index} 
-                  className="border-b border-gray-200/50 hover:bg-blue-50 transition-colors cursor-pointer"
+                  className="border-b border-blue-500/20 hover:bg-blue-900/30 transition-colors cursor-pointer"
                   onClick={() => {
                     setSelectedCiclo(ciclo);
                     setIsModalOpen(true);
                   }}
                 >
-                  <td className="py-3 px-4 text-foreground font-medium">{ciclo.cliente}</td>
-                  <td className="py-3 px-4 text-foreground">{ciclo.projeto}</td>
-                  <td className="py-3 px-4 text-muted-foreground">{ciclo.sprint}</td>
-                  <td className="py-3 px-4 text-center text-foreground">{ciclo.duracao} dias</td>
+                  <td className="py-3 px-4 text-white font-medium">{ciclo.cliente}</td>
+                  <td className="py-3 px-4 text-white">{ciclo.projeto}</td>
+                  <td className="py-3 px-4 text-gray-300">{ciclo.sprint}</td>
+                  <td className="py-3 px-4 text-center text-white">{ciclo.duracao} dias</td>
                   <td className="py-3 px-4">{getStatusBadge(ciclo.status)}</td>
-                  <td className="py-3 px-4 text-right text-foreground">{ciclo.total_horas.toFixed(1)}h</td>
-                  <td className="py-3 px-4 text-right text-foreground">{ciclo.total_cards}</td>
+                  <td className="py-3 px-4 text-right text-white">{ciclo.total_horas.toFixed(1)}h</td>
+                  <td className="py-3 px-4 text-right text-white">{ciclo.total_cards}</td>
                   <td className="py-3 px-4 text-right">
                     <span className={`font-semibold ${ciclo.retrabalho > 20 ? "text-red-400" : ciclo.retrabalho > 10 ? "text-orange-400" : "text-green-400"}`}>
                       {ciclo.retrabalho.toFixed(1)}%
