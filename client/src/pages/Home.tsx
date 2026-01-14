@@ -208,7 +208,7 @@ export default function Home() {
       <div className="max-w-[1600px] mx-auto space-y-4">
         
         {/* Filtros Compactos */}
-        <Card className="shadow-lg border-2 border-blue-100 animate-slide-down">
+        <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl animate-slide-down">
           <CardContent className="pt-4 pb-4">
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
               <div className="space-y-1">
@@ -306,7 +306,7 @@ export default function Home() {
 
         {/* Hero Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all hover:scale-[1.02] duration-300 animate-slide-up">
+          <Card className="shadow-xl border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:shadow-2xl transition-all hover:scale-[1.02] duration-300 animate-slide-up">
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white shadow-lg">
@@ -325,7 +325,7 @@ export default function Home() {
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-2 border-blue-200 bg-gradient-to-br from-blue-50 to-white hover:shadow-2xl transition-all hover:scale-[1.02] duration-300 animate-slide-up" style={{animationDelay: '50ms'}}>
+          <Card className="shadow-xl border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:shadow-2xl transition-all hover:scale-[1.02] duration-300 animate-slide-up" style={{animationDelay: '50ms'}}>
             <CardContent className="pt-4 pb-4">
               <div className="flex items-center gap-4">
                 <div className="p-3 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 text-white shadow-lg">
@@ -376,7 +376,7 @@ export default function Home() {
         {/* Listas Grid 2x2 */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {/* Distribuição por Tipo - LISTA */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900">
                 Distribuição por Tipo de Atividade
@@ -419,7 +419,7 @@ export default function Home() {
           </Card>
 
           {/* Ranking Projetos - TODOS */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
                 <span>Ranking Projetos</span>
@@ -465,7 +465,7 @@ export default function Home() {
           </Card>
 
           {/* Distribuição por Status - LISTA */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900">
                 Distribuição por Status
@@ -508,7 +508,7 @@ export default function Home() {
           </Card>
 
           {/* Ranking Colaboradores - Top 10 */}
-          <Card className="shadow-lg border-2 border-blue-100 hover:shadow-xl transition-shadow animate-fade-in">
+          <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:shadow-xl transition-shadow animate-fade-in">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-bold text-gray-900 flex items-center justify-between">
                 <span>Ranking Colaboradores</span>
@@ -555,7 +555,7 @@ export default function Home() {
         </div>
 
         {/* Matriz Colapsável com Filtros */}
-        <Card className="shadow-lg border-2 border-gray-200 animate-fade-in">
+        <Card className="shadow-lg border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl animate-fade-in">
           <CardHeader
             className="cursor-pointer hover:bg-gray-50 transition-colors"
             onClick={() => setIsMatrizExpanded(!isMatrizExpanded)}

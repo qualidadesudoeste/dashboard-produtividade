@@ -160,7 +160,7 @@ export default function CiclosTeste() {
           <select
             value={filtroCliente}
             onChange={(e) => setFiltroCliente(e.target.value)}
-            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
           >
             {clientes.map((cliente) => (
               <option key={cliente} value={cliente}>
@@ -175,7 +175,7 @@ export default function CiclosTeste() {
           <select
             value={filtroStatus}
             onChange={(e) => setFiltroStatus(e.target.value)}
-            className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+            className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
           >
             {statusList.map((status) => (
               <option key={status} value={status}>
@@ -194,7 +194,7 @@ export default function CiclosTeste() {
               type="date"
               value={dataInicio}
               onChange={(e) => setDataInicio(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+              className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
             />
           </div>
 
@@ -204,7 +204,7 @@ export default function CiclosTeste() {
               type="date"
               value={dataFim}
               onChange={(e) => setDataFim(e.target.value)}
-              className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
+              className="w-full px-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover-border-glow transition-all"
             />
           </div>
 
@@ -251,7 +251,7 @@ export default function CiclosTeste() {
 
       {/* KPIs */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white backdrop-blur-sm border border-blue-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-muted-foreground text-sm font-medium">Total de Ciclos</h3>
             <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center">
@@ -262,7 +262,7 @@ export default function CiclosTeste() {
           <p className="text-sm text-muted-foreground">Projetos em teste</p>
         </div>
 
-        <div className="bg-white backdrop-blur-sm border border-green-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-green-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-muted-foreground text-sm font-medium">Total de Horas</h3>
             <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center">
@@ -273,7 +273,7 @@ export default function CiclosTeste() {
           <p className="text-sm text-muted-foreground">Tempo total investido</p>
         </div>
 
-        <div className="bg-white backdrop-blur-sm border border-purple-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-purple-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-muted-foreground text-sm font-medium">Total de Cards</h3>
             <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center">
@@ -284,7 +284,7 @@ export default function CiclosTeste() {
           <p className="text-sm text-muted-foreground">Atividades testadas</p>
         </div>
 
-        <div className="bg-white backdrop-blur-sm border border-orange-500/30 rounded-xl p-6 hover-lift hover-glow">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-orange-500/30 rounded-xl p-6 hover-lift hover-glow">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-muted-foreground text-sm font-medium">Retrabalho Médio</h3>
             <div className="w-12 h-12 rounded-full bg-orange-500/20 flex items-center justify-center">
@@ -299,7 +299,7 @@ export default function CiclosTeste() {
       {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         {/* Distribuição por Status */}
-        <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover-lift hover-border-glow">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-border-glow">
           <h3 className="text-xl font-semibold text-foreground mb-6">Distribuição por Status</h3>
           <ResponsiveContainer width="100%" height={300}>
             <PieChart>
@@ -331,7 +331,7 @@ export default function CiclosTeste() {
         </div>
 
         {/* Top 10 Retrabalho */}
-        <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 hover-lift hover-border-glow">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-border-glow">
           <h3 className="text-xl font-semibold text-foreground mb-6">Top 10 - Maior Retrabalho</h3>
           <ResponsiveContainer width="100%" height={300}>
             <BarChart data={retrabalhoData} layout="vertical">
@@ -354,7 +354,7 @@ export default function CiclosTeste() {
       </div>
 
       {/* Top 10 Duração */}
-      <div className="bg-white backdrop-blur-sm border border-gray-200/50 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
+      <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
         <h3 className="text-xl font-semibold text-foreground mb-6">Top 10 - Maior Duração</h3>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={duracaoData}>
@@ -499,7 +499,7 @@ export default function CiclosTeste() {
                   </h4>
                   <div className="space-y-3">
                     {selectedCiclo.ciclo1 && (
-                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">1</div>
                         <div className="flex-1">
                           <p className="text-xs text-muted-foreground">Primeiro Ciclo</p>
@@ -508,7 +508,7 @@ export default function CiclosTeste() {
                       </div>
                     )}
                     {selectedCiclo.ciclo2 && (
-                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                         <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm">2</div>
                         <div className="flex-1">
                           <p className="text-xs text-muted-foreground">Segundo Ciclo</p>
@@ -517,7 +517,7 @@ export default function CiclosTeste() {
                       </div>
                     )}
                     {selectedCiclo.ciclo3 && (
-                      <div className="flex items-center gap-3 p-3 bg-white rounded-lg border border-gray-200">
+                      <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm">3</div>
                         <div className="flex-1">
                           <p className="text-xs text-muted-foreground">Terceiro Ciclo</p>
@@ -535,12 +535,12 @@ export default function CiclosTeste() {
                     Correções e Retrabalho
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                       <p className="text-xs text-muted-foreground mb-1">Horas de Correção</p>
                       <p className="text-xl font-bold text-foreground">{selectedCiclo.correcoes_horas.toFixed(1)}h</p>
                       <p className="text-xs text-muted-foreground mt-1">de {selectedCiclo.total_horas.toFixed(1)}h totais</p>
                     </div>
-                    <div className="p-3 bg-white rounded-lg border border-gray-200">
+                    <div className="p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                       <p className="text-xs text-muted-foreground mb-1">Cards Corrigidos</p>
                       <p className="text-xl font-bold text-foreground">{selectedCiclo.correcoes_cards}</p>
                       <p className="text-xs text-muted-foreground mt-1">de {selectedCiclo.total_cards} cards totais</p>

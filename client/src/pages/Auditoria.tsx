@@ -463,7 +463,7 @@ export default function Auditoria() {
 
         {/* KPIs */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="border-l-4 border-l-blue-600 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-l-4 border-l-blue-600 shadow-lg hover:shadow-xl transition-shadow bg-slate-900/50 backdrop-blur-xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -475,7 +475,7 @@ export default function Auditoria() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-600 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-l-4 border-l-green-600 shadow-lg hover:shadow-xl transition-shadow bg-slate-900/50 backdrop-blur-xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -487,7 +487,7 @@ export default function Auditoria() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-red-600 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-l-4 border-l-red-600 shadow-lg hover:shadow-xl transition-shadow bg-slate-900/50 backdrop-blur-xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -499,7 +499,7 @@ export default function Auditoria() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-600 shadow-lg hover:shadow-xl transition-shadow">
+          <Card className="border-l-4 border-l-purple-600 shadow-lg hover:shadow-xl transition-shadow bg-slate-900/50 backdrop-blur-xl">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
@@ -517,7 +517,7 @@ export default function Auditoria() {
         </div>
 
         {/* Histórico */}
-        <Card className="shadow-lg">
+        <Card className="shadow-lg bg-slate-900/50 backdrop-blur-xl border-2 border-blue-500/30">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-2xl">Auditorias</CardTitle>
@@ -800,7 +800,7 @@ export default function Auditoria() {
                 </div>
               </div>
 
-              <div className="space-y-3 border rounded-lg p-4 bg-white">
+              <div className="space-y-3 border rounded-lg p-4 bg-slate-800/30">
                 {CRITERIOS_KEYS.map((key, index) => (
                   <div key={key} className="flex items-start gap-3 p-3 hover:bg-blue-50 rounded transition-colors">
                     <Checkbox
@@ -940,7 +940,7 @@ export default function Auditoria() {
               {/* Checklist */}
               <div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Critérios Avaliados</h3>
-                <div className="space-y-2 border rounded-lg p-4 bg-white">
+                <div className="space-y-2 border rounded-lg p-4 bg-slate-800/30">
                   {CRITERIOS_KEYS.map((key, index) => {
                     const atendido = selectedAuditoria.checklist[key];
                     return (
