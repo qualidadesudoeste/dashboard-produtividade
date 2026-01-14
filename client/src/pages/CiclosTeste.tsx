@@ -455,71 +455,71 @@ export default function CiclosTeste() {
                 <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-600 bg-clip-text text-transparent">
                   {selectedCiclo.projeto}
                 </DialogTitle>
-                <p className="text-muted-foreground mt-2">{selectedCiclo.cliente} - {selectedCiclo.sprint}</p>
+                <p className="text-gray-400 mt-2">{selectedCiclo.cliente} - {selectedCiclo.sprint}</p>
               </DialogHeader>
 
               <div className="space-y-6 mt-6">
                 {/* Informações Gerais */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Calendar className="w-4 h-4 text-blue-600" />
-                      <p className="text-xs text-muted-foreground">Duração</p>
+                      <Calendar className="w-4 h-4 text-blue-400" />
+                      <p className="text-xs text-gray-400">Duração</p>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.duracao}</p>
-                    <p className="text-xs text-muted-foreground">dias</p>
+                    <p className="text-2xl font-bold text-white">{selectedCiclo.duracao}</p>
+                    <p className="text-xs text-gray-400">dias</p>
                   </div>
 
-                  <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                  <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <Clock className="w-4 h-4 text-green-600" />
-                      <p className="text-xs text-muted-foreground">Total Horas</p>
+                      <Clock className="w-4 h-4 text-green-400" />
+                      <p className="text-xs text-gray-400">Total Horas</p>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.total_horas.toFixed(1)}</p>
-                    <p className="text-xs text-muted-foreground">horas</p>
+                    <p className="text-2xl font-bold text-white">{selectedCiclo.total_horas.toFixed(1)}</p>
+                    <p className="text-xs text-gray-400">horas</p>
                   </div>
 
-                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                  <div className="bg-purple-500/10 border border-purple-500/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <FileText className="w-4 h-4 text-purple-600" />
-                      <p className="text-xs text-muted-foreground">Total Cards</p>
+                      <FileText className="w-4 h-4 text-purple-400" />
+                      <p className="text-xs text-gray-400">Total Cards</p>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.total_cards}</p>
-                    <p className="text-xs text-muted-foreground">cards</p>
+                    <p className="text-2xl font-bold text-white">{selectedCiclo.total_cards}</p>
+                    <p className="text-xs text-gray-400">cards</p>
                   </div>
 
-                  <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                  <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
                     <div className="flex items-center gap-2 mb-2">
-                      <TrendingUp className="w-4 h-4 text-orange-600" />
-                      <p className="text-xs text-muted-foreground">Retrabalho</p>
+                      <TrendingUp className="w-4 h-4 text-orange-400" />
+                      <p className="text-xs text-gray-400">Retrabalho</p>
                     </div>
-                    <p className="text-2xl font-bold text-foreground">{selectedCiclo.retrabalho.toFixed(1)}%</p>
-                    <p className="text-xs text-muted-foreground">do total</p>
+                    <p className="text-2xl font-bold text-white">{selectedCiclo.retrabalho.toFixed(1)}%</p>
+                    <p className="text-xs text-gray-400">do total</p>
                   </div>
                 </div>
 
                 {/* Período */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Calendar className="w-5 h-5 text-blue-600" />
+                <div className="bg-slate-900/50 border border-blue-500/30 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                    <Calendar className="w-5 h-5 text-blue-400" />
                     Período de Execução
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <p className="text-xs text-muted-foreground mb-1">Início</p>
-                      <p className="text-sm font-medium text-foreground">{selectedCiclo.inicio}</p>
+                      <p className="text-xs text-gray-400 mb-1">Início</p>
+                      <p className="text-sm font-medium text-white">{selectedCiclo.inicio}</p>
                     </div>
                     <div>
-                      <p className="text-xs text-muted-foreground mb-1">Fim</p>
-                      <p className="text-sm font-medium text-foreground">{selectedCiclo.fim}</p>
+                      <p className="text-xs text-gray-400 mb-1">Fim</p>
+                      <p className="text-sm font-medium text-white">{selectedCiclo.fim}</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Ciclos de Teste */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <Activity className="w-5 h-5 text-purple-600" />
+                <div className="bg-slate-900/50 border border-purple-500/30 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-purple-400" />
                     Ciclos de Teste
                   </h4>
                   <div className="space-y-3">
@@ -527,8 +527,8 @@ export default function CiclosTeste() {
                       <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm">1</div>
                         <div className="flex-1">
-                          <p className="text-xs text-muted-foreground">Primeiro Ciclo</p>
-                          <p className="text-sm font-medium text-foreground">{selectedCiclo.ciclo1}</p>
+                          <p className="text-xs text-gray-400">Primeiro Ciclo</p>
+                          <p className="text-sm font-medium text-white">{selectedCiclo.ciclo1}</p>
                         </div>
                       </div>
                     )}
@@ -536,8 +536,8 @@ export default function CiclosTeste() {
                       <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                         <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm">2</div>
                         <div className="flex-1">
-                          <p className="text-xs text-muted-foreground">Segundo Ciclo</p>
-                          <p className="text-sm font-medium text-foreground">{selectedCiclo.ciclo2}</p>
+                          <p className="text-xs text-gray-400">Segundo Ciclo</p>
+                          <p className="text-sm font-medium text-white">{selectedCiclo.ciclo2}</p>
                         </div>
                       </div>
                     )}
@@ -545,8 +545,8 @@ export default function CiclosTeste() {
                       <div className="flex items-center gap-3 p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
                         <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 font-bold text-sm">3</div>
                         <div className="flex-1">
-                          <p className="text-xs text-muted-foreground">Terceiro Ciclo</p>
-                          <p className="text-sm font-medium text-foreground">{selectedCiclo.ciclo3}</p>
+                          <p className="text-xs text-gray-400">Terceiro Ciclo</p>
+                          <p className="text-sm font-medium text-white">{selectedCiclo.ciclo3}</p>
                         </div>
                       </div>
                     )}
@@ -554,28 +554,28 @@ export default function CiclosTeste() {
                 </div>
 
                 {/* Correções */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-                    <AlertCircle className="w-5 h-5 text-orange-600" />
+                <div className="bg-slate-900/50 border border-orange-500/30 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
+                    <AlertCircle className="w-5 h-5 text-orange-400" />
                     Correções e Retrabalho
                   </h4>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
-                      <p className="text-xs text-muted-foreground mb-1">Horas de Correção</p>
-                      <p className="text-xl font-bold text-foreground">{selectedCiclo.correcoes_horas.toFixed(1)}h</p>
-                      <p className="text-xs text-muted-foreground mt-1">de {selectedCiclo.total_horas.toFixed(1)}h totais</p>
+                      <p className="text-xs text-gray-400 mb-1">Horas de Correção</p>
+                      <p className="text-xl font-bold text-white">{selectedCiclo.correcoes_horas.toFixed(1)}h</p>
+                      <p className="text-xs text-gray-400 mt-1">de {selectedCiclo.total_horas.toFixed(1)}h totais</p>
                     </div>
                     <div className="p-3 bg-slate-800/30 rounded-lg border border-blue-500/30">
-                      <p className="text-xs text-muted-foreground mb-1">Cards Corrigidos</p>
-                      <p className="text-xl font-bold text-foreground">{selectedCiclo.correcoes_cards}</p>
-                      <p className="text-xs text-muted-foreground mt-1">de {selectedCiclo.total_cards} cards totais</p>
+                      <p className="text-xs text-gray-400 mb-1">Cards Corrigidos</p>
+                      <p className="text-xl font-bold text-white">{selectedCiclo.correcoes_cards}</p>
+                      <p className="text-xs text-gray-400 mt-1">de {selectedCiclo.total_cards} cards totais</p>
                     </div>
                   </div>
                 </div>
 
                 {/* Status */}
-                <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                  <h4 className="font-semibold text-foreground mb-3">Status Atual</h4>
+                <div className="bg-slate-900/50 border border-green-500/30 rounded-lg p-4">
+                  <h4 className="font-semibold text-white mb-3">Status Atual</h4>
                   <div className="flex items-center gap-2">
                     {getStatusBadge(selectedCiclo.status)}
                   </div>
