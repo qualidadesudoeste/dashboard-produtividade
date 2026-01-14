@@ -14,9 +14,9 @@ export default function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: BarChart3, description: "Visão geral de produtividade" },
-    { path: "/auditoria", label: "Auditoria", icon: FileCheck, description: "Status de qualidade dos projetos" },
-    { path: "/ciclos-teste", label: "Ciclos de Teste", icon: TestTube, description: "Gestão de testes e bugs" },
+    { path: "/", label: "Dashboard", icon: BarChart3, description: "" },
+    { path: "/auditoria", label: "Auditoria", icon: FileCheck, description: "" },
+    { path: "/ciclos-teste", label: "Ciclos de Teste", icon: TestTube, description: "" },
   ];
 
   return (

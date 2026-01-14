@@ -449,7 +449,7 @@ export default function Auditoria() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Auditoria de Qualidade</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Status de Conformidade Maker Express</h1>
             <p className="text-gray-600 mt-1"></p>
           </div>
           <Button
@@ -520,7 +520,7 @@ export default function Auditoria() {
         <Card className="shadow-lg">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl">Histórico de Auditorias</CardTitle>
+              <CardTitle className="text-2xl">Auditorias</CardTitle>
               <div className="flex gap-3">
                 <Select value={filtroProj} onValueChange={setFiltroProj}>
                   <SelectTrigger className="w-[200px]">
