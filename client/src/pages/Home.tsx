@@ -47,9 +47,21 @@ export default function Home() {
   const [matrizSearchProj, setMatrizSearchProj] = useState<string>("");
   const [filterColaboradorInput, setFilterColaboradorInput] = useState<string>("");
   const [filterProjetoInput, setFilterProjetoInput] = useState<string>("");
+  const [showColaboradorDropdown, setShowColaboradorDropdown] = useState<boolean>(false);
+  const [showProjetoDropdown, setShowProjetoDropdown] = useState<boolean>(false);
 
-  const colaboradores = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador)))], [data]);
-  const projetos = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Projeto)))], [data]);
+  const colaboradores = useMemo(() => Array.from(new Set(data.map((r) => r.Colaborador))).sort(), [data]);
+  const projetos = useMemo(() => Array.from(new Set(data.map((r) => r.Projeto))).sort(), [data]);
+
+  const filteredColaboradores = useMemo(() => {
+    if (!filterColaboradorInput) return colaboradores;
+    return colaboradores.filter(c => c.toLowerCase().includes(filterColaboradorInput.toLowerCase()));
+  }, [colaboradores, filterColaboradorInput]);
+
+  const filteredProjetos = useMemo(() => {
+    if (!filterProjetoInput) return projetos;
+    return projetos.filter(p => p.toLowerCase().includes(filterProjetoInput.toLowerCase()));
+  }, [projetos, filterProjetoInput]);
 
   useEffect(() => {
     fetch("/data.json")
@@ -221,14 +233,32 @@ export default function Home() {
                   Colaborador
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
                   <Input
                     type="text"
                     placeholder="Buscar colaborador..."
                     value={filterColaboradorInput}
                     onChange={(e) => setFilterColaboradorInput(e.target.value)}
+                    onFocus={() => setShowColaboradorDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowColaboradorDropdown(false), 200)}
                     className="h-9 text-sm pl-8"
                   />
+                  {showColaboradorDropdown && filteredColaboradores.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-blue-500/30 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                      {filteredColaboradores.slice(0, 10).map((colab) => (
+                        <div
+                          key={colab}
+                          onClick={() => {
+                            setFilterColaboradorInput(colab);
+                            setShowColaboradorDropdown(false);
+                          }}
+                          className="px-3 py-2 text-sm text-gray-200 hover:bg-blue-600/40 cursor-pointer transition-colors"
+                        >
+                          {colab}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -237,14 +267,32 @@ export default function Home() {
                   Projeto
                 </label>
                 <div className="relative">
-                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 z-10" />
                   <Input
                     type="text"
                     placeholder="Buscar projeto..."
                     value={filterProjetoInput}
                     onChange={(e) => setFilterProjetoInput(e.target.value)}
+                    onFocus={() => setShowProjetoDropdown(true)}
+                    onBlur={() => setTimeout(() => setShowProjetoDropdown(false), 200)}
                     className="h-9 text-sm pl-8"
                   />
+                  {showProjetoDropdown && filteredProjetos.length > 0 && (
+                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-blue-500/30 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                      {filteredProjetos.slice(0, 10).map((proj) => (
+                        <div
+                          key={proj}
+                          onClick={() => {
+                            setFilterProjetoInput(proj);
+                            setShowProjetoDropdown(false);
+                          }}
+                          className="px-3 py-2 text-sm text-gray-200 hover:bg-blue-600/40 cursor-pointer transition-colors"
+                        >
+                          {proj}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -447,17 +495,17 @@ export default function Home() {
                       className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-900/30 to-transparent hover:from-blue-800/40 transition-all hover:scale-[1.02] duration-200"
                     >
                       <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        originalIdx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
-                        originalIdx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
-                        originalIdx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
-                        "bg-blue-100 text-blue-700"
+                        originalIdx === 0 ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white" :
+                        originalIdx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white" :
+                        originalIdx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white" :
+                        "bg-blue-900/50 text-blue-300"
                       }`}>
                         {originalIdx + 1}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{item.projeto}</p>
                       </div>
-                      <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
+                      <div className="text-sm font-bold text-blue-400">{item.horas.toFixed(1)}h</div>
                     </div>
                   );
                 })}
@@ -538,17 +586,17 @@ export default function Home() {
                       className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-900/30 to-transparent hover:from-blue-800/40 transition-all hover:scale-[1.02] duration-200"
                     >
                       <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
-                        originalIdx === 0 ? "bg-gradient-to-br from-blue-400 to-blue-600 text-white" :
-                        originalIdx === 1 ? "bg-gradient-to-br from-blue-300 to-blue-500 text-white" :
-                        originalIdx === 2 ? "bg-gradient-to-br from-blue-200 to-blue-400 text-white" :
-                        "bg-blue-100 text-blue-700"
+                        originalIdx === 0 ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white" :
+                        originalIdx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white" :
+                        originalIdx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white" :
+                        "bg-blue-900/50 text-blue-300"
                       }`}>
                         {originalIdx + 1}
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{item.colaborador}</p>
                       </div>
-                      <div className="text-sm font-bold text-blue-600">{item.horas.toFixed(1)}h</div>
+                      <div className="text-sm font-bold text-blue-400">{item.horas.toFixed(1)}h</div>
                     </div>
                   );
                 })}
