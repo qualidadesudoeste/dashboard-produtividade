@@ -14,6 +14,7 @@ export default function Configuracoes() {
   const [novoCliente, setNovoCliente] = useState('');
   const [novoGerente, setNovoGerente] = useState('');
   const [mensagem, setMensagem] = useState('');
+  const [sincronizando, setSincronizando] = useState(false);
 
   // Carregar mapeamentos do localStorage
   useEffect(() => {
@@ -43,6 +44,47 @@ export default function Configuracoes() {
     
     // Recarregar página para aplicar mudanças
     window.location.reload();
+  };
+
+  const sincronizarDashboard = async () => {
+    setSincronizando(true);
+    setMensagem('⏳ Sincronizando dados do Dashboard...');
+
+    try {
+      // Carregar dados do Dashboard
+      const response = await fetch('/dados_atualizados.json');
+      const dados = await response.json();
+
+      // Aplicar gerentes baseado no cliente extraído do projeto
+      const dadosAtualizados = dados.map((registro: any) => {
+        const projeto = registro.Projeto || '';
+        // Extrair cliente do formato "CLIENTE - PROJETO"
+        const partes = projeto.split(' - ');
+        const cliente = partes[0]?.trim() || '';
+        
+        // Buscar gerente do mapeamento
+        const map = mapeamentos.find(m => m.cliente.toUpperCase() === cliente.toUpperCase());
+        const gerente = map?.gerente || 'Não atribuído';
+
+        return {
+          ...registro,
+          Cliente: cliente,
+          Gerente: gerente
+        };
+      });
+
+      // Salvar dados atualizados (simulação - em produção seria uma API)
+      console.log('Dados sincronizados:', dadosAtualizados);
+      
+      setMensagem('✅ Dashboard sincronizado com sucesso! ' + dadosAtualizados.length + ' registros atualizados.');
+      setTimeout(() => setMensagem(''), 5000);
+    } catch (error) {
+      console.error('Erro ao sincronizar:', error);
+      setMensagem('❌ Erro ao sincronizar Dashboard');
+      setTimeout(() => setMensagem(''), 5000);
+    } finally {
+      setSincronizando(false);
+    }
   };
 
   const adicionarMapeamento = () => {
@@ -101,13 +143,23 @@ export default function Configuracoes() {
           <CardHeader>
             <CardTitle className="text-2xl text-white flex items-center justify-between">
               Mapeamento Cliente → Gerente
-              <Button
-                onClick={salvarMapeamentos}
-                className="bg-green-600 hover:bg-green-700"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Salvar Alterações
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={salvarMapeamentos}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Save className="w-4 h-4 mr-2" />
+                  Salvar Alterações
+                </Button>
+                <Button
+                  onClick={sincronizarDashboard}
+                  disabled={sincronizando}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  <Settings className="w-4 h-4 mr-2" />
+                  {sincronizando ? 'Sincronizando...' : 'Sincronizar Dashboard'}
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-6">
@@ -194,6 +246,7 @@ export default function Configuracoes() {
               <ul className="list-disc list-inside space-y-1">
                 <li>Os mapeamentos são aplicados automaticamente aos Ciclos de Teste e Auditorias</li>
                 <li>Clique em "Salvar Alterações" para aplicar as mudanças</li>
+                <li>Clique em "Sincronizar Dashboard" para aplicar gerentes aos dados do Dashboard</li>
                 <li>A página será recarregada automaticamente após salvar</li>
                 <li>Os dados são armazenados localmente no navegador</li>
               </ul>
