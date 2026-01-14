@@ -424,7 +424,7 @@ export default function CiclosTeste() {
 
         {/* Ranking Retrabalho */}
         <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-border-glow">
-          <h3 className="text-xl font-semibold text-foreground mb-6">Ranking - Maior Retrabalho</h3>
+          <h3 className="text-xl font-semibold text-foreground mb-6">Ranking Retrabalho</h3>
           <div className="max-h-[400px] overflow-y-auto">
             <table className="w-full">
               <thead className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
@@ -466,7 +466,7 @@ export default function CiclosTeste() {
 
       {/* Ranking Duração */}
       <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
-        <h3 className="text-xl font-semibold text-foreground mb-6">Ranking - Maior Duração</h3>
+        <h3 className="text-xl font-semibold text-foreground mb-6">Ranking Duração</h3>
         <div className="max-h-[400px] overflow-y-auto">
           <table className="w-full">
             <thead className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
