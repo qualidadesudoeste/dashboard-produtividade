@@ -45,6 +45,8 @@ export default function Home() {
   const [searchColaboradores, setSearchColaboradores] = useState<string>("");
   const [matrizSearchColab, setMatrizSearchColab] = useState<string>("");
   const [matrizSearchProj, setMatrizSearchProj] = useState<string>("");
+  const [filterColaboradorInput, setFilterColaboradorInput] = useState<string>("");
+  const [filterProjetoInput, setFilterProjetoInput] = useState<string>("");
 
   const colaboradores = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Colaborador)))], [data]);
   const projetos = useMemo(() => ["todos", ...Array.from(new Set(data.map((r) => r.Projeto)))], [data]);
@@ -113,8 +115,11 @@ export default function Home() {
   }
 
   const filteredData = data.filter((row) => {
-    if (selectedColaborador !== "todos" && row.Colaborador !== selectedColaborador) return false;
-    if (selectedProjeto !== "todos" && row.Projeto !== selectedProjeto) return false;
+    // Filtro por colaborador (busca parcial case-insensitive)
+    if (filterColaboradorInput && !row.Colaborador.toLowerCase().includes(filterColaboradorInput.toLowerCase())) return false;
+    // Filtro por projeto (busca parcial case-insensitive)
+    if (filterProjetoInput && !row.Projeto.toLowerCase().includes(filterProjetoInput.toLowerCase())) return false;
+    // Filtros de data
     if (dataInicio && row.Início < dataInicio) return false;
     if (dataFim && row.Fim > dataFim) return false;
     return true;
@@ -212,41 +217,35 @@ export default function Home() {
           <CardContent className="pt-4 pb-4">
             <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
               <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-300 flex items-center gap-1">
-                  <Users className="h-3 w-3" />
+                <label className="text-xs font-bold text-gray-300">
                   Colaborador
                 </label>
-                <Select value={selectedColaborador} onValueChange={setSelectedColaborador}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {colaboradores.map((c) => (
-                      <SelectItem key={c} value={c}>
-                        {c === "todos" ? "Todos" : c}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar colaborador..."
+                    value={filterColaboradorInput}
+                    onChange={(e) => setFilterColaboradorInput(e.target.value)}
+                    className="h-9 text-sm pl-8"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-xs font-bold text-gray-300 flex items-center gap-1">
-                  <FolderKanban className="h-3 w-3" />
+                <label className="text-xs font-bold text-gray-300">
                   Projeto
                 </label>
-                <Select value={selectedProjeto} onValueChange={setSelectedProjeto}>
-                  <SelectTrigger className="h-9 text-sm">
-                    <SelectValue placeholder="Todos" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {projetos.map((p) => (
-                      <SelectItem key={p} value={p}>
-                        {p === "todos" ? "Todos" : p}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <div className="relative">
+                  <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Buscar projeto..."
+                    value={filterProjetoInput}
+                    onChange={(e) => setFilterProjetoInput(e.target.value)}
+                    className="h-9 text-sm pl-8"
+                  />
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -348,25 +347,25 @@ export default function Home() {
         {/* KPIs Grid 3x2 */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
           {[
-            { label: "Total Horas", value: `${totalHoras.toFixed(1)}h`, icon: Clock, color: "blue-600" },
-            { label: "Atividades", value: totalAtividades, icon: Activity, color: "blue-500" },
-            { label: "Colaboradores", value: totalColaboradores, icon: Users, color: "blue-700" },
-            { label: "Projetos", value: totalProjetos, icon: FolderKanban, color: "blue-800" },
-            { label: "Taxa Conclusão", value: `${taxaConclusao.toFixed(1)}%`, icon: CheckCircle2, color: "blue-400" },
-            { label: "Pontos Função", value: `${Math.round(totalPontosFuncao)}PF`, icon: Target, color: "blue-900" },
+            { label: "Total Horas", value: `${totalHoras.toFixed(1)}h`, icon: Clock, borderColor: "border-l-blue-500", textColor: "text-blue-400", iconColor: "text-blue-400" },
+            { label: "Atividades", value: totalAtividades, icon: Activity, borderColor: "border-l-purple-500", textColor: "text-purple-400", iconColor: "text-purple-400" },
+            { label: "Colaboradores", value: totalColaboradores, icon: Users, borderColor: "border-l-green-500", textColor: "text-green-400", iconColor: "text-green-400" },
+            { label: "Projetos", value: totalProjetos, icon: FolderKanban, borderColor: "border-l-orange-500", textColor: "text-orange-400", iconColor: "text-orange-400" },
+            { label: "Taxa Conclusão", value: `${taxaConclusao.toFixed(1)}%`, icon: CheckCircle2, borderColor: "border-l-emerald-500", textColor: "text-emerald-400", iconColor: "text-emerald-400" },
+            { label: "Pontos Função", value: `${Math.round(totalPontosFuncao)}PF`, icon: Target, borderColor: "border-l-cyan-500", textColor: "text-cyan-400", iconColor: "text-cyan-400" },
           ].map((kpi, idx) => (
             <Card
               key={kpi.label}
-              className={`shadow-lg border-l-4 border-l-${kpi.color} bg-slate-900/50 backdrop-blur-xl hover:shadow-xl transition-all hover:-translate-y-1 duration-300 animate-slide-up`}
+              className={`shadow-lg border-l-4 ${kpi.borderColor} bg-slate-900/50 backdrop-blur-xl hover:shadow-xl transition-all hover:-translate-y-1 duration-300 animate-slide-up`}
               style={{animationDelay: `${idx * 50}ms`}}
             >
               <CardContent className="pt-4 pb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className={`text-xs font-bold text-blue-400 uppercase tracking-wide`}>{kpi.label}</p>
+                    <p className={`text-xs font-bold ${kpi.textColor} uppercase tracking-wide`}>{kpi.label}</p>
                     <p className="text-3xl font-extrabold text-white mt-1">{kpi.value}</p>
                   </div>
-                  <kpi.icon className={`h-10 w-10 text-blue-400 opacity-80`} />
+                  <kpi.icon className={`h-10 w-10 ${kpi.iconColor} opacity-80`} />
                 </div>
               </CardContent>
             </Card>
@@ -399,18 +398,20 @@ export default function Home() {
                   return (
                     <div
                       key={item.name}
-                      className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-900/30 to-transparent hover:from-blue-800/40 transition-all hover:scale-[1.02] duration-200"
+                      className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-900/30 to-transparent hover:from-blue-800/40 transition-all hover:scale-[1.02] duration-200"
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                          {originalIdx + 1}
-                        </div>
-                        <span className="text-sm font-semibold text-white truncate">{item.name}</span>
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        originalIdx === 0 ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white" :
+                        originalIdx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white" :
+                        originalIdx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white" :
+                        "bg-blue-900/50 text-blue-300"
+                      }`}>
+                        {originalIdx + 1}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold text-blue-600">{item.value}</span>
-                        <span className="text-xs text-gray-400">({item.percent.toFixed(1)}%)</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{item.name}</p>
                       </div>
+                      <div className="text-sm font-bold text-blue-400">{item.value}</div>
                     </div>
                   );
                 })}
@@ -488,18 +489,20 @@ export default function Home() {
                   return (
                     <div
                       key={item.name}
-                      className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-blue-900/30 to-transparent hover:from-blue-800/40 transition-all hover:scale-[1.02] duration-200"
+                      className="flex items-center gap-3 p-2 rounded-lg bg-gradient-to-r from-blue-900/30 to-transparent hover:from-blue-800/40 transition-all hover:scale-[1.02] duration-200"
                     >
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <div className="flex-shrink-0 w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
-                          {originalIdx + 1}
-                        </div>
-                        <span className="text-sm font-semibold text-white truncate">{item.name}</span>
+                      <div className={`flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                        originalIdx === 0 ? "bg-gradient-to-br from-yellow-400 to-yellow-600 text-white" :
+                        originalIdx === 1 ? "bg-gradient-to-br from-gray-300 to-gray-500 text-white" :
+                        originalIdx === 2 ? "bg-gradient-to-br from-orange-400 to-orange-600 text-white" :
+                        "bg-blue-900/50 text-blue-300"
+                      }`}>
+                        {originalIdx + 1}
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm font-bold text-blue-600">{item.value}</span>
-                        <span className="text-xs text-gray-400">({item.percent.toFixed(1)}%)</span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold text-white truncate">{item.name}</p>
                       </div>
+                      <div className="text-sm font-bold text-blue-400">{item.value}</div>
                     </div>
                   );
                 })}
@@ -601,12 +604,12 @@ export default function Home() {
               <div className="overflow-x-auto">
                 <table className="min-w-full text-xs border-collapse">
                   <thead>
-                    <tr className="bg-blue-100">
-                      <th className="border border-gray-300 px-2 py-1 text-left font-bold sticky left-0 bg-blue-100 z-10">
+                    <tr className="bg-blue-900/40">
+                      <th className="border border-blue-500/30 px-2 py-1 text-left font-bold sticky left-0 bg-blue-900/60 z-10 text-white">
                         Colaborador
                       </th>
                       {projetosUnicos.map((p) => (
-                        <th key={p} className="border border-gray-300 px-2 py-1 text-center font-semibold min-w-[80px]">
+                        <th key={p} className="border border-blue-500/30 px-2 py-1 text-center font-semibold min-w-[80px] text-gray-300">
                           {p}
                         </th>
                       ))}
@@ -614,8 +617,8 @@ export default function Home() {
                   </thead>
                   <tbody>
                     {colaboradoresUnicos.map((c) => (
-                      <tr key={c} className="hover:bg-blue-50 transition-colors">
-                        <td className="border border-gray-300 px-2 py-1 font-semibold sticky left-0 bg-white">
+                      <tr key={c} className="hover:bg-blue-900/30 transition-colors">
+                        <td className="border border-blue-500/30 px-2 py-1 font-semibold sticky left-0 bg-slate-900/80 text-white">
                           {c}
                         </td>
                         {projetosUnicos.map((p) => {
@@ -623,8 +626,8 @@ export default function Home() {
                           return (
                             <td
                               key={p}
-                              className={`border border-gray-300 px-2 py-1 text-center transition-colors ${
-                                horas > 0 ? "bg-blue-100 font-semibold text-blue-900 hover:bg-blue-200" : "text-gray-400"
+                              className={`border border-blue-500/30 px-2 py-1 text-center transition-colors ${
+                                horas > 0 ? "bg-gradient-to-br from-blue-600/40 to-purple-600/40 font-semibold text-white hover:from-blue-500/50 hover:to-purple-500/50" : "text-gray-600"
                               }`}
                             >
                               {horas > 0 ? horas.toFixed(1) : "-"}
