@@ -473,7 +473,7 @@ export default function Auditoria() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-white">Conformidade Maker Express</h1>
+            <h1 className="text-4xl font-bold text-white"></h1>
             <p className="text-gray-300 mt-1"></p>
           </div>
           <Button
@@ -545,7 +545,7 @@ export default function Auditoria() {
           <CardHeader>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <CardTitle className="text-2xl text-white">Auditorias</CardTitle>
+                <CardTitle className="text-2xl text-white"></CardTitle>
                 <Button
                   variant="outline"
                   size="sm"
