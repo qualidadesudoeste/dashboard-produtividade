@@ -244,7 +244,7 @@ export default function Home() {
                     className="h-9 text-sm pl-8"
                   />
                   {showColaboradorDropdown && filteredColaboradores.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-blue-500/30 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                    <div className="absolute z-[9999] w-full mt-1 bg-slate-800 border border-blue-500/30 rounded-md shadow-lg max-h-48 overflow-y-auto">
                       {filteredColaboradores.slice(0, 10).map((colab) => (
                         <div
                           key={colab}
@@ -278,7 +278,7 @@ export default function Home() {
                     className="h-9 text-sm pl-8"
                   />
                   {showProjetoDropdown && filteredProjetos.length > 0 && (
-                    <div className="absolute z-50 w-full mt-1 bg-slate-800 border border-blue-500/30 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                    <div className="absolute z-[9999] w-full mt-1 bg-slate-800 border border-blue-500/30 rounded-md shadow-lg max-h-48 overflow-y-auto">
                       {filteredProjetos.slice(0, 10).map((proj) => (
                         <div
                           key={proj}
