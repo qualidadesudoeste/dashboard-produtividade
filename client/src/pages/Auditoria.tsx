@@ -467,8 +467,8 @@ export default function Auditoria() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">TOTAL AUDITORIAS</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{kpis.total}</p>
+                  <p className="text-sm text-gray-300 font-medium">TOTAL AUDITORIAS</p>
+                  <p className="text-3xl font-bold text-white mt-2">{kpis.total}</p>
                 </div>
                 <FileCheck className="w-12 h-12 text-blue-600 opacity-80" />
               </div>
@@ -479,8 +479,8 @@ export default function Auditoria() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">TAXA CONFORMIDADE</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{kpis.taxaConformidade}%</p>
+                  <p className="text-sm text-gray-300 font-medium">TAXA CONFORMIDADE</p>
+                  <p className="text-3xl font-bold text-white mt-2">{kpis.taxaConformidade}%</p>
                 </div>
                 <TrendingUp className="w-12 h-12 text-green-600 opacity-80" />
               </div>
@@ -491,8 +491,8 @@ export default function Auditoria() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">SPRINTS CRÍTICAS</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-2">{kpis.criticos}</p>
+                  <p className="text-sm text-gray-300 font-medium">SPRINTS CRÍTICAS</p>
+                  <p className="text-3xl font-bold text-white mt-2">{kpis.criticos}</p>
                 </div>
                 <AlertTriangle className="w-12 h-12 text-red-600 opacity-80" />
               </div>
@@ -503,8 +503,8 @@ export default function Auditoria() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-gray-600 font-medium">ÚLTIMA AUDITORIA</p>
-                  <p className="text-xl font-bold text-gray-900 mt-2">
+                  <p className="text-sm text-gray-300 font-medium">ÚLTIMA AUDITORIA</p>
+                  <p className="text-xl font-bold text-white mt-2">
                     {kpis.ultimaAuditoria !== "N/A"
                       ? new Date(kpis.ultimaAuditoria).toLocaleDateString("pt-BR")
                       : "N/A"}
@@ -520,7 +520,7 @@ export default function Auditoria() {
         <Card className="shadow-lg bg-slate-900/50 backdrop-blur-xl border-2 border-blue-500/30">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-2xl">Auditorias</CardTitle>
+              <CardTitle className="text-2xl text-white">Auditorias</CardTitle>
               <div className="flex gap-3">
                 <Select value={filtroProj} onValueChange={setFiltroProj}>
                   <SelectTrigger className="w-[200px]">
@@ -554,7 +554,7 @@ export default function Auditoria() {
             {auditoriasFiltradas.length === 0 ? (
               <div className="text-center py-12">
                 <BarChart3 className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                <p className="text-gray-500 text-lg">Nenhuma auditoria encontrada</p>
+                <p className="text-gray-300 text-lg">Nenhuma auditoria encontrada</p>
                 <p className="text-gray-400 text-sm mt-2">
                   Clique em "Nova Auditoria" para começar
                 </p>
@@ -582,17 +582,17 @@ export default function Auditoria() {
                     return (
                       <Card
                         key={aud.id}
-                        className="border hover:border-blue-300 hover:bg-blue-50/50 transition-all cursor-pointer"
+                        className="border-2 border-blue-500/30 bg-slate-900/50 backdrop-blur-xl hover:border-blue-400 hover:bg-slate-800/70 transition-all cursor-pointer"
                       >
                         <CardContent className="p-4">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4 flex-1">
                               <Icon className={`w-8 h-8 ${iconColor}`} />
                               <div className="flex-1">
-                                <p className="font-semibold text-gray-900">
+                                <p className="font-semibold text-white">
                                   {aud.projeto} - {aud.sprint}
                                 </p>
-                                <p className="text-sm text-gray-600">
+                                <p className="text-sm text-gray-300">
                                   {new Date(aud.data).toLocaleDateString("pt-BR")} • {aud.auditor}
                                 </p>
                               </div>
@@ -601,7 +601,7 @@ export default function Auditoria() {
                             <div className="flex items-center gap-4">
                               <div className="text-right">
                                 <p className="text-3xl font-bold text-blue-600">{aud.scoreTotal}%</p>
-                                <p className="text-xs text-gray-500">
+                                <p className="text-xs text-gray-400">
                                   {itensAtendidos}/15 critérios
                                 </p>
                               </div>
@@ -637,7 +637,7 @@ export default function Auditoria() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="text-blue-600 hover:bg-blue-50"
+                                  className="text-blue-400 hover:bg-blue-900/50 border-blue-500/30"
                                   onClick={() => handleEditarAuditoria(aud)}
                                 >
                                   <Pencil className="w-4 h-4" />
@@ -645,7 +645,7 @@ export default function Auditoria() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  className="text-red-600 hover:bg-red-50"
+                                  className="text-red-400 hover:bg-red-900/50 border-red-500/30"
                                   onClick={() => handleExcluirAuditoria(aud.id)}
                                 >
                                   <Trash2 className="w-4 h-4" />
