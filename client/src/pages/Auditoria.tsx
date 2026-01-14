@@ -777,12 +777,12 @@ export default function Auditoria() {
                 Checklist Maker Compass
               </h3>
 
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Score Total Calculado:</p>
-                    <p className="text-4xl font-bold text-blue-600 mt-1">{scoreAtual}%</p>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-4xl font-bold text-blue-400 mt-1">{scoreAtual}%</p>
+                    <p className="text-xs text-gray-400 mt-1">
                       {itensAtendidos}/15 critérios atendidos
                     </p>
                   </div>
@@ -929,10 +929,10 @@ export default function Auditoria() {
               </div>
 
               {/* Score Total */}
-              <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-6 text-center">
-                <p className="text-sm text-gray-600 mb-2">Score Total</p>
-                <p className="text-5xl font-bold text-blue-600">{selectedAuditoria.scoreTotal}%</p>
-                <p className="text-sm text-gray-500 mt-2">
+              <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-6 text-center">
+                <p className="text-sm text-gray-400 mb-2">Score Total</p>
+                <p className="text-5xl font-bold text-blue-400">{selectedAuditoria.scoreTotal}%</p>
+                <p className="text-sm text-gray-400 mt-2">
                   {CRITERIOS_KEYS.filter((key) => selectedAuditoria.checklist[key]).length}/15 critérios atendidos
                 </p>
               </div>
