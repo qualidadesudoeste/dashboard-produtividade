@@ -449,7 +449,7 @@ export default function Auditoria() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-gray-900">Status de Conformidade Maker Express</h1>
+            <h1 className="text-4xl font-bold text-gray-900">Conformidade Maker Express</h1>
             <p className="text-gray-600 mt-1"></p>
           </div>
           <Button
