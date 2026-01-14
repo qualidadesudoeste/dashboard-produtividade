@@ -440,12 +440,6 @@ export default function CiclosTeste() {
                 dataKey="retrabalho" 
                 fill="#f59e0b" 
                 radius={[0, 8, 8, 0]}
-                activeBar={{
-                  fill: "#f59e0b",
-                  stroke: "#fbbf24",
-                  strokeWidth: 3,
-                  filter: "drop-shadow(0 0 8px rgba(251, 191, 36, 0.8))",
-                }}
               />
             </BarChart>
           </ResponsiveContainer>
@@ -473,12 +467,6 @@ export default function CiclosTeste() {
               dataKey="duracao" 
               fill="#3b82f6" 
               radius={[8, 8, 0, 0]}
-              activeBar={{
-                fill: "#3b82f6",
-                stroke: "#60a5fa",
-                strokeWidth: 3,
-                filter: "drop-shadow(0 0 8px rgba(96, 165, 250, 0.8))",
-              }}
             />
           </BarChart>
         </ResponsiveContainer>

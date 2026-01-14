@@ -87,6 +87,9 @@ interface Auditoria {
   status: "Aprovado" | "Aprovado com Ressalvas" | "Reprovado";
   observacoes: string;
   acoesCorretivas: string;
+  tempoEstimado?: number;
+  tempoTotal?: number;
+  diferencaTempo?: number;
 }
 
 const CRITERIOS_LABELS = [
@@ -233,6 +236,10 @@ export default function Auditoria() {
           );
 
           if (!jaExiste) {
+            const tempoEstimado = ciclo.tempoPrevisto || 0;
+            const tempoTotal = ciclo.totalHoras || 0;
+            const diferencaTempo = tempoTotal - tempoEstimado;
+
             novasAuditorias.push({
               id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               gerente,
@@ -264,6 +271,9 @@ export default function Auditoria() {
               status: "Reprovado",
               observacoes: "",
               acoesCorretivas: "",
+              tempoEstimado,
+              tempoTotal,
+              diferencaTempo,
             });
           }
         });
@@ -1025,6 +1035,28 @@ export default function Auditoria() {
                 <div>
                   <p className="text-sm text-gray-400">Duração</p>
                   <p className="font-semibold text-white">{selectedAuditoria.duracao} dias</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Tempo Estimado</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.tempoEstimado?.toFixed(1) || "N/A"}h</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Tempo Total</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.tempoTotal?.toFixed(1) || "N/A"}h</p>
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400">Diferença (Total - Estimado)</p>
+                  <p className={`font-semibold ${
+                    (selectedAuditoria.diferencaTempo || 0) > 0 
+                      ? "text-red-400" 
+                      : (selectedAuditoria.diferencaTempo || 0) < 0 
+                      ? "text-green-400" 
+                      : "text-white"
+                  }`}>
+                    {selectedAuditoria.diferencaTempo !== undefined 
+                      ? `${selectedAuditoria.diferencaTempo > 0 ? "+" : ""}${selectedAuditoria.diferencaTempo.toFixed(1)}h` 
+                      : "N/A"}
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-gray-400">Data Auditoria</p>
