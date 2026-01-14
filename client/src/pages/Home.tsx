@@ -474,11 +474,10 @@ export default function Home() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-semibold text-white truncate">{item.name}</p>
-                        <p className="text-xs text-gray-400">{item.horas.toFixed(1)}h ({item.horasPercent.toFixed(1)}%)</p>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-bold text-blue-400">{item.value}</div>
-                        <div className="text-xs text-gray-400">{item.percent.toFixed(1)}%</div>
+                        <div className="text-sm font-bold text-blue-400">{item.horas.toFixed(1)}h</div>
+                        <div className="text-xs text-gray-400">{item.horasPercent.toFixed(1)}%</div>
                       </div>
                     </div>
                   );
