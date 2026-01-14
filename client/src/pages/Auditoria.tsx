@@ -73,6 +73,7 @@ interface Checklist {
 
 interface Auditoria {
   id: string;
+  gerente: string;
   projeto: string;
   sprint: string;
   dataInicio: string;
@@ -156,6 +157,7 @@ export default function Auditoria() {
 
   // Form state
   const [formData, setFormData] = useState({
+    gerente: "",
     projeto: "",
     sprint: "",
     dataInicio: "",
@@ -215,6 +217,13 @@ export default function Auditoria() {
         ciclosData.forEach((ciclo: any) => {
           const projeto = ciclo.projeto;
           const sprint = ciclo.sprint;
+          const gerente = ciclo.gerente || "Não informado";
+          const dataFim = ciclo.fim;
+
+          // Criar auditoria apenas se houver data fim preenchida
+          if (!dataFim || dataFim.trim() === "") {
+            return; // Pular este ciclo
+          }
 
           // Verificar se já existe auditoria para este projeto+sprint
           const jaExiste = auditorias.some(
@@ -224,6 +233,7 @@ export default function Auditoria() {
           if (!jaExiste) {
             novasAuditorias.push({
               id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+              gerente,
               projeto,
               sprint,
               dataInicio: converterParaFormatoISO(ciclo.inicio || ""),
@@ -307,6 +317,7 @@ export default function Auditoria() {
       // EDITAR: atualizar registro existente
       const auditoriaAtualizada: Auditoria = {
         id: editandoAuditoria.id,
+        gerente: formData.gerente,
         projeto: formData.projeto,
         sprint: formData.sprint,
         dataInicio: formData.dataInicio,
@@ -331,6 +342,7 @@ export default function Auditoria() {
       // CRIAR: adicionar novo registro
       const novaAuditoria: Auditoria = {
         id: Date.now().toString(),
+        gerente: formData.gerente,
         projeto: formData.projeto,
         sprint: formData.sprint,
         dataInicio: formData.dataInicio,
@@ -352,6 +364,7 @@ export default function Auditoria() {
 
     // Reset form
     setFormData({
+      gerente: "",
       projeto: "",
       sprint: "",
       dataInicio: "",
@@ -386,6 +399,7 @@ export default function Auditoria() {
   const handleEditarAuditoria = (auditoria: Auditoria) => {
     setEditandoAuditoria(auditoria);
     setFormData({
+      gerente: auditoria.gerente,
       projeto: auditoria.projeto,
       sprint: auditoria.sprint,
       dataInicio: auditoria.dataInicio,
@@ -773,6 +787,17 @@ export default function Auditoria() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-2">
+                  Gerente
+                </label>
+                <Input
+                  value={formData.gerente}
+                  disabled
+                  className="bg-slate-700 border-slate-600 text-gray-400 cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Projeto <span className="text-red-500">*</span>
                 </label>
                 <Select value={formData.projeto} onValueChange={(val) => setFormData({ ...formData, projeto: val })}>
@@ -971,6 +996,10 @@ export default function Auditoria() {
             <div className="space-y-6 py-4">
               {/* Informações Gerais */}
               <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <p className="text-sm text-gray-400">Gerente</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.gerente || "Não informado"}</p>
+                </div>
                 <div>
                   <p className="text-sm text-gray-400">Projeto</p>
                   <p className="font-semibold text-white">{selectedAuditoria.projeto}</p>

@@ -4,6 +4,7 @@ import { Activity, AlertCircle, CheckCircle, Clock, FileText, X, Calendar, Trend
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 interface CicloTeste {
+  gerente: string;
   cliente: string;
   projeto: string;
   sprint: string;
@@ -382,6 +383,7 @@ export default function CiclosTeste() {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-blue-500/20">
+                <th className="text-left py-3 px-4 text-gray-300 font-medium">Gerente</th>
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Cliente</th>
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Projeto</th>
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Sprint</th>
@@ -410,6 +412,7 @@ export default function CiclosTeste() {
                     setIsModalOpen(true);
                   }}
                 >
+                  <td className="py-3 px-4 text-white font-medium">{ciclo.gerente}</td>
                   <td className="py-3 px-4 text-white font-medium">{ciclo.cliente}</td>
                   <td className="py-3 px-4 text-white">{ciclo.projeto}</td>
                   <td className="py-3 px-4 text-gray-300">{ciclo.sprint}</td>

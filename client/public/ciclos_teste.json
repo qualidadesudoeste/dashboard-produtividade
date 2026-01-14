@@ -1,5 +1,6 @@
 [
   {
+    "gerente": "Leidiane",
     "cliente": "SEFAZ",
     "projeto": "CONTRATOS",
     "sprint": "3.0.3",
@@ -18,6 +19,7 @@
     "retrabalho": 0.8
   },
   {
+    "gerente": "Leidiane",
     "cliente": "SEDUR",
     "projeto": "FISCALIZAÇÃO",
     "sprint": "22.0.0",
@@ -36,6 +38,7 @@
     "retrabalho": 8.42
   },
   {
+    "gerente": "Luiz",
     "cliente": "SMED",
     "projeto": "SIE - CORUÍPE",
     "sprint": "APP 2.2",
@@ -54,6 +57,7 @@
     "retrabalho": 0.0
   },
   {
+    "gerente": "Leidiane",
     "cliente": "SMED",
     "projeto": "SIE - SERRINHA",
     "sprint": "2.0.0",
@@ -72,6 +76,7 @@
     "retrabalho": 0.0
   },
   {
+    "gerente": "Leidiane",
     "cliente": "SMED",
     "projeto": "SIE - SERRINHA",
     "sprint": "3.0.0",
@@ -90,6 +95,7 @@
     "retrabalho": 0.0
   },
   {
+    "gerente": "Luiz",
     "cliente": "SMED",
     "projeto": "GESTÃO DE PESSOAS",
     "sprint": "11.0.0",
@@ -108,6 +114,7 @@
     "retrabalho": 55.93
   },
   {
+    "gerente": "Fabíola",
     "cliente": "SMED",
     "projeto": "GESTÃO DE PESSOAS",
     "sprint": "12.0.0",
@@ -126,6 +133,7 @@
     "retrabalho": 47.6
   },
   {
+    "gerente": "Leidiane",
     "cliente": "SMED",
     "projeto": "SIE - SALVADOR",
     "sprint": "65.0.0",
@@ -144,6 +152,7 @@
     "retrabalho": 0.33
   },
   {
+    "gerente": "Leidiane",
     "cliente": "SYSMOBI",
     "projeto": "SEMOB",
     "sprint": "38.0.0",
