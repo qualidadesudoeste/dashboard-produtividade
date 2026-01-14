@@ -123,6 +123,22 @@ const CRITERIOS_KEYS: (keyof Checklist)[] = [
   "sprintQuinzenal",
 ];
 
+// Função auxiliar para converter data DD/MM/YYYY para YYYY-MM-DD
+const converterParaFormatoISO = (data: string): string => {
+  if (!data) return "";
+  
+  // Se já está no formato YYYY-MM-DD, retorna
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) return data;
+  
+  // Se está no formato DD/MM/YYYY, converte
+  if (/^\d{2}\/\d{2}\/\d{4}$/.test(data)) {
+    const [dia, mes, ano] = data.split("/");
+    return `${ano}-${mes}-${dia}`;
+  }
+  
+  return "";
+};
+
 export default function Auditoria() {
   const [data, setData] = useState<DataRecord[]>([]);
   const [loading, setLoading] = useState(true);
@@ -205,8 +221,8 @@ export default function Auditoria() {
               id: `${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
               projeto,
               sprint,
-              dataInicio: ciclo.inicio || "",
-              dataFim: ciclo.fim || "",
+              dataInicio: converterParaFormatoISO(ciclo.inicio || ""),
+              dataFim: converterParaFormatoISO(ciclo.fim || ""),
               duracao: ciclo.duracao || 0,
               data: new Date().toISOString().split("T")[0],
               auditor: "Pendente",
@@ -654,19 +670,9 @@ export default function Auditoria() {
       }}>
         <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-2xl">
-                {editandoAuditoria ? `Editar Auditoria - ${editandoAuditoria.projeto} ${editandoAuditoria.sprint}` : "Nova Auditoria de Sprint"}
-              </DialogTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsFormOpen(false)}
-                className="h-8 w-8 p-0"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+            <DialogTitle className="text-2xl">
+              {editandoAuditoria ? `Editar Auditoria - ${editandoAuditoria.projeto} ${editandoAuditoria.sprint}` : "Nova Auditoria de Sprint"}
+            </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-6 py-4">
@@ -865,17 +871,7 @@ export default function Auditoria() {
       <Dialog open={!!selectedAuditoria} onOpenChange={() => setSelectedAuditoria(null)}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-2xl">Detalhes da Auditoria</DialogTitle>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedAuditoria(null)}
-                className="h-8 w-8 p-0"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
+            <DialogTitle className="text-2xl">Detalhes da Auditoria</DialogTitle>
           </DialogHeader>
 
           {selectedAuditoria && (

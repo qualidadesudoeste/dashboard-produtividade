@@ -1,27 +1,37 @@
-# TODO - Badge de Alerta para Sprints Longas
+# TODO - Correção de Bugs na Auditoria
 
-## Objetivo
-Adicionar indicador visual automático (badge laranja) nos cards de auditorias para sprints com duração > 15 dias.
+## Bugs Identificados
+
+### Bug 1: Datas não preenchidas ao editar
+**Problema:** Ao clicar em "Editar" auditoria, os campos Data Início Sprint e Data Fim Sprint ficam vazios, mesmo a auditoria tendo essas informações.
+
+**Causa:** A função `handleEditarAuditoria` não está preenchendo os campos `dataInicio` e `dataFim` no `formData`.
+
+**Solução:** Adicionar `dataInicio` e `dataFim` ao setFormData dentro de handleEditarAuditoria.
+
+### Bug 2: Botões X duplicados no modal
+**Problema:** Modal de formulário tem dois botões X para fechar (um do DialogHeader e outro customizado).
+
+**Causa:** Provavelmente há um botão X customizado além do botão padrão do Dialog.
+
+**Solução:** Remover botão X duplicado, manter apenas o padrão do DialogHeader.
 
 ## Tarefas
 
-### [ ] 1. Implementar Badge de Alerta
-- Adicionar lógica condicional nos cards da lista de auditorias
-- Verificar se `auditoria.duracao > 15`
-- Exibir badge laranja "Sprint >15 dias" quando condição for verdadeira
-- Posicionar badge ao lado do score ou abaixo do título
+### [ ] 1. Corrigir preenchimento de datas ao editar
+- Localizar função `handleEditarAuditoria`
+- Adicionar `dataInicio: auditoria.dataInicio` ao setFormData
+- Adicionar `dataFim: auditoria.dataFim` ao setFormData
 
-### [ ] 2. Estilizar Badge
-- Cor: laranja (orange-500 ou warning)
-- Ícone: AlertTriangle ou Clock
-- Tamanho: pequeno (text-xs)
-- Posicionamento: visível mas não intrusivo
+### [ ] 2. Remover botão X duplicado
+- Localizar modal de formulário (Dialog)
+- Identificar botão X customizado duplicado
+- Remover botão duplicado
 
-### [ ] 3. Testar Funcionalidade
-- Verificar auditorias com duração > 15 dias mostram badge
-- Verificar auditorias com duração ≤ 15 dias NÃO mostram badge
-- Testar responsividade do badge em diferentes tamanhos de tela
+### [ ] 3. Testar correções
+- Abrir edição de auditoria e verificar datas preenchidas
+- Verificar que há apenas 1 botão X no modal
 
-### [ ] 4. Documentar e Entregar
+### [ ] 4. Documentar e entregar
 - Criar checkpoint
-- Documentar funcionalidade implementada
+- Documentar correções aplicadas
