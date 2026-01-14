@@ -899,6 +899,51 @@ export default function Auditoria() {
                   onChange={(e) => setFormData({ ...formData, auditor: e.target.value })}
                 />
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Tempo Previsto (h)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={editandoAuditoria?.tempoEstimado?.toFixed(1) || "0.0"}
+                  readOnly
+                  className="bg-slate-700 border-slate-600 text-gray-400 cursor-not-allowed"
+                  placeholder="Buscado de Ciclos de Teste"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Tempo Total (h)</label>
+                <Input
+                  type="number"
+                  step="0.1"
+                  value={editandoAuditoria?.tempoTotal?.toFixed(1) || "0.0"}
+                  readOnly
+                  className="bg-slate-700 border-slate-600 text-gray-400 cursor-not-allowed"
+                  placeholder="Buscado de Ciclos de Teste"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Diferença (Total - Previsto)</label>
+                <Input
+                  type="text"
+                  value={
+                    editandoAuditoria?.diferencaTempo !== undefined
+                      ? `${editandoAuditoria.diferencaTempo > 0 ? "+" : ""}${editandoAuditoria.diferencaTempo.toFixed(1)}h`
+                      : "0.0h"
+                  }
+                  readOnly
+                  className={`font-semibold cursor-not-allowed ${
+                    (editandoAuditoria?.diferencaTempo || 0) > 0
+                      ? "bg-red-900/30 border-red-500/50 text-red-400"
+                      : (editandoAuditoria?.diferencaTempo || 0) < 0
+                      ? "bg-green-900/30 border-green-500/50 text-green-400"
+                      : "bg-slate-700 border-slate-600 text-gray-400"
+                  }`}
+                  placeholder="Calculado automaticamente"
+                />
+              </div>
             </div>
 
             {/* Checklist Maker Compass */}

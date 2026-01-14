@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
+import { ResponsiveContainer, PieChart, Pie, Cell, Legend, Tooltip } from "recharts";
 import { Activity, AlertCircle, CheckCircle, Clock, FileText, X, Calendar, TrendingUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { getGerentePorCliente } from "@/lib/gerenteUtils";
@@ -160,19 +160,22 @@ export default function CiclosTeste() {
     { name: "Liberada/Sem teste", value: liberadosSemTeste, color: "#eab308" },
   ].filter((item) => item.value > 0);
 
-  const retrabalhoData = ciclosFiltrados
+  // Rankings completos (todos os projetos)
+  const retrabalhoRanking = ciclosFiltrados
     .sort((a, b) => b.retrabalho - a.retrabalho)
-    .slice(0, 10)
-    .map((c) => ({
-      name: `${c.cliente} - ${c.projeto}`,
+    .map((c, index) => ({
+      posicao: index + 1,
+      cliente: c.cliente,
+      projeto: c.projeto,
       retrabalho: c.retrabalho,
     }));
 
-  const duracaoData = ciclosFiltrados
+  const duracaoRanking = ciclosFiltrados
     .sort((a, b) => b.duracao - a.duracao)
-    .slice(0, 10)
-    .map((c) => ({
-      name: `${c.cliente} - ${c.projeto}`,
+    .map((c, index) => ({
+      posicao: index + 1,
+      cliente: c.cliente,
+      projeto: c.projeto,
       duracao: c.duracao,
     }));
 
@@ -419,57 +422,87 @@ export default function CiclosTeste() {
           </ResponsiveContainer>
         </div>
 
-        {/* Top 10 Retrabalho */}
+        {/* Ranking Retrabalho */}
         <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 hover-lift hover-border-glow">
-          <h3 className="text-xl font-semibold text-foreground mb-6">Top 10 - Maior Retrabalho</h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={retrabalhoData} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-              <XAxis type="number" stroke="#9ca3af" />
-              <YAxis dataKey="name" type="category" width={150} stroke="#9ca3af" style={{ fontSize: "11px" }} />
-              <Tooltip
-                contentStyle={{
-                  backgroundColor: "rgba(17, 24, 39, 0.95)",
-                  border: "1px solid rgba(75, 85, 99, 0.5)",
-                  borderRadius: "8px",
-                  color: "#fff",
-                }}
-                formatter={(value: number) => `${value.toFixed(1)}%`}
-              />
-              <Bar 
-                dataKey="retrabalho" 
-                fill="#f59e0b" 
-                radius={[0, 8, 8, 0]}
-              />
-            </BarChart>
-          </ResponsiveContainer>
+          <h3 className="text-xl font-semibold text-foreground mb-6">Ranking - Maior Retrabalho</h3>
+          <div className="max-h-[400px] overflow-y-auto">
+            <table className="w-full">
+              <thead className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
+                <tr className="border-b border-blue-500/30">
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">#</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Cliente</th>
+                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Projeto</th>
+                  <th className="text-right py-3 px-4 text-sm font-semibold text-gray-300">Retrabalho</th>
+                </tr>
+              </thead>
+              <tbody>
+                {retrabalhoRanking.map((item, idx) => (
+                  <tr 
+                    key={idx}
+                    className="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors"
+                  >
+                    <td className="py-3 px-4">
+                      <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                        item.posicao === 1 ? "bg-yellow-500/20 text-yellow-400" :
+                        item.posicao === 2 ? "bg-gray-400/20 text-gray-300" :
+                        item.posicao === 3 ? "bg-orange-600/20 text-orange-400" :
+                        "bg-slate-700/50 text-gray-400"
+                      }`}>
+                        {item.posicao}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-sm text-gray-300">{item.cliente}</td>
+                    <td className="py-3 px-4 text-sm text-white font-medium">{item.projeto}</td>
+                    <td className="py-3 px-4 text-right">
+                      <span className="text-orange-400 font-bold">{item.retrabalho.toFixed(1)}%</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
-      {/* Top 10 Duração */}
+      {/* Ranking Duração */}
       <div className="bg-slate-900/50 backdrop-blur-xl border border-blue-500/30 rounded-xl p-6 mb-8 hover-lift hover-border-glow">
-        <h3 className="text-xl font-semibold text-foreground mb-6">Top 10 - Maior Duração</h3>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={duracaoData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9ca3af" angle={-45} textAnchor="end" height={100} style={{ fontSize: "11px" }} />
-            <YAxis stroke="#9ca3af" label={{ value: "Dias", angle: -90, position: "insideLeft", style: { fill: "#9ca3af" } }} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "rgba(17, 24, 39, 0.95)",
-                border: "1px solid rgba(75, 85, 99, 0.5)",
-                borderRadius: "8px",
-                color: "#fff",
-              }}
-              formatter={(value: number) => `${value} dias`}
-            />
-            <Bar 
-              dataKey="duracao" 
-              fill="#3b82f6" 
-              radius={[8, 8, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
+        <h3 className="text-xl font-semibold text-foreground mb-6">Ranking - Maior Duração</h3>
+        <div className="max-h-[400px] overflow-y-auto">
+          <table className="w-full">
+            <thead className="sticky top-0 bg-slate-800/90 backdrop-blur-sm">
+              <tr className="border-b border-blue-500/30">
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">#</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Cliente</th>
+                <th className="text-left py-3 px-4 text-sm font-semibold text-gray-300">Projeto</th>
+                <th className="text-right py-3 px-4 text-sm font-semibold text-gray-300">Duração</th>
+              </tr>
+            </thead>
+            <tbody>
+              {duracaoRanking.map((item, idx) => (
+                <tr 
+                  key={idx}
+                  className="border-b border-slate-700/50 hover:bg-slate-800/50 transition-colors"
+                >
+                  <td className="py-3 px-4">
+                    <span className={`inline-flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold ${
+                      item.posicao === 1 ? "bg-yellow-500/20 text-yellow-400" :
+                      item.posicao === 2 ? "bg-gray-400/20 text-gray-300" :
+                      item.posicao === 3 ? "bg-orange-600/20 text-orange-400" :
+                      "bg-slate-700/50 text-gray-400"
+                    }`}>
+                      {item.posicao}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-300">{item.cliente}</td>
+                  <td className="py-3 px-4 text-sm text-white font-medium">{item.projeto}</td>
+                  <td className="py-3 px-4 text-right">
+                    <span className="text-blue-400 font-bold">{item.duracao} dias</span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* Tabela de Ciclos */}
