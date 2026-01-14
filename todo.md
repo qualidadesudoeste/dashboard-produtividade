@@ -1,9 +1,8 @@
-# TODO - Remover Ícones do Menu
+# TODO - Substituir Label por Logo
 
 ## Tarefa
-- [ ] Remover ícones dos itens de menu na sidebar (Layout.tsx)
-  - [ ] Remover ícone LayoutDashboard do item Dashboard
-  - [ ] Remover ícone FileCheck do item Auditoria
-  - [ ] Remover ícone TestTube2 do item Ciclos de Teste
-  - [ ] Testar no navegador
-  - [ ] Salvar checkpoint
+- [ ] Copiar logo para pasta pública do projeto
+- [ ] Atualizar Layout.tsx para exibir logo no lugar do texto
+- [ ] Ajustar tamanho e posicionamento da logo
+- [ ] Testar no navegador
+- [ ] Salvar checkpoint

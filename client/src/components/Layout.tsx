@@ -35,12 +35,9 @@ export default function Layout({ children }: LayoutProps) {
             !sidebarOpen && "px-4"
           )}>
             {sidebarOpen && (
-              <div className="mb-2">
-                <h2 className="text-xl font-bold gradient-text">Fábrica de Software</h2>
+              <div className="mb-2 flex justify-center">
+                <img src="/images/logo.png" alt="Produtividade" className="h-20 w-auto" />
               </div>
-            )}
-            {sidebarOpen && (
-              <p className="text-xs text-muted-foreground overflow-hidden"></p>
             )}
           </div>
 
