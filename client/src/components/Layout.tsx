@@ -36,7 +36,7 @@ export default function Layout({ children }: LayoutProps) {
           )}>
             {sidebarOpen && (
               <div className="mb-2 flex justify-center">
-                <img src="/images/logo.png" alt="Produtividade" className="h-32 w-auto" />
+                <img src="/images/logo.png" alt="Produtividade" className="h-40 w-auto" />
               </div>
             )}
           </div>
@@ -53,7 +53,7 @@ export default function Layout({ children }: LayoutProps) {
                     className={cn(
                       "w-full h-auto transition-all duration-300 group relative overflow-hidden border",
                       sidebarOpen ? "justify-start gap-3 py-3 px-4" : "justify-center p-3",
-                      isActive ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "border-transparent hover:border-primary/30 hover:bg-accent/50"
+                      isActive ? "bg-primary text-primary-foreground border-primary shadow-[0_0_15px_rgba(59,130,246,0.3)]" : "border-transparent hover:border-primary/30 hover:bg-primary/10 hover:backdrop-blur-xl"
                     )}
                     title={!sidebarOpen ? item.label : undefined}
                   >
