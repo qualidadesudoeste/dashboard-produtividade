@@ -679,7 +679,7 @@ export default function Auditoria() {
             {/* Informações Básicas */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Projeto <span className="text-red-500">*</span>
                 </label>
                 <Select value={formData.projeto} onValueChange={(val) => setFormData({ ...formData, projeto: val })}>
@@ -697,7 +697,7 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Sprint <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -709,7 +709,7 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Data Início Sprint</label>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Data Início Sprint</label>
                 <Input
                   type="date"
                   value={formData.dataInicio}
@@ -724,7 +724,7 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Data Fim Sprint</label>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Data Fim Sprint</label>
                 <Input
                   type="date"
                   value={formData.dataFim}
@@ -739,7 +739,7 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Duração (dias)</label>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Duração (dias)</label>
                 <Input
                   type="number"
                   value={formData.duracao}
@@ -750,7 +750,7 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Data Auditoria</label>
+                <label className="block text-sm font-medium text-gray-200 mb-2">Data Auditoria</label>
                 <Input
                   type="date"
                   value={formData.data}
@@ -759,7 +759,7 @@ export default function Auditoria() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-200 mb-2">
                   Auditor <span className="text-red-500">*</span>
                 </label>
                 <Input
@@ -773,14 +773,14 @@ export default function Auditoria() {
 
             {/* Checklist Maker Compass */}
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              <h3 className="text-lg font-semibold text-white mb-4">
                 Checklist Maker Compass
               </h3>
 
               <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-gray-600">Score Total Calculado:</p>
+                    <p className="text-sm text-gray-400">Score Total Calculado:</p>
                     <p className="text-4xl font-bold text-blue-600 mt-1">{scoreAtual}%</p>
                     <p className="text-xs text-gray-500 mt-1">
                       {itensAtendidos}/15 critérios atendidos
@@ -802,7 +802,7 @@ export default function Auditoria() {
 
               <div className="space-y-3 border rounded-lg p-4 bg-slate-800/30">
                 {CRITERIOS_KEYS.map((key, index) => (
-                  <div key={key} className="flex items-start gap-3 p-3 hover:bg-blue-50 rounded transition-colors">
+                  <div key={key} className="flex items-start gap-3 p-3 hover:bg-slate-700/50 rounded transition-colors">
                     <Checkbox
                       id={key}
                       checked={formData.checklist[key]}
@@ -811,7 +811,7 @@ export default function Auditoria() {
                     />
                     <label
                       htmlFor={key}
-                      className="text-sm text-gray-700 cursor-pointer flex-1 leading-relaxed"
+                      className="text-sm text-gray-200 cursor-pointer flex-1 leading-relaxed"
                     >
                       <span className="font-medium text-blue-600 mr-2">{index + 1}.</span>
                       {CRITERIOS_LABELS[index]}
@@ -879,41 +879,41 @@ export default function Auditoria() {
               {/* Informações Gerais */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-sm text-gray-600">Projeto</p>
-                  <p className="font-semibold text-gray-900">{selectedAuditoria.projeto}</p>
+                  <p className="text-sm text-gray-400">Projeto</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.projeto}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Sprint</p>
-                  <p className="font-semibold text-gray-900">{selectedAuditoria.sprint}</p>
+                  <p className="text-sm text-gray-400">Sprint</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.sprint}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Data Início Sprint</p>
-                  <p className="font-semibold text-gray-900">
+                  <p className="text-sm text-gray-400">Data Início Sprint</p>
+                  <p className="font-semibold text-white">
                     {selectedAuditoria.dataInicio ? new Date(selectedAuditoria.dataInicio).toLocaleDateString("pt-BR") : "N/A"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Data Fim Sprint</p>
-                  <p className="font-semibold text-gray-900">
+                  <p className="text-sm text-gray-400">Data Fim Sprint</p>
+                  <p className="font-semibold text-white">
                     {selectedAuditoria.dataFim ? new Date(selectedAuditoria.dataFim).toLocaleDateString("pt-BR") : "N/A"}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Duração</p>
-                  <p className="font-semibold text-gray-900">{selectedAuditoria.duracao} dias</p>
+                  <p className="text-sm text-gray-400">Duração</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.duracao} dias</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Data Auditoria</p>
-                  <p className="font-semibold text-gray-900">
+                  <p className="text-sm text-gray-400">Data Auditoria</p>
+                  <p className="font-semibold text-white">
                     {new Date(selectedAuditoria.data).toLocaleDateString("pt-BR")}
                   </p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Auditor</p>
-                  <p className="font-semibold text-gray-900">{selectedAuditoria.auditor}</p>
+                  <p className="text-sm text-gray-400">Auditor</p>
+                  <p className="font-semibold text-white">{selectedAuditoria.auditor}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-gray-600">Status</p>
+                  <p className="text-sm text-gray-400">Status</p>
                   <Badge
                     className={
                       selectedAuditoria.status === "Aprovado"
@@ -939,7 +939,7 @@ export default function Auditoria() {
 
               {/* Checklist */}
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Critérios Avaliados</h3>
+                <h3 className="text-lg font-semibold text-white mb-4">Critérios Avaliados</h3>
                 <div className="space-y-2 border rounded-lg p-4 bg-slate-800/30">
                   {CRITERIOS_KEYS.map((key, index) => {
                     const atendido = selectedAuditoria.checklist[key];
@@ -947,7 +947,7 @@ export default function Auditoria() {
                       <div
                         key={key}
                         className={`flex items-center gap-3 p-3 rounded ${
-                          atendido ? "bg-green-50" : "bg-red-50"
+                          atendido ? "bg-green-900/30" : "bg-red-900/30"
                         }`}
                       >
                         {atendido ? (
@@ -955,7 +955,7 @@ export default function Auditoria() {
                         ) : (
                           <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                         )}
-                        <span className="text-sm text-gray-700">
+                        <span className="text-sm text-gray-200">
                           <span className="font-medium mr-2">{index + 1}.</span>
                           {CRITERIOS_LABELS[index]}
                         </span>
@@ -968,8 +968,8 @@ export default function Auditoria() {
               {/* Observações */}
               {selectedAuditoria.observacoes && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Observações</h3>
-                  <p className="text-gray-700 bg-gray-50 p-4 rounded-lg whitespace-pre-wrap">
+                  <h3 className="text-lg font-semibold text-white mb-2">Observações</h3>
+                  <p className="text-gray-200 bg-slate-800/50 p-4 rounded-lg whitespace-pre-wrap">
                     {selectedAuditoria.observacoes}
                   </p>
                 </div>
@@ -978,8 +978,8 @@ export default function Auditoria() {
               {/* Ações Corretivas */}
               {selectedAuditoria.acoesCorretivas && (
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Ações Corretivas</h3>
-                  <p className="text-gray-700 bg-yellow-50 p-4 rounded-lg whitespace-pre-wrap border-l-4 border-yellow-500">
+                  <h3 className="text-lg font-semibold text-white mb-2">Ações Corretivas</h3>
+                  <p className="text-gray-200 bg-yellow-900/30 p-4 rounded-lg whitespace-pre-wrap border-l-4 border-yellow-500">
                     {selectedAuditoria.acoesCorretivas}
                   </p>
                 </div>
