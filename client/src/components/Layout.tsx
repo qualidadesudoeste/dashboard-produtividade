@@ -60,12 +60,7 @@ export default function Layout({ children }: LayoutProps) {
                     )}
                     title={!sidebarOpen ? item.label : undefined}
                   >
-                    {item.path !== "/" && (
-                      <Icon className={cn(
-                        "shrink-0 transition-transform group-hover:scale-110",
-                        sidebarOpen ? "h-5 w-5" : "h-6 w-6"
-                      )} />
-                    )}
+
                     {sidebarOpen && (
                       <div className="flex flex-col items-start text-left overflow-hidden">
                         <span className="font-medium whitespace-nowrap">{item.label}</span>
