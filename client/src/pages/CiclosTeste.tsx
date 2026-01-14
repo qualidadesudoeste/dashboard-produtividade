@@ -385,11 +385,19 @@ export default function CiclosTeste() {
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Cliente</th>
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Projeto</th>
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Sprint</th>
+                <th className="text-center py-3 px-4 text-gray-300 font-medium">Início</th>
+                <th className="text-center py-3 px-4 text-gray-300 font-medium">Fim</th>
                 <th className="text-center py-3 px-4 text-gray-300 font-medium">Duração</th>
+                <th className="text-center py-3 px-4 text-gray-300 font-medium">1º Ciclo</th>
+                <th className="text-center py-3 px-4 text-gray-300 font-medium">2º Ciclo</th>
+                <th className="text-center py-3 px-4 text-gray-300 font-medium">3º Ciclo</th>
                 <th className="text-left py-3 px-4 text-gray-300 font-medium">Status</th>
-                <th className="text-right py-3 px-4 text-gray-300 font-medium">Horas</th>
-                <th className="text-right py-3 px-4 text-gray-300 font-medium">Cards</th>
-                <th className="text-right py-3 px-4 text-gray-300 font-medium">Retrabalho</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Correções<br/>(horas)</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Correções<br/>(cards)</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Total<br/>(horas)</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Total<br/>(cards)</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Tempo<br/>Previsto</th>
+                <th className="text-right py-3 px-4 text-gray-300 font-medium">Retrabalho<br/>(tempo)</th>
               </tr>
             </thead>
             <tbody>
@@ -405,13 +413,21 @@ export default function CiclosTeste() {
                   <td className="py-3 px-4 text-white font-medium">{ciclo.cliente}</td>
                   <td className="py-3 px-4 text-white">{ciclo.projeto}</td>
                   <td className="py-3 px-4 text-gray-300">{ciclo.sprint}</td>
-                  <td className="py-3 px-4 text-center text-white">{ciclo.duracao} dias</td>
+                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.inicio}</td>
+                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.fim}</td>
+                  <td className="py-3 px-4 text-center text-white">{ciclo.duracao}</td>
+                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.ciclo1 || '-'}</td>
+                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.ciclo2 || '-'}</td>
+                  <td className="py-3 px-4 text-center text-gray-300">{ciclo.ciclo3 || '-'}</td>
                   <td className="py-3 px-4">{getStatusBadge(ciclo.status)}</td>
-                  <td className="py-3 px-4 text-right text-white">{ciclo.total_horas.toFixed(1)}h</td>
+                  <td className="py-3 px-4 text-right text-white">{ciclo.correcoes_horas > 0 ? ciclo.correcoes_horas.toFixed(2) : '-'}</td>
+                  <td className="py-3 px-4 text-right text-white">{ciclo.correcoes_cards > 0 ? ciclo.correcoes_cards : '-'}</td>
+                  <td className="py-3 px-4 text-right text-white">{ciclo.total_horas.toFixed(2)}</td>
                   <td className="py-3 px-4 text-right text-white">{ciclo.total_cards}</td>
+                  <td className="py-3 px-4 text-right text-white">{ciclo.tempo_previsto > 0 ? ciclo.tempo_previsto.toFixed(2) : '-'}</td>
                   <td className="py-3 px-4 text-right">
                     <span className={`font-semibold ${ciclo.retrabalho > 20 ? "text-red-400" : ciclo.retrabalho > 10 ? "text-orange-400" : "text-green-400"}`}>
-                      {ciclo.retrabalho.toFixed(1)}%
+                      {ciclo.retrabalho.toFixed(2)}%
                     </span>
                   </td>
                 </tr>
