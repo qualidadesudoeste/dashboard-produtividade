@@ -590,17 +590,25 @@ export default function Auditoria() {
                                 </p>
                               </div>
 
-                              <Badge
-                                className={
-                                  aud.status === "Aprovado"
-                                    ? "bg-green-500 text-white"
-                                    : aud.status === "Aprovado com Ressalvas"
-                                    ? "bg-yellow-500 text-white"
-                                    : "bg-red-500 text-white"
-                                }
-                              >
-                                {aud.status}
-                              </Badge>
+                              <div className="flex flex-col gap-2">
+                                <Badge
+                                  className={
+                                    aud.status === "Aprovado"
+                                      ? "bg-green-500 text-white"
+                                      : aud.status === "Aprovado com Ressalvas"
+                                      ? "bg-yellow-500 text-white"
+                                      : "bg-red-500 text-white"
+                                  }
+                                >
+                                  {aud.status}
+                                </Badge>
+                                {aud.duracao && aud.duracao > 15 && (
+                                  <Badge className="bg-orange-500 text-white text-xs flex items-center gap-1">
+                                    <AlertTriangle className="w-3 h-3" />
+                                    Sprint &gt;15 dias
+                                  </Badge>
+                                )}
+                              </div>
 
                               <div className="flex gap-2">
                                 <Button
