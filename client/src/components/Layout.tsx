@@ -1,6 +1,6 @@
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { BarChart3, FileCheck, TestTube, ChevronLeft, ChevronRight } from "lucide-react";
+import { BarChart3, FileCheck, TestTube, Settings, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 
@@ -17,6 +17,7 @@ export default function Layout({ children }: LayoutProps) {
     { path: "/", label: "Dashboard", icon: BarChart3, description: "" },
     { path: "/auditoria", label: "Auditoria", icon: FileCheck, description: "" },
     { path: "/ciclos-teste", label: "Ciclos de Teste", icon: TestTube, description: "" },
+    { path: "/configuracoes", label: "Configurações", icon: Settings, description: "" },
   ];
 
   return (

@@ -7,6 +7,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import Home from "./pages/Home";
 import Auditoria from "./pages/Auditoria";
 import CiclosTeste from "./pages/CiclosTeste";
+import Configuracoes from "./pages/Configuracoes";
 import Layout from "./components/Layout";
 
 function Router() {
@@ -15,6 +16,7 @@ function Router() {
       <Route path="/" component={() => <Layout><Home /></Layout>} />
       <Route path="/auditoria" component={() => <Layout><Auditoria /></Layout>} />
       <Route path="/ciclos-teste" component={() => <Layout><CiclosTeste /></Layout>} />
+      <Route path="/configuracoes" component={() => <Layout><Configuracoes /></Layout>} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

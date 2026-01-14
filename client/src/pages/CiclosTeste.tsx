@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from "recharts";
 import { Activity, AlertCircle, CheckCircle, Clock, FileText, X, Calendar, TrendingUp } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getGerentePorCliente } from "@/lib/gerenteUtils";
 
 interface CicloTeste {
   gerente: string;
@@ -37,7 +38,12 @@ export default function CiclosTeste() {
     fetch("/ciclos_teste.json")
       .then((res) => res.json())
       .then((data) => {
-        setCiclos(data);
+        // Aplicar gerente dinamicamente baseado no mapeamento configurado
+        const ciclosComGerente = data.map((ciclo: CicloTeste) => ({
+          ...ciclo,
+          gerente: getGerentePorCliente(ciclo.cliente)
+        }));
+        setCiclos(ciclosComGerente);
         setLoading(false);
       })
       .catch((error) => {

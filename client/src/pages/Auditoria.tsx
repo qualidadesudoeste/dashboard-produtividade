@@ -6,6 +6,7 @@
  */
 
 import { useEffect, useState, useMemo } from "react";
+import { getGerentePorCliente } from "@/lib/gerenteUtils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -217,7 +218,8 @@ export default function Auditoria() {
         ciclosData.forEach((ciclo: any) => {
           const projeto = ciclo.projeto;
           const sprint = ciclo.sprint;
-          const gerente = ciclo.gerente || "Não informado";
+          const cliente = ciclo.cliente;
+          const gerente = getGerentePorCliente(cliente); // Buscar gerente dinamicamente
           const dataFim = ciclo.fim;
 
           // Criar auditoria apenas se houver data fim preenchida
