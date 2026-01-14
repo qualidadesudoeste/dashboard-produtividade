@@ -153,8 +153,8 @@
   },
   {
     "gerente": "Luiz",
-    "cliente": "SYSMOBI",
-    "projeto": "SEMOB",
+    "cliente": "SEMOB",
+    "projeto": "SYSMOBI",
     "sprint": "38.0.0",
     "inicio": "17/11/2025",
     "fim": "",
